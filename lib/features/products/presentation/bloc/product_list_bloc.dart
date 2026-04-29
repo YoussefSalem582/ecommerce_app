@@ -1,0 +1,88 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
+
+import 'package:shop_flow/features/products/domain/usecases/get_categories_usecase.dart';
+import 'package:shop_flow/features/products/domain/usecases/get_products_usecase.dart';
+import 'package:shop_flow/features/products/presentation/bloc/product_list_event.dart';
+import 'package:shop_flow/features/products/presentation/bloc/product_list_state.dart';
+
+/// Drives catalog filters, search, and offline-aware reload cycles.
+@lazySingleton
+class ProductListBloc extends Bloc<ProductListEvent, ProductListState> {
+  /// Loads taxonomy + SKU slices via use cases only.
+  ProductListBloc(
+    this._getProducts,
+    this._getCategories,
+  ) : super(const ProductListInitial()) {
+    on<ProductListStarted>(_onStarted);
+    on<ProductListRefreshRequested>(_onRefresh);
+    on<ProductListCategorySelected>(_onCategory);
+    on<ProductListSearchSubmitted>(_onSearch);
+  }
+
+  final GetProductsUseCase _getProducts;
+  final GetCategoriesUseCase _getCategories;
+
+  String? _categoryFilter;
+  String _searchQuery = '';
+  int _loadGeneration = 0;
+
+  Future<void> _onStarted(
+    ProductListStarted event,
+    Emitter<ProductListState> emit,
+  ) async {
+    emit(ProductListLoading(++_loadGeneration));
+    await _loadCatalog(emit);
+  }
+
+  Future<void> _onRefresh(
+    ProductListRefreshRequested event,
+    Emitter<ProductListState> emit,
+  ) async {
+    emit(ProductListLoading(++_loadGeneration));
+    await _loadCatalog(emit);
+  }
+
+  Future<void> _onCategory(
+    ProductListCategorySelected event,
+    Emitter<ProductListState> emit,
+  ) async {
+    _categoryFilter = event.category;
+    emit(ProductListLoading(++_loadGeneration));
+    await _loadCatalog(emit);
+  }
+
+  Future<void> _onSearch(
+    ProductListSearchSubmitted event,
+    Emitter<ProductListState> emit,
+  ) async {
+    _searchQuery = event.query;
+    emit(ProductListLoading(++_loadGeneration));
+    await _loadCatalog(emit);
+  }
+
+  Future<void> _loadCatalog(Emitter<ProductListState> emit) async {
+    final categoriesResult = await _getCategories.call();
+    final productsResult = await _getProducts.call(
+      category: _categoryFilter,
+      searchQuery: _searchQuery.trim().isEmpty ? null : _searchQuery.trim(),
+    );
+
+    final categories = categoriesResult.fold(
+      (failure) => <String>[],
+      (list) => list,
+    );
+
+    productsResult.fold(
+      (failure) => emit(ProductListFailure(failure.message)),
+      (products) => emit(
+        ProductListLoaded(
+          products: products,
+          categories: categories,
+          selectedCategory: _categoryFilter,
+          searchQuery: _searchQuery,
+        ),
+      ),
+    );
+  }
+}

@@ -1,0 +1,303 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:shop_flow/core/l10n/gen/app_localizations.dart';
+import 'package:shop_flow/core/router/app_routes.dart';
+import 'package:shop_flow/core/theme/theme_extensions.dart';
+import 'package:shop_flow/core/widgets/offline_banner.dart';
+import 'package:shop_flow/core/widgets/product_grid_shimmer.dart';
+import 'package:shop_flow/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:shop_flow/features/auth/presentation/bloc/auth_event.dart';
+import 'package:shop_flow/features/auth/presentation/bloc/auth_state.dart';
+import 'package:shop_flow/features/cart/presentation/bloc/cart_bloc.dart';
+import 'package:shop_flow/features/cart/presentation/bloc/cart_event.dart';
+import 'package:shop_flow/features/cart/presentation/bloc/cart_state.dart';
+import 'package:shop_flow/features/products/domain/entities/product_entity.dart';
+import 'package:shop_flow/features/products/presentation/bloc/product_list_bloc.dart';
+import 'package:shop_flow/features/products/presentation/bloc/product_list_event.dart';
+import 'package:shop_flow/features/products/presentation/bloc/product_list_state.dart';
+import 'package:shop_flow/features/products/presentation/widgets/product_card_widget.dart';
+
+/// Authenticated catalog shell — responsive grid, chips, search, shimmer.
+class HomePage extends StatefulWidget {
+  /// Creates catalog host route.
+  const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        return;
+      }
+      context.read<ProductListBloc>().add(const ProductListStarted());
+      context.read<CartBloc>().add(const CartRefreshRequested());
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _submitSearch() {
+    FocusScope.of(context).unfocus();
+    context.read<ProductListBloc>().add(
+          ProductListSearchSubmitted(_searchController.text),
+        );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final palette = context.appPalette;
+
+    return BlocConsumer<ProductListBloc, ProductListState>(
+      listener: (BuildContext context, ProductListState state) {
+        if (state is ProductListFailure) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.message)),
+          );
+        }
+      },
+      builder: (BuildContext context, ProductListState listState) {
+        return BlocBuilder<AuthBloc, AuthState>(
+          builder: (BuildContext context, AuthState authState) {
+            final username =
+                authState is AuthAuthenticated ? authState.user.username : '';
+
+            return Scaffold(
+              appBar: AppBar(
+                title: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(l10n.homeTitle),
+                    if (authState is AuthAuthenticated)
+                      Text(
+                        l10n.welcomeUser(username),
+                        style: Theme.of(context).textTheme.labelSmall,
+                      ),
+                  ],
+                ),
+                actions: <Widget>[
+                  if (authState is AuthAuthenticated)
+                    BlocSelector<CartBloc, CartState, int>(
+                      selector: (CartState s) =>
+                          s is CartLoaded ? s.totalQuantity : 0,
+                      builder: (BuildContext context, int count) {
+                        return Badge(
+                          isLabelVisible: count > 0,
+                          label: AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 220),
+                            transitionBuilder:
+                                (Widget child, Animation<double> animation) {
+                              return ScaleTransition(
+                                scale: animation,
+                                child: child,
+                              );
+                            },
+                            child: Text(
+                              '$count',
+                              key: ValueKey<int>(count),
+                              semanticsLabel: l10n.cartBadgeA11y(count),
+                            ),
+                          ),
+                          child: IconButton(
+                            tooltip: l10n.cartTooltip,
+                            onPressed: () => context.push(AppRoutes.cart),
+                            icon: const Icon(Icons.shopping_cart_outlined),
+                          ),
+                        );
+                      },
+                    ),
+                  if (authState is AuthAuthenticated)
+                    IconButton(
+                      tooltip: l10n.ordersTooltip,
+                      onPressed: () => context.push(AppRoutes.orders),
+                      icon: const Icon(Icons.receipt_long_outlined),
+                    ),
+                  if (authState is AuthAuthenticated)
+                    IconButton(
+                      tooltip: l10n.logoutButton,
+                      onPressed: () => context
+                          .read<AuthBloc>()
+                          .add(const AuthLogoutRequested()),
+                      icon: const Icon(Icons.logout_rounded),
+                    ),
+                ],
+              ),
+              floatingActionButton: kDebugMode
+                  ? FloatingActionButton.small(
+                      tooltip: l10n.debugLogs,
+                      onPressed: () => context.push(AppRoutes.debugLogs),
+                      child: const Icon(Icons.bug_report_outlined),
+                    )
+                  : null,
+              body: OfflineBanner(
+                child: Column(
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                      child: Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: TextField(
+                              controller: _searchController,
+                              textInputAction: TextInputAction.search,
+                              decoration: InputDecoration(
+                                hintText: l10n.catalogSearchHint,
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                isDense: true,
+                              ),
+                              onSubmitted: (_) => _submitSearch(),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          IconButton.filled(
+                            onPressed: _submitSearch,
+                            icon: const Icon(Icons.search_rounded),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    if (listState is ProductListLoaded &&
+                        listState.categories.isNotEmpty)
+                      SizedBox(
+                        height: 44,
+                        child: ListView(
+                          scrollDirection: Axis.horizontal,
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          children: <Widget>[
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 4),
+                              child: ChoiceChip(
+                                label: Text(l10n.catalogAllCategories),
+                                selected: listState.selectedCategory == null,
+                                onSelected: (_) => context
+                                    .read<ProductListBloc>()
+                                    .add(const ProductListCategorySelected(null)),
+                              ),
+                            ),
+                            ...listState.categories.map(
+                              (String c) => Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 4),
+                                child: ChoiceChip(
+                                  label: Text(c),
+                                  selected: listState.selectedCategory == c,
+                                  onSelected: (_) => context
+                                      .read<ProductListBloc>()
+                                      .add(ProductListCategorySelected(c)),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    Expanded(
+                      child: LayoutBuilder(
+                        builder:
+                            (BuildContext context, BoxConstraints constraints) {
+                          final cols = ProductGridShimmer.columnsForWidth(
+                            constraints.maxWidth,
+                          );
+
+                          if (listState is ProductListInitial ||
+                              listState is ProductListLoading) {
+                            return ProductGridShimmer(crossAxisCount: cols);
+                          }
+
+                          if (listState is ProductListFailure) {
+                            return Center(
+                              child: Padding(
+                                padding: const EdgeInsets.all(24),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    Text(
+                                      listState.message,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    const SizedBox(height: 16),
+                                    FilledButton(
+                                      onPressed: () => context
+                                          .read<ProductListBloc>()
+                                          .add(const ProductListStarted()),
+                                      child: Text(l10n.retry),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          }
+
+                          if (listState is ProductListLoaded) {
+                            final products = listState.products;
+                            if (products.isEmpty) {
+                              return Center(child: Text(l10n.catalogEmpty));
+                            }
+
+                            return RefreshIndicator(
+                              color: palette.primary,
+                              onRefresh: () async {
+                                final ProductListBloc bloc =
+                                    context.read<ProductListBloc>();
+                                bloc.add(const ProductListRefreshRequested());
+                                await bloc.stream.firstWhere(
+                                  (ProductListState s) =>
+                                      s is ProductListLoaded ||
+                                      s is ProductListFailure,
+                                );
+                              },
+                              child: GridView.builder(
+                                padding: const EdgeInsets.all(16),
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: cols,
+                                  mainAxisSpacing: 16,
+                                  crossAxisSpacing: 16,
+                                  childAspectRatio: 0.72,
+                                ),
+                                itemCount: products.length,
+                                itemBuilder:
+                                    (BuildContext context, int index) {
+                                  final ProductEntity product =
+                                      products[index];
+                                  return ProductCard(
+                                    product: product,
+                                    onTap: () => context.push(
+                                      AppRoutes.product(product.id),
+                                    ),
+                                  );
+                                },
+                              ),
+                            );
+                          }
+
+                          return const SizedBox.shrink();
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+}
