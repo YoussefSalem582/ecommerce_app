@@ -1,0 +1,123 @@
+{
+  "@@locale": "en",
+  "appTitle": "ShopFlow",
+  "@appTitle": {
+    "description": "Application title shown in task manager"
+  },
+  "splashLoading": "Loading…",
+  "homeTitle": "Home",
+  "settingsTitle": "Settings",
+  "offlineBannerTitle": "You are offline",
+  "offlineBannerBody": "Showing cached content where available.",
+  "retry": "Retry",
+  "languageEnglish": "English",
+  "languageArabic": "Arabic",
+  "themeLight": "Light",
+  "themeDark": "Dark",
+  "themeSystem": "System",
+  "debugLogs": "Debug logs",
+  "loginTitle": "Sign in",
+  "registerTitle": "Create account",
+  "usernameLabel": "Username",
+  "passwordLabel": "Password",
+  "emailLabel": "Email",
+  "firstNameLabel": "First name",
+  "lastNameLabel": "Last name",
+  "loginButton": "Sign in",
+  "registerButton": "Register",
+  "createAccountLink": "Create an account",
+  "alreadyHaveAccountLink": "Already have an account? Sign in",
+  "fieldRequired": "This field is required",
+  "passwordTooShort": "Use at least 3 characters",
+  "invalidEmailHint": "Enter a valid email address",
+  "logoutButton": "Sign out",
+  "welcomeUser": "Welcome, {username}",
+  "@welcomeUser": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "registerSuccessSnackbar": "Account created. Sign in with your username.",
+  "authErrorNetworkUnreachable": "Couldn't reach the server. Check your connection and try again.",
+  "signInWithGoogleComingSoon": "Google Sign-In will connect here for production builds.",
+  "googleSignInButton": "Continue with Google",
+  "catalogSearchHint": "Search products",
+  "catalogAllCategories": "All",
+  "catalogEmpty": "No products match your filters.",
+  "productDetailLoadingTitle": "Product",
+  "productRatingLabel": "{rating} • {count} reviews",
+  "@productRatingLabel": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "addToCartLabel": "Add to cart",
+  "addToCartComingSoon": "Cart sync comes in the next milestone.",
+  "addToCartSuccess": "Added to your cart",
+  "pageNotFoundTitle": "Page not found",
+  "pageNotFoundBody": "That route does not exist.",
+  "cartTitle": "Cart",
+  "cartEmptyTitle": "Your cart is empty",
+  "cartEmptyBody": "Browse the catalog and tap add to cart on any product.",
+  "cartSubtotalLabel": "Subtotal",
+  "cartCheckoutLabel": "Checkout",
+  "cartCheckoutComingSoon": "Checkout with Stripe arrives in Phase 5.",
+  "cartQuantityA11y": "Quantity {quantity}",
+  "@cartQuantityA11y": {
+    "placeholders": {
+      "quantity": {
+        "type": "int"
+      }
+    }
+  },
+  "wishlistToggleTooltip": "Wishlist",
+  "cartTooltip": "Cart",
+  "cartBadgeA11y": "{count} items in cart",
+  "@cartBadgeA11y": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "checkoutTitle": "Checkout",
+  "checkoutPayButton": "Pay now",
+  "checkoutOrderSummarySection": "Order summary",
+  "checkoutShippingSection": "Shipping address",
+  "checkoutFullNameLabel": "Full name",
+  "checkoutStreetLabel": "Street address",
+  "checkoutCityLabel": "City",
+  "checkoutPostalLabel": "Postal code",
+  "checkoutCountryLabel": "Country",
+  "checkoutStripeSheetHint": "Stripe Payment Sheet opens next. Use a test card in sandbox.",
+  "checkoutProcessingHint": "Processing payment…",
+  "checkoutCartEmpty": "Your cart is empty. Add products before checkout.",
+  "ordersTitle": "Orders",
+  "ordersEmptyTitle": "No orders yet",
+  "ordersEmptyBody": "Complete checkout to see receipts here — stored offline in Hive.",
+  "ordersOrderIdLabel": "Order",
+  "orderDetailTitle": "Order details",
+  "orderTimelineTitle": "Status",
+  "orderStatusPending": "Payment received",
+  "orderStatusProcessing": "Processing",
+  "orderStatusShipped": "Shipped",
+  "orderStatusDelivered": "Delivered",
+  "orderSuccessTitle": "Thank you!",
+  "orderSuccessSubtitle": "Your order {orderId} is saved.",
+  "@orderSuccessSubtitle": {
+    "placeholders": {
+      "orderId": {
+        "type": "String"
+      }
+    }
+  },
+  "orderContinueShopping": "Continue shopping",
+  "ordersTooltip": "Orders"
+}

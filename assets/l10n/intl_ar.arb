@@ -1,0 +1,120 @@
+{
+  "@@locale": "ar",
+  "appTitle": "شوب فلو",
+  "splashLoading": "جاري التحميل…",
+  "homeTitle": "الرئيسية",
+  "settingsTitle": "الإعدادات",
+  "offlineBannerTitle": "أنت غير متصل",
+  "offlineBannerBody": "عرض المحتوى المخزن مؤقتاً حيثما أمكن.",
+  "retry": "إعادة المحاولة",
+  "languageEnglish": "الإنجليزية",
+  "languageArabic": "العربية",
+  "themeLight": "فاتح",
+  "themeDark": "داكن",
+  "themeSystem": "النظام",
+  "debugLogs": "سجلات التصحيح",
+  "loginTitle": "تسجيل الدخول",
+  "registerTitle": "إنشاء حساب",
+  "usernameLabel": "اسم المستخدم",
+  "passwordLabel": "كلمة المرور",
+  "emailLabel": "البريد الإلكتروني",
+  "firstNameLabel": "الاسم الأول",
+  "lastNameLabel": "اسم العائلة",
+  "loginButton": "دخول",
+  "registerButton": "تسجيل",
+  "createAccountLink": "إنشاء حساب",
+  "alreadyHaveAccountLink": "لديك حساب؟ سجّل الدخول",
+  "fieldRequired": "هذا الحقل مطلوب",
+  "passwordTooShort": "استخدم 3 أحرف على الأقل",
+  "invalidEmailHint": "أدخل بريداً إلكترونياً صالحاً",
+  "logoutButton": "خروج",
+  "welcomeUser": "مرحباً، {username}",
+  "@welcomeUser": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "registerSuccessSnackbar": "تم إنشاء الحساب. سجّل الدخول باسم المستخدم.",
+  "authErrorNetworkUnreachable": "تعذّر الوصول إلى الخادم. تحقّق من اتصالك وحاول مرة أخرى.",
+  "signInWithGoogleComingSoon": "سيتم ربط تسجيل الدخول عبر جوجل في الإصدارات الإنتاجية.",
+  "googleSignInButton": "المتابعة مع جوجل",
+  "catalogSearchHint": "ابحث عن منتجات",
+  "catalogAllCategories": "الكل",
+  "catalogEmpty": "لا توجد منتجات مطابقة للفلاتر.",
+  "productDetailLoadingTitle": "المنتج",
+  "productRatingLabel": "{rating} • {count} تقييم",
+  "@productRatingLabel": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "addToCartLabel": "أضف إلى السلة",
+  "addToCartComingSoon": "مزامنة السلة في المرحلة القادمة.",
+  "addToCartSuccess": "تمت الإضافة إلى السلة",
+  "pageNotFoundTitle": "الصفحة غير موجودة",
+  "pageNotFoundBody": "هذا المسار غير موجود.",
+  "cartTitle": "السلة",
+  "cartEmptyTitle": "سلتك فارغة",
+  "cartEmptyBody": "تصفح المنتجات واضغط «أضف إلى السلة» على أي منتج.",
+  "cartSubtotalLabel": "المجموع الفرعي",
+  "cartCheckoutLabel": "إتمام الشراء",
+  "cartCheckoutComingSoon": "الدفع عبر Stripe سيصل في المرحلة الخامسة.",
+  "cartQuantityA11y": "الكمية {quantity}",
+  "@cartQuantityA11y": {
+    "placeholders": {
+      "quantity": {
+        "type": "int"
+      }
+    }
+  },
+  "wishlistToggleTooltip": "قائمة الرغبات",
+  "cartTooltip": "السلة",
+  "cartBadgeA11y": "{count} عناصر في السلة",
+  "@cartBadgeA11y": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "checkoutTitle": "إتمام الشراء",
+  "checkoutPayButton": "ادفع الآن",
+  "checkoutOrderSummarySection": "ملخص الطلب",
+  "checkoutShippingSection": "عنوان الشحن",
+  "checkoutFullNameLabel": "الاسم الكامل",
+  "checkoutStreetLabel": "عنوان الشارع",
+  "checkoutCityLabel": "المدينة",
+  "checkoutPostalLabel": "الرمز البريدي",
+  "checkoutCountryLabel": "الدولة",
+  "checkoutStripeSheetHint": "ستظهر نافذة دفع Stripe. استخدم بطاقة اختبار في وضع التجربة.",
+  "checkoutProcessingHint": "جاري معالجة الدفع…",
+  "checkoutCartEmpty": "سلتك فارغة. أضف منتجات قبل إتمام الشراء.",
+  "ordersTitle": "الطلبات",
+  "ordersEmptyTitle": "لا توجد طلبات بعد",
+  "ordersEmptyBody": "أكمل الشراء لعرض الإيصالات هنا — تُخزَّن محلياً في Hive.",
+  "ordersOrderIdLabel": "طلب",
+  "orderDetailTitle": "تفاصيل الطلب",
+  "orderTimelineTitle": "الحالة",
+  "orderStatusPending": "تم استلام الدفع",
+  "orderStatusProcessing": "قيد المعالجة",
+  "orderStatusShipped": "تم الشحن",
+  "orderStatusDelivered": "تم التسليم",
+  "orderSuccessTitle": "شكراً لك!",
+  "orderSuccessSubtitle": "تم حفظ طلبك {orderId}.",
+  "@orderSuccessSubtitle": {
+    "placeholders": {
+      "orderId": {
+        "type": "String"
+      }
+    }
+  },
+  "orderContinueShopping": "متابعة التسوق",
+  "ordersTooltip": "الطلبات"
+}
