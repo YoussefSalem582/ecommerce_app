@@ -78,3 +78,9 @@ final class AuthLogoutRequested extends AuthEvent {
   /// Logs out current session.
   const AuthLogoutRequested();
 }
+
+/// Google Sign-In showcase stub.
+final class AuthGoogleSignInRequested extends AuthEvent {
+  /// Triggers Google OAuth stub flow.
+  const AuthGoogleSignInRequested();
+}

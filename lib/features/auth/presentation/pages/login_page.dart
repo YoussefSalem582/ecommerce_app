@@ -134,13 +134,9 @@ class _LoginPageState extends State<LoginPage> {
                     TextButton(
                       onPressed: loading
                           ? null
-                          : () => ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    l10n.signInWithGoogleComingSoon,
-                                  ),
-                                ),
-                              ),
+                          : () => context
+                              .read<AuthBloc>()
+                              .add(const AuthGoogleSignInRequested()),
                       child: Text(l10n.googleSignInButton),
                     ),
                   ],

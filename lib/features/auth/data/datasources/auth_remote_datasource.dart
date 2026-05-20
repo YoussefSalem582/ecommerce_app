@@ -16,4 +16,7 @@ abstract class AuthRemoteDatasource {
     required String firstName,
     required String lastName,
   });
+
+  /// Rotates access token using refresh credential (showcase stub).
+  Future<String> refreshAccessToken({required String refreshToken});
 }

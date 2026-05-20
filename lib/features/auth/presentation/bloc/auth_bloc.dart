@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:talker/talker.dart';
 
+import 'package:shop_flow/features/auth/domain/usecases/google_sign_in_usecase.dart';
 import 'package:shop_flow/features/auth/domain/usecases/login_usecase.dart';
 import 'package:shop_flow/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:shop_flow/features/auth/domain/usecases/register_usecase.dart';
@@ -18,18 +19,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     this._login,
     this._register,
     this._logout,
+    this._googleSignIn,
     this._talker,
   ) : super(const AuthInitial()) {
     on<AuthSessionRequested>(_onSessionRequested);
     on<AuthLoginRequested>(_onLoginRequested);
     on<AuthRegisterRequested>(_onRegisterRequested);
     on<AuthLogoutRequested>(_onLogoutRequested);
+    on<AuthGoogleSignInRequested>(_onGoogleSignInRequested);
   }
 
   final RestoreSessionUseCase _restoreSession;
   final LoginUseCase _login;
   final RegisterUseCase _register;
   final LogoutUseCase _logout;
+  final GoogleSignInUseCase _googleSignIn;
   final Talker _talker;
 
   Future<void> _onSessionRequested(
@@ -97,6 +101,18 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     result.fold(
       (failure) => emit(AuthCredentialFailure(failure.message)),
       (_) => emit(const AuthUnauthenticated()),
+    );
+  }
+
+  Future<void> _onGoogleSignInRequested(
+    AuthGoogleSignInRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(const AuthLoading());
+    final result = await _googleSignIn.call();
+    result.fold(
+      (failure) => emit(AuthCredentialFailure(failure.message)),
+      (user) => emit(AuthAuthenticated(user)),
     );
   }
 }

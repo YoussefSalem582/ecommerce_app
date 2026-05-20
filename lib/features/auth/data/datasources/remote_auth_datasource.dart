@@ -80,6 +80,16 @@ class RemoteAuthDatasource implements AuthRemoteDatasource {
     }
   }
 
+  @override
+  Future<String> refreshAccessToken({required String refreshToken}) async {
+    if (refreshToken.startsWith('refresh_')) {
+      return 'showcase.jwt.refreshed.${DateTime.now().millisecondsSinceEpoch}';
+    }
+    throw const ServerException(
+      'Token refresh is not supported by Fake Store API',
+    );
+  }
+
   ServerException _mapDio(DioException e) {
     final status = e.response?.statusCode;
     final body = e.response?.data;

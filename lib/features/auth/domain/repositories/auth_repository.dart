@@ -25,4 +25,10 @@ abstract class AuthRepository {
 
   /// Restores session when a token + cached profile exist.
   Future<Either<Failure, UserEntity?>> restoreSession();
+
+  /// Rotates JWT using stored refresh token (showcase stub).
+  Future<Either<Failure, String>> refreshAccessToken();
+
+  /// Signs in via Google OAuth showcase stub.
+  Future<Either<Failure, UserEntity>> signInWithGoogle();
 }

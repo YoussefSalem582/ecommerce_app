@@ -43,4 +43,13 @@ class FakeAuthRemoteDatasource implements AuthRemoteDatasource {
       lastName: lastName,
     );
   }
+
+  @override
+  Future<String> refreshAccessToken({required String refreshToken}) async {
+    if (refreshToken.isEmpty) {
+      throw StateError('Missing refresh token');
+    }
+    _talker.info('[ShopFlow][auth][demo] refresh token rotation');
+    return '$_demoJwt.refreshed.${DateTime.now().millisecondsSinceEpoch}';
+  }
 }
