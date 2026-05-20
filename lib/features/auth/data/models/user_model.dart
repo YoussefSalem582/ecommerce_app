@@ -58,4 +58,13 @@ class UserModel extends UserEntity {
         firstName: firstName,
         lastName: lastName,
       );
+
+  /// Builds model from domain entity for local persistence.
+  factory UserModel.fromEntity(UserEntity entity) => UserModel(
+        id: entity.id,
+        username: entity.username,
+        email: entity.email,
+        firstName: entity.firstName,
+        lastName: entity.lastName,
+      );
 }

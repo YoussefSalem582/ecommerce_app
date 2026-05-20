@@ -14,6 +14,8 @@ import 'package:shop_flow/features/checkout/presentation/bloc/checkout_bloc.dart
 import 'package:shop_flow/features/orders/presentation/bloc/orders_bloc.dart';
 import 'package:shop_flow/features/products/presentation/bloc/product_detail_bloc.dart';
 import 'package:shop_flow/features/products/presentation/bloc/product_list_bloc.dart';
+import 'package:shop_flow/features/profile/presentation/bloc/edit_profile_bloc.dart';
+import 'package:shop_flow/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:shop_flow/features/wishlist/presentation/cubit/wishlist_cubit.dart';
 
 /// Root widget wiring localization, theme, routing, and cross-cutting cubits.
@@ -41,6 +43,8 @@ class ShopFlowApp extends StatelessWidget {
         BlocProvider<ConnectivityCubit>.value(
           value: getIt<ConnectivityCubit>(),
         ),
+        BlocProvider<ProfileBloc>.value(value: getIt<ProfileBloc>()),
+        BlocProvider<EditProfileBloc>.value(value: getIt<EditProfileBloc>()),
       ],
       child: BlocBuilder<ThemeCubit, ThemeMode>(
         builder: (BuildContext context, ThemeMode themeMode) {
