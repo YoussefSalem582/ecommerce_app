@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:injectable/injectable.dart';
 import 'package:shop_flow/core/l10n/gen/app_localizations.dart';
 import 'package:shop_flow/core/router/app_routes.dart';
+import 'package:shop_flow/core/router/app_shell.dart';
 import 'package:shop_flow/core/router/auth_refresh_notifier.dart';
 import 'package:shop_flow/core/widgets/debug_logs_page.dart';
 import 'package:shop_flow/features/auth/presentation/bloc/auth_bloc.dart';
@@ -12,10 +13,14 @@ import 'package:shop_flow/features/auth/presentation/pages/register_page.dart';
 import 'package:shop_flow/features/cart/presentation/pages/cart_page.dart';
 import 'package:shop_flow/features/checkout/presentation/pages/checkout_page.dart';
 import 'package:shop_flow/features/home/presentation/pages/home_page.dart';
+import 'package:shop_flow/features/onboarding/presentation/pages/onboarding_page.dart';
 import 'package:shop_flow/features/orders/presentation/pages/order_detail_page.dart';
 import 'package:shop_flow/features/orders/presentation/pages/order_success_page.dart';
 import 'package:shop_flow/features/orders/presentation/pages/orders_page.dart';
 import 'package:shop_flow/features/products/presentation/pages/product_detail_page.dart';
+import 'package:shop_flow/features/profile/presentation/pages/edit_profile_page.dart';
+import 'package:shop_flow/features/profile/presentation/pages/profile_page.dart';
+import 'package:shop_flow/features/profile/presentation/pages/settings_page.dart';
 import 'package:shop_flow/features/splash/presentation/pages/splash_page.dart';
 
 /// Application-wide GoRouter configuration with auth-aware redirects.
@@ -55,6 +60,12 @@ class AppRouter {
         },
       ),
       GoRoute(
+        path: AppRoutes.onboarding,
+        name: 'onboarding',
+        builder: (BuildContext context, GoRouterState state) =>
+            const OnboardingPage(),
+      ),
+      GoRoute(
         path: AppRoutes.login,
         name: 'login',
         builder: (BuildContext context, GoRouterState state) =>
@@ -66,17 +77,56 @@ class AppRouter {
         builder: (BuildContext context, GoRouterState state) =>
             const RegisterPage(),
       ),
-      GoRoute(
-        path: AppRoutes.home,
-        name: 'home',
-        builder: (BuildContext context, GoRouterState state) =>
-            const HomePage(),
-      ),
-      GoRoute(
-        path: AppRoutes.cart,
-        name: 'cart',
-        builder: (BuildContext context, GoRouterState state) =>
-            const CartPage(),
+      StatefulShellRoute.indexedStack(
+        builder: (
+          BuildContext context,
+          GoRouterState state,
+          StatefulNavigationShell navigationShell,
+        ) {
+          return AppShell(navigationShell: navigationShell);
+        },
+        branches: <StatefulShellBranch>[
+          StatefulShellBranch(
+            routes: <RouteBase>[
+              GoRoute(
+                path: AppRoutes.home,
+                name: 'home',
+                builder: (BuildContext context, GoRouterState state) =>
+                    const HomePage(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: <RouteBase>[
+              GoRoute(
+                path: AppRoutes.cart,
+                name: 'cart',
+                builder: (BuildContext context, GoRouterState state) =>
+                    const CartPage(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: <RouteBase>[
+              GoRoute(
+                path: AppRoutes.orders,
+                name: 'orders',
+                builder: (BuildContext context, GoRouterState state) =>
+                    const OrdersPage(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: <RouteBase>[
+              GoRoute(
+                path: AppRoutes.profile,
+                name: 'profile',
+                builder: (BuildContext context, GoRouterState state) =>
+                    const ProfilePage(),
+              ),
+            ],
+          ),
+        ],
       ),
       GoRoute(
         path: AppRoutes.checkout,
@@ -85,10 +135,16 @@ class AppRouter {
             const CheckoutPage(),
       ),
       GoRoute(
-        path: AppRoutes.orders,
-        name: 'orders',
+        path: AppRoutes.settings,
+        name: 'settings',
         builder: (BuildContext context, GoRouterState state) =>
-            const OrdersPage(),
+            const SettingsPage(),
+      ),
+      GoRoute(
+        path: AppRoutes.editProfile,
+        name: 'editProfile',
+        builder: (BuildContext context, GoRouterState state) =>
+            const EditProfilePage(),
       ),
       GoRoute(
         path: '${AppRoutes.orderPath}/:orderId',
@@ -136,6 +192,7 @@ class AppRouter {
 
     const publicRoutes = <String>{
       AppRoutes.splash,
+      AppRoutes.onboarding,
       AppRoutes.login,
       AppRoutes.register,
       AppRoutes.debugLogs,
@@ -146,7 +203,9 @@ class AppRouter {
     }
 
     if (loggedIn &&
-        (location == AppRoutes.login || location == AppRoutes.register)) {
+        (location == AppRoutes.login ||
+            location == AppRoutes.register ||
+            location == AppRoutes.onboarding)) {
       return AppRoutes.home;
     }
 

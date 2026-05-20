@@ -6,6 +6,18 @@ abstract final class AppRoutes {
   /// Primary catalog shell home.
   static const home = '/home';
 
+  /// Profile tab inside authenticated shell.
+  static const profile = '/profile';
+
+  /// Theme, locale, and debug preferences.
+  static const settings = '/settings';
+
+  /// First-run carousel (shown once).
+  static const onboarding = '/onboarding';
+
+  /// Edit profile form (full-screen over shell).
+  static const editProfile = '/edit-profile';
+
   /// PDP pattern `/product/:id`.
   static const productPath = '/product';
 
