@@ -1,4 +1,5 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -7,6 +8,9 @@ import 'package:shop_flow/core/network/dio_client.dart';
 import 'package:shop_flow/features/auth/data/datasources/auth_remote_datasource.dart';
 import 'package:shop_flow/features/auth/data/datasources/fake_auth_remote_datasource.dart';
 import 'package:shop_flow/features/auth/data/datasources/remote_auth_datasource.dart';
+import 'package:shop_flow/features/products/data/datasources/fake_products_remote_datasource.dart';
+import 'package:shop_flow/features/products/data/datasources/products_remote_datasource.dart';
+import 'package:shop_flow/features/products/data/datasources/remote_products_datasource.dart';
 import 'package:talker_flutter/talker_flutter.dart';
 
 /// Third-party bindings required during dependency injection setup.
@@ -19,6 +23,10 @@ abstract class RegisterModule {
   /// Platform connectivity probe used by connectivity cubit.
   @lazySingleton
   Connectivity connectivity() => Connectivity();
+
+  /// Secure storage for JWT credentials.
+  @lazySingleton
+  FlutterSecureStorage secureStorage() => const FlutterSecureStorage();
 
   /// Application preferences (theme, locale, feature flags).
   @preResolve
@@ -53,9 +61,22 @@ abstract class RegisterModule {
     Talker talker,
     DioClient dioClient,
   ) {
-    if (config.appEnv.toLowerCase().trim() == 'demo') {
+    if (config.isDemoEnv) {
       return FakeAuthRemoteDatasource(talker);
     }
     return RemoteAuthDatasource(dioClient);
+  }
+
+  /// Fake Store HTTP unless `APP_ENV=demo`, then in-memory demo catalog.
+  @lazySingleton
+  ProductsRemoteDatasource productsRemoteDatasource(
+    AppConfig config,
+    Talker talker,
+    DioClient dioClient,
+  ) {
+    if (config.isDemoEnv) {
+      return FakeProductsRemoteDatasource(talker);
+    }
+    return RemoteProductsDatasource(dioClient);
   }
 }

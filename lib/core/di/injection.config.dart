@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:connectivity_plus/connectivity_plus.dart' as _i895;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart' as _i558;
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:hive_flutter/hive_flutter.dart' as _i986;
 import 'package:injectable/injectable.dart' as _i526;
@@ -19,22 +20,31 @@ import 'package:shop_flow/core/di/register_module.dart' as _i465;
 import 'package:shop_flow/core/l10n/language_cubit.dart' as _i615;
 import 'package:shop_flow/core/network/connectivity_cubit.dart' as _i1045;
 import 'package:shop_flow/core/network/dio_client.dart' as _i475;
+import 'package:shop_flow/core/network/token_refresher.dart' as _i543;
 import 'package:shop_flow/core/network/token_storage.dart' as _i671;
 import 'package:shop_flow/core/router/app_router.dart' as _i305;
 import 'package:shop_flow/core/router/auth_refresh_notifier.dart' as _i70;
 import 'package:shop_flow/core/theme/theme_cubit.dart' as _i714;
 import 'package:shop_flow/features/auth/data/datasources/auth_remote_datasource.dart'
     as _i475;
+import 'package:shop_flow/features/auth/data/datasources/google_auth_datasource.dart'
+    as _i891;
 import 'package:shop_flow/features/auth/data/datasources/local_auth_datasource.dart'
     as _i389;
+import 'package:shop_flow/features/auth/data/datasources/showcase_google_auth_datasource.dart'
+    as _i505;
 import 'package:shop_flow/features/auth/data/repositories/auth_repository_impl.dart'
     as _i320;
 import 'package:shop_flow/features/auth/domain/repositories/auth_repository.dart'
     as _i285;
+import 'package:shop_flow/features/auth/domain/usecases/google_sign_in_usecase.dart'
+    as _i369;
 import 'package:shop_flow/features/auth/domain/usecases/login_usecase.dart'
     as _i626;
 import 'package:shop_flow/features/auth/domain/usecases/logout_usecase.dart'
     as _i89;
+import 'package:shop_flow/features/auth/domain/usecases/refresh_token_usecase.dart'
+    as _i297;
 import 'package:shop_flow/features/auth/domain/usecases/register_usecase.dart'
     as _i229;
 import 'package:shop_flow/features/auth/domain/usecases/restore_session_usecase.dart'
@@ -87,8 +97,8 @@ import 'package:shop_flow/features/orders/presentation/bloc/orders_bloc.dart'
     as _i13;
 import 'package:shop_flow/features/products/data/datasources/local_products_datasource.dart'
     as _i185;
-import 'package:shop_flow/features/products/data/datasources/remote_products_datasource.dart'
-    as _i311;
+import 'package:shop_flow/features/products/data/datasources/products_remote_datasource.dart'
+    as _i437;
 import 'package:shop_flow/features/products/data/repositories/products_repository_impl.dart'
     as _i851;
 import 'package:shop_flow/features/products/domain/repositories/products_repository.dart'
@@ -105,6 +115,24 @@ import 'package:shop_flow/features/products/presentation/bloc/product_detail_blo
     as _i814;
 import 'package:shop_flow/features/products/presentation/bloc/product_list_bloc.dart'
     as _i428;
+import 'package:shop_flow/features/profile/data/datasources/local_profile_datasource.dart'
+    as _i197;
+import 'package:shop_flow/features/profile/data/repositories/profile_repository_impl.dart'
+    as _i925;
+import 'package:shop_flow/features/profile/domain/repositories/profile_repository.dart'
+    as _i151;
+import 'package:shop_flow/features/profile/domain/usecases/get_avatar_path_usecase.dart'
+    as _i111;
+import 'package:shop_flow/features/profile/domain/usecases/get_profile_usecase.dart'
+    as _i220;
+import 'package:shop_flow/features/profile/domain/usecases/save_avatar_path_usecase.dart'
+    as _i81;
+import 'package:shop_flow/features/profile/domain/usecases/update_profile_usecase.dart'
+    as _i827;
+import 'package:shop_flow/features/profile/presentation/bloc/edit_profile_bloc.dart'
+    as _i1060;
+import 'package:shop_flow/features/profile/presentation/bloc/profile_bloc.dart'
+    as _i827;
 import 'package:shop_flow/features/wishlist/data/datasources/local_wishlist_datasource.dart'
     as _i1027;
 import 'package:shop_flow/features/wishlist/data/repositories/wishlist_repository_impl.dart'
@@ -118,6 +146,7 @@ import 'package:shop_flow/features/wishlist/domain/usecases/toggle_wishlist_usec
 import 'package:shop_flow/features/wishlist/presentation/cubit/wishlist_cubit.dart'
     as _i866;
 import 'package:talker/talker.dart' as _i993;
+import 'package:talker_flutter/talker_flutter.dart' as _i207;
 
 extension GetItInjectableX on _i174.GetIt {
   // initializes the registration of main-scope dependencies inside of GetIt
@@ -135,8 +164,11 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i824.CreateOrderEntityUseCase(),
     );
     gh.singleton<_i910.AppConfig>(() => _i910.AppConfig());
-    gh.singleton<_i993.Talker>(() => registerModule.talker());
+    gh.singleton<_i207.Talker>(() => registerModule.talker());
     gh.lazySingleton<_i895.Connectivity>(() => registerModule.connectivity());
+    gh.lazySingleton<_i558.FlutterSecureStorage>(
+      () => registerModule.secureStorage(),
+    );
     await gh.factoryAsync<_i986.Box<String>>(
       () => registerModule.ordersCache,
       instanceName: 'ordersCache',
@@ -176,19 +208,22 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i615.LanguageCubit>(
       () => _i615.LanguageCubit(gh<_i460.SharedPreferences>()),
     );
-    gh.lazySingleton<_i671.TokenStorage>(
-      () => _i671.TokenStorage(gh<_i460.SharedPreferences>()),
-    );
     gh.lazySingleton<_i714.ThemeCubit>(
       () => _i714.ThemeCubit(gh<_i460.SharedPreferences>()),
     );
     gh.lazySingleton<_i389.LocalAuthDatasource>(
       () => _i389.LocalAuthDatasource(gh<_i460.SharedPreferences>()),
     );
+    gh.lazySingleton<_i891.GoogleAuthDatasource>(
+      () => _i505.ShowcaseGoogleAuthDatasource(gh<_i993.Talker>()),
+    );
     await gh.factoryAsync<_i986.Box<String>>(
       () => registerModule.productsCache,
       instanceName: 'productsCache',
       preResolve: true,
+    );
+    gh.factory<_i369.GoogleSignInUseCase>(
+      () => _i369.GoogleSignInUseCase(gh<_i285.AuthRepository>()),
     );
     gh.factory<_i626.LoginUseCase>(
       () => _i626.LoginUseCase(gh<_i285.AuthRepository>()),
@@ -196,17 +231,33 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i89.LogoutUseCase>(
       () => _i89.LogoutUseCase(gh<_i285.AuthRepository>()),
     );
+    gh.factory<_i297.RefreshTokenUseCase>(
+      () => _i297.RefreshTokenUseCase(gh<_i285.AuthRepository>()),
+    );
     gh.factory<_i229.RegisterUseCase>(
       () => _i229.RegisterUseCase(gh<_i285.AuthRepository>()),
     );
     gh.factory<_i968.RestoreSessionUseCase>(
       () => _i968.RestoreSessionUseCase(gh<_i285.AuthRepository>()),
     );
+    gh.lazySingleton<_i430.AuthBloc>(
+      () => _i430.AuthBloc(
+        gh<_i968.RestoreSessionUseCase>(),
+        gh<_i626.LoginUseCase>(),
+        gh<_i229.RegisterUseCase>(),
+        gh<_i89.LogoutUseCase>(),
+        gh<_i369.GoogleSignInUseCase>(),
+        gh<_i993.Talker>(),
+      ),
+    );
     gh.factory<_i1048.GetWishlistIdsUseCase>(
       () => _i1048.GetWishlistIdsUseCase(gh<_i535.WishlistRepository>()),
     );
     gh.factory<_i192.ToggleWishlistUseCase>(
       () => _i192.ToggleWishlistUseCase(gh<_i535.WishlistRepository>()),
+    );
+    gh.lazySingleton<_i671.TokenStorage>(
+      () => _i671.TokenStorage(gh<_i558.FlutterSecureStorage>()),
     );
     gh.factory<_i873.GetCategoriesUseCase>(
       () => _i873.GetCategoriesUseCase(gh<_i823.ProductsRepository>()),
@@ -247,6 +298,9 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i993.Talker>(),
       ),
     );
+    gh.lazySingleton<_i70.AuthRefreshNotifier>(
+      () => _i70.AuthRefreshNotifier(gh<_i430.AuthBloc>()),
+    );
     gh.lazySingleton<_i888.LocalCartDatasource>(
       () => _i888.LocalCartDatasource(
         gh<_i986.Box<String>>(instanceName: 'cartItems'),
@@ -263,16 +317,29 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i873.GetCategoriesUseCase>(),
       ),
     );
+    gh.lazySingleton<_i305.AppRouter>(
+      () =>
+          _i305.AppRouter(gh<_i430.AuthBloc>(), gh<_i70.AuthRefreshNotifier>()),
+    );
     gh.lazySingleton<_i1005.OrdersRepositoryImpl>(
       () => _i1005.OrdersRepositoryImpl(
         gh<_i688.LocalOrdersDatasource>(),
         gh<_i993.Talker>(),
       ),
     );
+    gh.lazySingleton<_i197.LocalProfileDatasource>(
+      () => _i197.LocalProfileDatasource(
+        gh<_i389.LocalAuthDatasource>(),
+        gh<_i460.SharedPreferences>(),
+      ),
+    );
     gh.lazySingleton<_i1027.LocalWishlistDatasource>(
       () => _i1027.LocalWishlistDatasource(
         gh<_i986.Box<String>>(instanceName: 'wishlist'),
       ),
+    );
+    gh.lazySingleton<_i543.TokenRefresher>(
+      () => _i543.TokenRefresher(gh<_i297.RefreshTokenUseCase>()),
     );
     gh.lazySingleton<_i814.ProductDetailBloc>(
       () => _i814.ProductDetailBloc(gh<_i961.GetProductByIdUseCase>()),
@@ -296,15 +363,6 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i671.TokenStorage>(),
       ),
     );
-    gh.lazySingleton<_i430.AuthBloc>(
-      () => _i430.AuthBloc(
-        gh<_i968.RestoreSessionUseCase>(),
-        gh<_i626.LoginUseCase>(),
-        gh<_i229.RegisterUseCase>(),
-        gh<_i89.LogoutUseCase>(),
-        gh<_i993.Talker>(),
-      ),
-    );
     gh.lazySingleton<_i1038.WishlistRepositoryImpl>(
       () => _i1038.WishlistRepositoryImpl(
         gh<_i1027.LocalWishlistDatasource>(),
@@ -316,6 +374,12 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i982.OrderDetailBloc>(
       () => _i982.OrderDetailBloc(gh<_i848.GetOrderByIdUseCase>()),
+    );
+    gh.lazySingleton<_i151.ProfileRepository>(
+      () => _i925.ProfileRepositoryImpl(
+        gh<_i197.LocalProfileDatasource>(),
+        gh<_i993.Talker>(),
+      ),
     );
     gh.lazySingleton<_i514.CheckoutBloc>(
       () => _i514.CheckoutBloc(
@@ -334,36 +398,60 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i993.Talker>(),
       ),
     );
-    gh.lazySingleton<_i70.AuthRefreshNotifier>(
-      () => _i70.AuthRefreshNotifier(gh<_i430.AuthBloc>()),
-    );
-    gh.lazySingleton<_i311.RemoteProductsDatasource>(
-      () => _i311.RemoteProductsDatasource(gh<_i475.DioClient>()),
-    );
     gh.lazySingleton<_i475.AuthRemoteDatasource>(
       () => registerModule.authRemoteDatasource(
         gh<_i910.AppConfig>(),
-        gh<_i993.Talker>(),
+        gh<_i207.Talker>(),
         gh<_i475.DioClient>(),
       ),
     );
-    gh.lazySingleton<_i305.AppRouter>(
-      () =>
-          _i305.AppRouter(gh<_i430.AuthBloc>(), gh<_i70.AuthRefreshNotifier>()),
+    gh.lazySingleton<_i437.ProductsRemoteDatasource>(
+      () => registerModule.productsRemoteDatasource(
+        gh<_i910.AppConfig>(),
+        gh<_i207.Talker>(),
+        gh<_i475.DioClient>(),
+      ),
+    );
+    gh.lazySingleton<_i851.ProductsRepositoryImpl>(
+      () => _i851.ProductsRepositoryImpl(
+        gh<_i437.ProductsRemoteDatasource>(),
+        gh<_i185.LocalProductsDatasource>(),
+        gh<_i993.Talker>(),
+      ),
+    );
+    gh.factory<_i111.GetAvatarPathUseCase>(
+      () => _i111.GetAvatarPathUseCase(gh<_i151.ProfileRepository>()),
+    );
+    gh.factory<_i220.GetProfileUseCase>(
+      () => _i220.GetProfileUseCase(gh<_i151.ProfileRepository>()),
+    );
+    gh.factory<_i81.SaveAvatarPathUseCase>(
+      () => _i81.SaveAvatarPathUseCase(gh<_i151.ProfileRepository>()),
+    );
+    gh.factory<_i827.UpdateProfileUseCase>(
+      () => _i827.UpdateProfileUseCase(gh<_i151.ProfileRepository>()),
+    );
+    gh.factory<_i1060.EditProfileBloc>(
+      () => _i1060.EditProfileBloc(
+        gh<_i220.GetProfileUseCase>(),
+        gh<_i827.UpdateProfileUseCase>(),
+        gh<_i111.GetAvatarPathUseCase>(),
+        gh<_i81.SaveAvatarPathUseCase>(),
+      ),
     );
     gh.lazySingleton<_i320.AuthRepositoryImpl>(
       () => _i320.AuthRepositoryImpl(
         gh<_i475.AuthRemoteDatasource>(),
+        gh<_i891.GoogleAuthDatasource>(),
         gh<_i389.LocalAuthDatasource>(),
         gh<_i671.TokenStorage>(),
         gh<_i993.Talker>(),
       ),
     );
-    gh.lazySingleton<_i851.ProductsRepositoryImpl>(
-      () => _i851.ProductsRepositoryImpl(
-        gh<_i311.RemoteProductsDatasource>(),
-        gh<_i185.LocalProductsDatasource>(),
-        gh<_i993.Talker>(),
+    gh.factory<_i827.ProfileBloc>(
+      () => _i827.ProfileBloc(
+        gh<_i220.GetProfileUseCase>(),
+        gh<_i111.GetAvatarPathUseCase>(),
       ),
     );
     return this;

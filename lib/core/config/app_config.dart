@@ -28,6 +28,26 @@ class AppConfig {
     return secret.trim();
   }
 
-  /// Application environment label (`APP_ENV`).
-  String get appEnv => dotenv.env['APP_ENV'] ?? 'development';
+  /// Application environment label (`APP_ENV`). Defaults to `demo` for offline showcase.
+  String get appEnv {
+    final raw = dotenv.env['APP_ENV']?.trim();
+    if (raw == null || raw.isEmpty) {
+      return 'demo';
+    }
+    return raw;
+  }
+
+  /// Whether the app runs with in-memory auth/catalog stubs (no Fake Store HTTP).
+  ///
+  /// Demo mode is on for `demo`, `development`, and unset env values.
+  /// Set `APP_ENV=live` to force real Fake Store HTTP.
+  bool get isDemoEnv {
+    switch (appEnv.toLowerCase()) {
+      case 'live':
+      case 'production':
+        return false;
+      default:
+        return true;
+    }
+  }
 }
