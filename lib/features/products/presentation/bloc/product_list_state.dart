@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 import 'package:shop_flow/features/products/domain/entities/product_entity.dart';
+import 'package:shop_flow/features/products/presentation/bloc/product_list_view_mode.dart';
 
 /// Listing states emitted by [ProductListBloc].
 sealed class ProductListState extends Equatable {
@@ -37,6 +38,7 @@ final class ProductListLoaded extends ProductListState {
     required this.categories,
     required this.selectedCategory,
     required this.searchQuery,
+    this.viewMode = ProductListViewMode.grid,
   });
 
   /// Visible SKU rows after filters.
@@ -51,9 +53,12 @@ final class ProductListLoaded extends ProductListState {
   /// Latest submitted search query string.
   final String searchQuery;
 
+  /// Grid or list presentation mode.
+  final ProductListViewMode viewMode;
+
   @override
   List<Object?> get props =>
-      <Object?>[products, categories, selectedCategory, searchQuery];
+      <Object?>[products, categories, selectedCategory, searchQuery, viewMode];
 }
 
 /// Recoverable failure surface with messaging for snackbars.

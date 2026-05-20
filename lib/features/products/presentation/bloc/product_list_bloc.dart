@@ -1,10 +1,13 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 
+import 'package:shop_flow/core/error/failures.dart';
+import 'package:shop_flow/features/products/domain/entities/product_entity.dart';
 import 'package:shop_flow/features/products/domain/usecases/get_categories_usecase.dart';
 import 'package:shop_flow/features/products/domain/usecases/get_products_usecase.dart';
 import 'package:shop_flow/features/products/presentation/bloc/product_list_event.dart';
 import 'package:shop_flow/features/products/presentation/bloc/product_list_state.dart';
+import 'package:shop_flow/features/products/presentation/bloc/product_list_view_mode.dart';
 
 /// Drives catalog filters, search, and offline-aware reload cycles.
 @lazySingleton
@@ -18,6 +21,7 @@ class ProductListBloc extends Bloc<ProductListEvent, ProductListState> {
     on<ProductListRefreshRequested>(_onRefresh);
     on<ProductListCategorySelected>(_onCategory);
     on<ProductListSearchSubmitted>(_onSearch);
+    on<ProductListViewModeToggled>(_onViewModeToggled);
   }
 
   final GetProductsUseCase _getProducts;
@@ -26,6 +30,7 @@ class ProductListBloc extends Bloc<ProductListEvent, ProductListState> {
   String? _categoryFilter;
   String _searchQuery = '';
   int _loadGeneration = 0;
+  ProductListViewMode _viewMode = ProductListViewMode.grid;
 
   Future<void> _onStarted(
     ProductListStarted event,
@@ -61,6 +66,27 @@ class ProductListBloc extends Bloc<ProductListEvent, ProductListState> {
     await _loadCatalog(emit);
   }
 
+  void _onViewModeToggled(
+    ProductListViewModeToggled event,
+    Emitter<ProductListState> emit,
+  ) {
+    _viewMode = _viewMode == ProductListViewMode.grid
+        ? ProductListViewMode.list
+        : ProductListViewMode.grid;
+    final current = state;
+    if (current is ProductListLoaded) {
+      emit(
+        ProductListLoaded(
+          products: current.products,
+          categories: current.categories,
+          selectedCategory: current.selectedCategory,
+          searchQuery: current.searchQuery,
+          viewMode: _viewMode,
+        ),
+      );
+    }
+  }
+
   Future<void> _loadCatalog(Emitter<ProductListState> emit) async {
     final categoriesResult = await _getCategories.call();
     final productsResult = await _getProducts.call(
@@ -69,7 +95,16 @@ class ProductListBloc extends Bloc<ProductListEvent, ProductListState> {
     );
 
     final categories = categoriesResult.fold(
-      (failure) => <String>[],
+      (failure) {
+        final fromProducts = productsResult.fold(
+          (Failure _) => <String>[],
+          (List<ProductEntity> list) {
+            final labels = list.map((ProductEntity p) => p.category).toSet();
+            return labels.toList()..sort();
+          },
+        );
+        return fromProducts;
+      },
       (list) => list,
     );
 
@@ -81,6 +116,7 @@ class ProductListBloc extends Bloc<ProductListEvent, ProductListState> {
           categories: categories,
           selectedCategory: _categoryFilter,
           searchQuery: _searchQuery,
+          viewMode: _viewMode,
         ),
       ),
     );

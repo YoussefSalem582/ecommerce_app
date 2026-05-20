@@ -44,3 +44,9 @@ final class ProductListSearchSubmitted extends ProductListEvent {
   @override
   List<Object?> get props => <Object?>[query];
 }
+
+/// Toggles grid vs list layout on catalog.
+final class ProductListViewModeToggled extends ProductListEvent {
+  /// Switches between grid and list presentation.
+  const ProductListViewModeToggled();
+}

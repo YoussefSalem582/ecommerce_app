@@ -8,15 +8,14 @@ import 'package:shop_flow/core/theme/theme_extensions.dart';
 import 'package:shop_flow/core/widgets/offline_banner.dart';
 import 'package:shop_flow/core/widgets/product_grid_shimmer.dart';
 import 'package:shop_flow/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:shop_flow/features/auth/presentation/bloc/auth_event.dart';
 import 'package:shop_flow/features/auth/presentation/bloc/auth_state.dart';
 import 'package:shop_flow/features/cart/presentation/bloc/cart_bloc.dart';
 import 'package:shop_flow/features/cart/presentation/bloc/cart_event.dart';
-import 'package:shop_flow/features/cart/presentation/bloc/cart_state.dart';
 import 'package:shop_flow/features/products/domain/entities/product_entity.dart';
 import 'package:shop_flow/features/products/presentation/bloc/product_list_bloc.dart';
 import 'package:shop_flow/features/products/presentation/bloc/product_list_event.dart';
 import 'package:shop_flow/features/products/presentation/bloc/product_list_state.dart';
+import 'package:shop_flow/features/products/presentation/bloc/product_list_view_mode.dart';
 import 'package:shop_flow/features/products/presentation/widgets/product_card_widget.dart';
 
 /// Authenticated catalog shell — responsive grid, chips, search, shimmer.
@@ -89,49 +88,19 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
                 actions: <Widget>[
-                  if (authState is AuthAuthenticated)
-                    BlocSelector<CartBloc, CartState, int>(
-                      selector: (CartState s) =>
-                          s is CartLoaded ? s.totalQuantity : 0,
-                      builder: (BuildContext context, int count) {
-                        return Badge(
-                          isLabelVisible: count > 0,
-                          label: AnimatedSwitcher(
-                            duration: const Duration(milliseconds: 220),
-                            transitionBuilder:
-                                (Widget child, Animation<double> animation) {
-                              return ScaleTransition(
-                                scale: animation,
-                                child: child,
-                              );
-                            },
-                            child: Text(
-                              '$count',
-                              key: ValueKey<int>(count),
-                              semanticsLabel: l10n.cartBadgeA11y(count),
-                            ),
-                          ),
-                          child: IconButton(
-                            tooltip: l10n.cartTooltip,
-                            onPressed: () => context.push(AppRoutes.cart),
-                            icon: const Icon(Icons.shopping_cart_outlined),
-                          ),
-                        );
-                      },
-                    ),
-                  if (authState is AuthAuthenticated)
+                  if (listState is ProductListLoaded)
                     IconButton(
-                      tooltip: l10n.ordersTooltip,
-                      onPressed: () => context.push(AppRoutes.orders),
-                      icon: const Icon(Icons.receipt_long_outlined),
-                    ),
-                  if (authState is AuthAuthenticated)
-                    IconButton(
-                      tooltip: l10n.logoutButton,
+                      tooltip: listState.viewMode == ProductListViewMode.grid
+                          ? l10n.catalogListView
+                          : l10n.catalogGridView,
                       onPressed: () => context
-                          .read<AuthBloc>()
-                          .add(const AuthLogoutRequested()),
-                      icon: const Icon(Icons.logout_rounded),
+                          .read<ProductListBloc>()
+                          .add(const ProductListViewModeToggled()),
+                      icon: Icon(
+                        listState.viewMode == ProductListViewMode.grid
+                            ? Icons.view_list_rounded
+                            : Icons.grid_view_rounded,
+                      ),
                     ),
                 ],
               ),
@@ -262,28 +231,50 @@ class _HomePageState extends State<HomePage> {
                                       s is ProductListFailure,
                                 );
                               },
-                              child: GridView.builder(
-                                padding: const EdgeInsets.all(16),
-                                gridDelegate:
-                                    SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: cols,
-                                  mainAxisSpacing: 16,
-                                  crossAxisSpacing: 16,
-                                  childAspectRatio: 0.72,
-                                ),
-                                itemCount: products.length,
-                                itemBuilder:
-                                    (BuildContext context, int index) {
-                                  final ProductEntity product =
-                                      products[index];
-                                  return ProductCard(
-                                    product: product,
-                                    onTap: () => context.push(
-                                      AppRoutes.product(product.id),
+                              child: listState.viewMode ==
+                                      ProductListViewMode.list
+                                  ? ListView.builder(
+                                      padding: const EdgeInsets.all(16),
+                                      itemCount: products.length,
+                                      itemBuilder:
+                                          (BuildContext context, int index) {
+                                        final ProductEntity product =
+                                            products[index];
+                                        return Padding(
+                                          padding: const EdgeInsets.only(
+                                            bottom: 12,
+                                          ),
+                                          child: ProductCard(
+                                            product: product,
+                                            onTap: () => context.push(
+                                              AppRoutes.product(product.id),
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    )
+                                  : GridView.builder(
+                                      padding: const EdgeInsets.all(16),
+                                      gridDelegate:
+                                          SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: cols,
+                                        mainAxisSpacing: 16,
+                                        crossAxisSpacing: 16,
+                                        childAspectRatio: 0.72,
+                                      ),
+                                      itemCount: products.length,
+                                      itemBuilder:
+                                          (BuildContext context, int index) {
+                                        final ProductEntity product =
+                                            products[index];
+                                        return ProductCard(
+                                          product: product,
+                                          onTap: () => context.push(
+                                            AppRoutes.product(product.id),
+                                          ),
+                                        );
+                                      },
                                     ),
-                                  );
-                                },
-                              ),
                             );
                           }
 
