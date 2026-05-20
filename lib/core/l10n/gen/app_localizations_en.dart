@@ -262,4 +262,67 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ordersTooltip => 'Orders';
+
+  @override
+  String get profileTitle => 'Profile';
+
+  @override
+  String get editProfileTitle => 'Edit profile';
+
+  @override
+  String get changeAvatar => 'Change photo';
+
+  @override
+  String get saveProfile => 'Save profile';
+
+  @override
+  String get profileUpdated => 'Profile updated';
+
+  @override
+  String get settingsThemeSection => 'Appearance';
+
+  @override
+  String get settingsLanguageSection => 'Language';
+
+  @override
+  String get debugLogsHint => 'Shake device or tap to open Talker console';
+
+  @override
+  String get catalogGridView => 'Grid view';
+
+  @override
+  String get catalogListView => 'List view';
+
+  @override
+  String get onboardingSkip => 'Skip';
+
+  @override
+  String get onboardingNext => 'Next';
+
+  @override
+  String get onboardingGetStarted => 'Get started';
+
+  @override
+  String get onboardingSlide1Title => 'Shop offline';
+
+  @override
+  String get onboardingSlide1Body =>
+      'Browse cached products even when your connection drops. Hive keeps the catalog available.';
+
+  @override
+  String get onboardingSlide2Title => 'Pay with Stripe';
+
+  @override
+  String get onboardingSlide2Body =>
+      'Checkout uses Stripe Payment Sheet with sandbox test cards for a real payment flow demo.';
+
+  @override
+  String get onboardingSlide3Title => 'Arabic & English';
+
+  @override
+  String get onboardingSlide3Body =>
+      'Switch language instantly with full RTL support — no app restart required.';
+
+  @override
+  String get googleSignInSuccess => 'Signed in with Google (showcase stub)';
 }

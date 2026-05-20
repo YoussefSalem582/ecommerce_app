@@ -261,4 +261,67 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get ordersTooltip => 'الطلبات';
+
+  @override
+  String get profileTitle => 'الملف الشخصي';
+
+  @override
+  String get editProfileTitle => 'تعديل الملف';
+
+  @override
+  String get changeAvatar => 'تغيير الصورة';
+
+  @override
+  String get saveProfile => 'حفظ الملف';
+
+  @override
+  String get profileUpdated => 'تم تحديث الملف';
+
+  @override
+  String get settingsThemeSection => 'المظهر';
+
+  @override
+  String get settingsLanguageSection => 'اللغة';
+
+  @override
+  String get debugLogsHint => 'هزّ الجهاز أو اضغط لفتح سجل Talker';
+
+  @override
+  String get catalogGridView => 'عرض شبكي';
+
+  @override
+  String get catalogListView => 'عرض قائمة';
+
+  @override
+  String get onboardingSkip => 'تخطي';
+
+  @override
+  String get onboardingNext => 'التالي';
+
+  @override
+  String get onboardingGetStarted => 'ابدأ';
+
+  @override
+  String get onboardingSlide1Title => 'تسوق بدون اتصال';
+
+  @override
+  String get onboardingSlide1Body =>
+      'تصفح المنتجات المخزنة حتى عند انقطاع الاتصال. Hive يحافظ على توفر الكatalog.';
+
+  @override
+  String get onboardingSlide2Title => 'ادفع عبر Stripe';
+
+  @override
+  String get onboardingSlide2Body =>
+      'الدفع عبر Stripe Payment Sheet مع بطاقات اختبار للعرض التوضيحي.';
+
+  @override
+  String get onboardingSlide3Title => 'عربي وإنجليزي';
+
+  @override
+  String get onboardingSlide3Body =>
+      'بدّل اللغة فوراً مع دعم RTL كامل — دون إعادة تشغيل التطبيق.';
+
+  @override
+  String get googleSignInSuccess => 'تم تسجيل الدخول عبر جوجل (عرض توضيحي)';
 }

@@ -571,6 +571,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Orders'**
   String get ordersTooltip;
+
+  /// No description provided for @profileTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get profileTitle;
+
+  /// No description provided for @editProfileTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit profile'**
+  String get editProfileTitle;
+
+  /// No description provided for @changeAvatar.
+  ///
+  /// In en, this message translates to:
+  /// **'Change photo'**
+  String get changeAvatar;
+
+  /// No description provided for @saveProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Save profile'**
+  String get saveProfile;
+
+  /// No description provided for @profileUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile updated'**
+  String get profileUpdated;
+
+  /// No description provided for @settingsThemeSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get settingsThemeSection;
+
+  /// No description provided for @settingsLanguageSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get settingsLanguageSection;
+
+  /// No description provided for @debugLogsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Shake device or tap to open Talker console'**
+  String get debugLogsHint;
+
+  /// No description provided for @catalogGridView.
+  ///
+  /// In en, this message translates to:
+  /// **'Grid view'**
+  String get catalogGridView;
+
+  /// No description provided for @catalogListView.
+  ///
+  /// In en, this message translates to:
+  /// **'List view'**
+  String get catalogListView;
+
+  /// No description provided for @onboardingSkip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get onboardingSkip;
+
+  /// No description provided for @onboardingNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get onboardingNext;
+
+  /// No description provided for @onboardingGetStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'Get started'**
+  String get onboardingGetStarted;
+
+  /// No description provided for @onboardingSlide1Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop offline'**
+  String get onboardingSlide1Title;
+
+  /// No description provided for @onboardingSlide1Body.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse cached products even when your connection drops. Hive keeps the catalog available.'**
+  String get onboardingSlide1Body;
+
+  /// No description provided for @onboardingSlide2Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay with Stripe'**
+  String get onboardingSlide2Title;
+
+  /// No description provided for @onboardingSlide2Body.
+  ///
+  /// In en, this message translates to:
+  /// **'Checkout uses Stripe Payment Sheet with sandbox test cards for a real payment flow demo.'**
+  String get onboardingSlide2Body;
+
+  /// No description provided for @onboardingSlide3Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Arabic & English'**
+  String get onboardingSlide3Title;
+
+  /// No description provided for @onboardingSlide3Body.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch language instantly with full RTL support — no app restart required.'**
+  String get onboardingSlide3Body;
+
+  /// No description provided for @googleSignInSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Signed in with Google (showcase stub)'**
+  String get googleSignInSuccess;
 }
 
 class _AppLocalizationsDelegate

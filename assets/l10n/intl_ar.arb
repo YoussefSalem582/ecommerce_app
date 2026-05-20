@@ -116,5 +116,25 @@
     }
   },
   "orderContinueShopping": "متابعة التسوق",
-  "ordersTooltip": "الطلبات"
+  "ordersTooltip": "الطلبات",
+  "profileTitle": "الملف الشخصي",
+  "editProfileTitle": "تعديل الملف",
+  "changeAvatar": "تغيير الصورة",
+  "saveProfile": "حفظ الملف",
+  "profileUpdated": "تم تحديث الملف",
+  "settingsThemeSection": "المظهر",
+  "settingsLanguageSection": "اللغة",
+  "debugLogsHint": "هزّ الجهاز أو اضغط لفتح سجل Talker",
+  "catalogGridView": "عرض شبكي",
+  "catalogListView": "عرض قائمة",
+  "onboardingSkip": "تخطي",
+  "onboardingNext": "التالي",
+  "onboardingGetStarted": "ابدأ",
+  "onboardingSlide1Title": "تسوق بدون اتصال",
+  "onboardingSlide1Body": "تصفح المنتجات المخزنة حتى عند انقطاع الاتصال. Hive يحافظ على توفر الكatalog.",
+  "onboardingSlide2Title": "ادفع عبر Stripe",
+  "onboardingSlide2Body": "الدفع عبر Stripe Payment Sheet مع بطاقات اختبار للعرض التوضيحي.",
+  "onboardingSlide3Title": "عربي وإنجليزي",
+  "onboardingSlide3Body": "بدّل اللغة فوراً مع دعم RTL كامل — دون إعادة تشغيل التطبيق.",
+  "googleSignInSuccess": "تم تسجيل الدخول عبر جوجل (عرض توضيحي)"
 }
