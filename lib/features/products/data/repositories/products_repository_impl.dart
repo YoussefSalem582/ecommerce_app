@@ -7,7 +7,7 @@ import 'package:talker/talker.dart';
 import 'package:shop_flow/core/error/exceptions.dart';
 import 'package:shop_flow/core/error/failures.dart';
 import 'package:shop_flow/features/products/data/datasources/local_products_datasource.dart';
-import 'package:shop_flow/features/products/data/datasources/remote_products_datasource.dart';
+import 'package:shop_flow/features/products/data/datasources/products_remote_datasource.dart';
 import 'package:shop_flow/features/products/data/models/product_model.dart';
 import 'package:shop_flow/features/products/domain/entities/product_entity.dart';
 import 'package:shop_flow/features/products/domain/repositories/products_repository.dart';
@@ -22,7 +22,7 @@ class ProductsRepositoryImpl implements ProductsRepository {
     this._talker,
   );
 
-  final RemoteProductsDatasource _remote;
+  final ProductsRemoteDatasource _remote;
   final LocalProductsDatasource _local;
   final Talker _talker;
 

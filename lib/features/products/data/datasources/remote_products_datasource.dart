@@ -1,20 +1,19 @@
 import 'package:dio/dio.dart';
-import 'package:injectable/injectable.dart';
 
 import 'package:shop_flow/core/error/exceptions.dart';
 import 'package:shop_flow/core/network/dio_client.dart';
 import 'package:shop_flow/core/network/dio_user_message.dart';
+import 'package:shop_flow/features/products/data/datasources/products_remote_datasource.dart';
 import 'package:shop_flow/features/products/data/models/product_model.dart';
 
 /// Fake Store catalog REST datasource (`/products`, `/products/categories`).
-@lazySingleton
-class RemoteProductsDatasource {
+class RemoteProductsDatasource implements ProductsRemoteDatasource {
   /// REST client backed by shared [Dio] configuration.
   RemoteProductsDatasource(this._dioClient);
 
   final DioClient _dioClient;
 
-  /// `GET /products`
+  @override
   Future<List<ProductModel>> fetchAllProducts() async {
     try {
       final response = await _dioClient.dio.get<List<dynamic>>('/products');
@@ -30,7 +29,7 @@ class RemoteProductsDatasource {
     }
   }
 
-  /// `GET /products/category/:category`
+  @override
   Future<List<ProductModel>> fetchProductsByCategory(String category) async {
     try {
       final encoded = Uri.encodeComponent(category);
@@ -48,7 +47,7 @@ class RemoteProductsDatasource {
     }
   }
 
-  /// `GET /products/:id`
+  @override
   Future<ProductModel> fetchProductById(int id) async {
     try {
       final response =
@@ -63,10 +62,11 @@ class RemoteProductsDatasource {
     }
   }
 
-  /// `GET /products/categories`
+  @override
   Future<List<String>> fetchCategories() async {
     try {
-      final response = await _dioClient.dio.get<List<dynamic>>('/products/categories');
+      final response =
+          await _dioClient.dio.get<List<dynamic>>('/products/categories');
       final data = response.data;
       if (data == null) {
         throw const ServerException('Empty categories payload');
