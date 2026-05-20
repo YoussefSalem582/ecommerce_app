@@ -2,12 +2,14 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive/hive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shop_flow/app/shop_flow_app.dart';
 import 'package:shop_flow/core/di/injection.dart';
+import 'package:shop_flow/core/network/token_storage.dart';
 import 'package:shop_flow/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:shop_flow/features/auth/presentation/bloc/auth_event.dart';
 
@@ -18,10 +20,12 @@ void main() {
 
   setUpAll(() async {
     SharedPreferences.setMockInitialValues(<String, Object>{});
+    FlutterSecureStorage.setMockInitialValues(<String, String>{});
     hiveDir = await Directory.systemTemp.createTemp('shop_flow_hive_test');
     Hive.init(hiveDir.path);
     await dotenv.load(fileName: 'assets/env/default.env');
     await configureDependencies();
+    await getIt<TokenStorage>().hydrate();
     getIt<AuthBloc>().add(const AuthSessionRequested());
   });
 
