@@ -14,4 +14,10 @@ abstract final class StorageKeys {
 
   /// Cached signed-in user JSON snapshot for cold-start restoration.
   static const cachedUserJson = 'cached_user_json';
+
+  /// Opaque refresh token for JWT rotation showcase.
+  static const refreshToken = 'refresh_token';
+
+  /// Local avatar image filesystem path.
+  static const avatarPath = 'avatar_path';
 }

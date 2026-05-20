@@ -63,6 +63,7 @@ class DioClient {
           requestFilter: _dioRequestSafeToLog,
         ),
       ),
+      TokenRefreshInterceptor(dio, _tokenStorage),
       RetryInterceptor(dio),
     ]);
 
