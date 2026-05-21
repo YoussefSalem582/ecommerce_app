@@ -184,11 +184,16 @@ class AppRouter {
     final location = state.matchedLocation;
     final authState = _authBloc.state;
 
-    if (authState is AuthInitial || authState is AuthLoading) {
+    final bool? loggedIn = switch (authState) {
+      AuthAuthenticated() => true,
+      AuthUnauthenticated() => false,
+      AuthInitial() || AuthLoading() => null,
+      _ => false,
+    };
+
+    if (loggedIn == null) {
       return null;
     }
-
-    final loggedIn = authState is AuthAuthenticated;
 
     const publicRoutes = <String>{
       AppRoutes.splash,
