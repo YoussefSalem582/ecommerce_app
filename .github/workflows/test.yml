@@ -1,0 +1,77 @@
+name: test
+
+on:
+  pull_request:
+    paths:
+      - 'lib/**'
+      - 'test/**'
+      - 'integration_test/**'
+      - 'assets/**'
+      - 'pubspec.yaml'
+      - 'l10n.yaml'
+      - '.github/workflows/test.yml'
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - 'lib/**'
+      - 'test/**'
+      - 'integration_test/**'
+      - 'assets/**'
+      - 'pubspec.yaml'
+      - 'l10n.yaml'
+      - '.github/workflows/test.yml'
+  workflow_dispatch:
+
+jobs:
+  flutter-test:
+    name: flutter analyze + test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Generate l10n
+        run: flutter gen-l10n
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Run widget and unit tests with coverage
+        run: flutter test --coverage
+
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-lcov
+          path: coverage/lcov.info
+          if-no-files-found: error
+
+  integration-manual:
+    name: integration tests (manual dispatch)
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Generate l10n
+        run: flutter gen-l10n
+
+      - name: Run integration tests
+        run: flutter test integration_test
