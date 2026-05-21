@@ -20,6 +20,38 @@ abstract final class TestKeys {
   /// First product card on wishlist page grid.
   static const firstWishlistCard = ValueKey<String>('first_wishlist_card');
 
+  /// Categories browse button on home app bar.
+  static const categoriesBrowseButton =
+      ValueKey<String>('categories_browse_button');
+
+  /// Sort menu on home catalog app bar.
+  static const catalogSortButton = ValueKey<String>('catalog_sort_button');
+
+  /// Filter button on home catalog app bar.
+  static const catalogFilterButton = ValueKey<String>('catalog_filter_button');
+
+  /// Clear filters chip on home catalog.
+  static const catalogClearFiltersChip =
+      ValueKey<String>('catalog_clear_filters_chip');
+
+  /// Price range slider in catalog filter sheet.
+  static const catalogPriceRangeSlider =
+      ValueKey<String>('catalog_price_range_slider');
+
+  /// Rating slider in catalog filter sheet.
+  static const catalogRatingSlider =
+      ValueKey<String>('catalog_rating_slider');
+
+  /// Apply filters button in catalog filter sheet.
+  static const catalogFilterApplyButton =
+      ValueKey<String>('catalog_filter_apply_button');
+
+  /// First category card on categories page.
+  static const firstCategoryCard = ValueKey<String>('first_category_card');
+
+  /// Share button on product detail app bar.
+  static const productShareButton = ValueKey<String>('product_share_button');
+
   /// Wishlist toggle on product detail app bar.
   static const wishlistToggleButton =
       ValueKey<String>('wishlist_toggle_button');
@@ -45,6 +77,21 @@ abstract final class TestKeys {
   /// Checkout CTA on cart page.
   static const cartCheckoutButton = ValueKey<String>('cart_checkout_button');
 
+  /// Promo code field on checkout page.
+  static const checkoutPromoField = ValueKey<String>('checkout_promo_field');
+
+  /// Apply promo button on checkout page.
+  static const checkoutPromoApplyButton =
+      ValueKey<String>('checkout_promo_apply_button');
+
+  /// Saved address dropdown on checkout page.
+  static const checkoutSavedAddressDropdown =
+      ValueKey<String>('checkout_saved_address_dropdown');
+
+  /// Save address checkbox on checkout page.
+  static const checkoutSaveAddressCheckbox =
+      ValueKey<String>('checkout_save_address_checkbox');
+
   /// Shipping form fields on checkout page.
   static const checkoutFullName = ValueKey<String>('checkout_full_name');
   static const checkoutStreet = ValueKey<String>('checkout_street');
@@ -66,6 +113,10 @@ abstract final class TestKeys {
   /// Edit profile CTA on profile page.
   static const editProfileButton = ValueKey<String>('edit_profile_button');
 
+  /// Change password CTA on profile page.
+  static const changePasswordButton =
+      ValueKey<String>('change_password_button');
+
   /// Save profile on edit profile form.
   static const saveProfileButton = ValueKey<String>('save_profile_button');
 
@@ -75,4 +126,34 @@ abstract final class TestKeys {
   /// Arabic locale radio on settings page.
   static const settingsLanguageArabic =
       ValueKey<String>('settings_language_arabic');
+
+  /// EUR currency radio on settings page.
+  static const settingsCurrencyEur = ValueKey<String>('settings_currency_eur');
+
+  /// Order notifications toggle on settings page.
+  static const settingsOrderNotifications =
+      ValueKey<String>('settings_order_notifications');
+
+  /// Add address FAB on addresses page.
+  static const addAddressFab = ValueKey<String>('add_address_fab');
+
+  /// First address tile on addresses page.
+  static const firstAddressTile = ValueKey<String>('first_address_tile');
+
+  /// Address form fields on add address page.
+  static const addressFullName = ValueKey<String>('address_full_name');
+  static const addressStreet = ValueKey<String>('address_street');
+  static const addressCity = ValueKey<String>('address_city');
+  static const addressPostal = ValueKey<String>('address_postal');
+  static const addressCountry = ValueKey<String>('address_country');
+  static const saveAddressButton = ValueKey<String>('save_address_button');
+
+  /// Change password form fields.
+  static const changePasswordCurrent =
+      ValueKey<String>('change_password_current');
+  static const changePasswordNew = ValueKey<String>('change_password_new');
+  static const changePasswordConfirm =
+      ValueKey<String>('change_password_confirm');
+  static const changePasswordSubmit =
+      ValueKey<String>('change_password_submit');
 }
