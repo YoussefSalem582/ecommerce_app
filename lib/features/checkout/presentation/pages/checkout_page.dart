@@ -5,6 +5,9 @@ import 'package:shop_flow/core/constants/test_keys.dart';
 import 'package:shop_flow/core/l10n/gen/app_localizations.dart';
 import 'package:shop_flow/core/router/app_routes.dart';
 import 'package:shop_flow/core/theme/theme_extensions.dart';
+import 'package:shop_flow/core/widgets/app_error_view.dart';
+import 'package:shop_flow/core/widgets/app_loading_view.dart';
+import 'package:shop_flow/core/widgets/offline_banner.dart';
 import 'package:shop_flow/core/utils/app_breakpoints.dart';
 import 'package:shop_flow/core/utils/price_formatter.dart';
 import 'package:shop_flow/features/cart/domain/entities/cart_line_entity.dart';
@@ -116,28 +119,17 @@ class _CheckoutPageState extends State<CheckoutPage> {
       ],
       child: Scaffold(
         appBar: AppBar(title: Text(l10n.checkoutTitle)),
-        body: BlocBuilder<CheckoutBloc, CheckoutState>(
+        body: OfflineBanner(
+          child: BlocBuilder<CheckoutBloc, CheckoutState>(
           builder: (BuildContext context, CheckoutState state) {
             return switch (state) {
               CheckoutInitial() || CheckoutLoading() =>
-                const Center(child: CircularProgressIndicator()),
-              CheckoutFailure(:final message) => Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Text(message, textAlign: TextAlign.center),
-                        const SizedBox(height: 16),
-                        FilledButton(
-                          onPressed: () => context
-                              .read<CheckoutBloc>()
-                              .add(const CheckoutStarted()),
-                          child: Text(l10n.retry),
-                        ),
-                      ],
-                    ),
-                  ),
+                const AppLoadingView(),
+              CheckoutFailure(:final message) => AppErrorView(
+                  message: message,
+                  onRetry: () => context
+                      .read<CheckoutBloc>()
+                      .add(const CheckoutStarted()),
                 ),
               CheckoutReady(
                 :final lines,
@@ -233,6 +225,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 const SizedBox.shrink(),
             };
           },
+        ),
         ),
       ),
     );
@@ -369,6 +362,7 @@ class _ShippingFormSection extends StatelessWidget {
             validator: (String? v) =>
                 (v == null || v.trim().isEmpty) ? l10n.fieldRequired : null,
           ),
+          const SizedBox(height: 12),
           TextFormField(
             key: TestKeys.checkoutStreet,
             controller: streetCtrl,
@@ -376,6 +370,7 @@ class _ShippingFormSection extends StatelessWidget {
             validator: (String? v) =>
                 (v == null || v.trim().isEmpty) ? l10n.fieldRequired : null,
           ),
+          const SizedBox(height: 12),
           if (rowFields)
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -387,8 +382,10 @@ class _ShippingFormSection extends StatelessWidget {
             )
           else ...<Widget>[
             cityField,
+            const SizedBox(height: 12),
             postalField,
           ],
+          const SizedBox(height: 12),
           TextFormField(
             key: TestKeys.checkoutCountry,
             controller: countryCtrl,
