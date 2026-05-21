@@ -118,6 +118,16 @@ class AppRouter {
           StatefulShellBranch(
             routes: <RouteBase>[
               GoRoute(
+                path: AppRoutes.categories,
+                name: 'categories',
+                builder: (BuildContext context, GoRouterState state) =>
+                    const CategoriesPage(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: <RouteBase>[
+              GoRoute(
                 path: AppRoutes.orders,
                 name: 'orders',
                 builder: (BuildContext context, GoRouterState state) =>
@@ -136,12 +146,6 @@ class AppRouter {
             ],
           ),
         ],
-      ),
-      GoRoute(
-        path: AppRoutes.categories,
-        name: 'categories',
-        builder: (BuildContext context, GoRouterState state) =>
-            const CategoriesPage(),
       ),
       GoRoute(
         path: AppRoutes.wishlist,

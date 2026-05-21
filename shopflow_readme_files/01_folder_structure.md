@@ -15,6 +15,9 @@ lib/
 │   └── widgets/         # Shared UI
 └── features/
     └── <name>/          # data / domain / presentation
+        └── presentation/
+            ├── pages/
+            └── widgets/ # feature-specific UI (e.g. home/, products/, profile/)
 assets/
 ├── l10n/                # intl_en.arb, intl_ar.arb
 ├── env/                 # default.env

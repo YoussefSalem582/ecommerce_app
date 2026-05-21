@@ -46,6 +46,7 @@
   "catalogSearchHint": "Search products",
   "catalogAllCategories": "All",
   "catalogEmpty": "No products match your filters.",
+  "catalogEmptyBody": "Try adjusting your search or clearing filters to see more products.",
   "productDetailLoadingTitle": "Product",
   "productRatingLabel": "{rating} • {count} reviews",
   "@productRatingLabel": {
@@ -175,6 +176,7 @@
   "settingsEnvironmentStripeOff": "Stripe not configured — demo checkout only",
   "navHomeA11y": "Home tab",
   "navCartA11y": "Cart tab",
+  "navCategoriesA11y": "Categories tab",
   "navOrdersA11y": "Orders tab",
   "navProfileA11y": "Profile tab",
   "categoriesTitle": "Categories",

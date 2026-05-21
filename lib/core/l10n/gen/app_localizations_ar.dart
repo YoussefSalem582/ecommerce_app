@@ -122,6 +122,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get catalogEmpty => 'لا توجد منتجات مطابقة للفلاتر.';
 
   @override
+  String get catalogEmptyBody =>
+      'جرّب تعديل البحث أو مسح الفلاتر لعرض المزيد من المنتجات.';
+
+  @override
   String get productDetailLoadingTitle => 'المنتج';
 
   @override
@@ -402,6 +406,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get navCartA11y => 'تبويب السلة';
+
+  @override
+  String get navCategoriesA11y => 'تبويب الفئات';
 
   @override
   String get navOrdersA11y => 'تبويب الطلبات';

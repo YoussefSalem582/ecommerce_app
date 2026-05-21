@@ -20,14 +20,16 @@ abstract final class TestKeys {
   /// First product card on wishlist page grid.
   static const firstWishlistCard = ValueKey<String>('first_wishlist_card');
 
-  /// Categories browse button on home app bar.
-  static const categoriesBrowseButton =
-      ValueKey<String>('categories_browse_button');
+  /// Categories tab in shell navigation (after cart).
+  static const categoriesNavTab = ValueKey<String>('categories_nav_tab');
 
-  /// Sort menu on home catalog app bar.
+  /// Alias for [categoriesNavTab] (legacy home bottom bar key).
+  static const categoriesBrowseButton = categoriesNavTab;
+
+  /// Sort section inside the catalog filter bottom sheet.
   static const catalogSortButton = ValueKey<String>('catalog_sort_button');
 
-  /// Filter button on home catalog app bar.
+  /// Filter button beside the home catalog search field.
   static const catalogFilterButton = ValueKey<String>('catalog_filter_button');
 
   /// Clear filters chip on home catalog.

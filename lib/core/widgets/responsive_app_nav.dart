@@ -12,10 +12,7 @@ import 'package:shop_flow/features/cart/presentation/bloc/cart_state.dart';
 /// Breakpoint-aware shell navigation: bottom bar, rail, or drawer.
 class ResponsiveAppNav extends StatelessWidget {
   /// Creates responsive navigation chrome for [navigationShell].
-  const ResponsiveAppNav({
-    required this.navigationShell,
-    super.key,
-  });
+  const ResponsiveAppNav({required this.navigationShell, super.key});
 
   /// GoRouter branch host managed by [StatefulShellRoute].
   final StatefulNavigationShell navigationShell;
@@ -30,6 +27,11 @@ class ResponsiveAppNav extends StatelessWidget {
       icon: Icon(Icons.shopping_cart_outlined),
       selectedIcon: Icon(Icons.shopping_cart_rounded),
       label: 'Cart',
+    ),
+    NavigationDestination(
+      icon: Icon(Icons.category_outlined),
+      selectedIcon: Icon(Icons.category_rounded),
+      label: 'Categories',
     ),
     NavigationDestination(
       icon: Icon(Icons.receipt_long_outlined),
@@ -57,12 +59,14 @@ class ResponsiveAppNav extends StatelessWidget {
     final labels = <String>[
       l10n.homeTitle,
       l10n.cartTitle,
+      l10n.categoriesTitle,
       l10n.ordersTitle,
       l10n.profileTitle,
     ];
     final a11yLabels = <String>[
       l10n.navHomeA11y,
       l10n.navCartA11y,
+      l10n.navCategoriesA11y,
       l10n.navOrdersA11y,
       l10n.navProfileA11y,
     ];
@@ -77,7 +81,7 @@ class ResponsiveAppNav extends StatelessWidget {
       );
     }
 
-    if (width >= AppBreakpoints.mobile) {
+    if (width >= AppBreakpoints.tablet) {
       return _TabletShell(
         currentIndex: navigationShell.currentIndex,
         labels: labels,
@@ -125,12 +129,15 @@ class _MobileShell extends StatelessWidget {
             icon: _NavTabIcon(
               index: i,
               semanticLabel: a11yLabels[i],
-              icon: ResponsiveAppNav._destinations[i].icon ?? const Icon(Icons.circle),
+              icon:
+                  ResponsiveAppNav._destinations[i].icon ??
+                  const Icon(Icons.circle),
             ),
             selectedIcon: _NavTabIcon(
               index: i,
               semanticLabel: a11yLabels[i],
-              icon: ResponsiveAppNav._destinations[i].selectedIcon ??
+              icon:
+                  ResponsiveAppNav._destinations[i].selectedIcon ??
                   ResponsiveAppNav._destinations[i].icon ??
                   const Icon(Icons.circle),
             ),
@@ -166,31 +173,34 @@ class _TabletShell extends StatelessWidget {
             selectedIndex: currentIndex,
             onDestinationSelected: onTap,
             labelType: NavigationRailLabelType.all,
-            destinations: List<NavigationDestination>.generate(
-              ResponsiveAppNav._destinations.length,
-              (int i) => NavigationDestination(
-                icon: _NavTabIcon(
-                  index: i,
-                  semanticLabel: a11yLabels[i],
-                  icon: ResponsiveAppNav._destinations[i].icon ??
-                      const Icon(Icons.circle),
-                ),
-                selectedIcon: _NavTabIcon(
-                  index: i,
-                  semanticLabel: a11yLabels[i],
-                  icon: ResponsiveAppNav._destinations[i].selectedIcon ??
-                      ResponsiveAppNav._destinations[i].icon ??
-                      const Icon(Icons.circle),
-                ),
-                label: labels[i],
-              ),
-            ).map((NavigationDestination d) {
-              return NavigationRailDestination(
-                icon: d.icon,
-                selectedIcon: d.selectedIcon,
-                label: Text(d.label),
-              );
-            }).toList(),
+            destinations:
+                List<NavigationDestination>.generate(
+                  ResponsiveAppNav._destinations.length,
+                  (int i) => NavigationDestination(
+                    icon: _NavTabIcon(
+                      index: i,
+                      semanticLabel: a11yLabels[i],
+                      icon:
+                          ResponsiveAppNav._destinations[i].icon ??
+                          const Icon(Icons.circle),
+                    ),
+                    selectedIcon: _NavTabIcon(
+                      index: i,
+                      semanticLabel: a11yLabels[i],
+                      icon:
+                          ResponsiveAppNav._destinations[i].selectedIcon ??
+                          ResponsiveAppNav._destinations[i].icon ??
+                          const Icon(Icons.circle),
+                    ),
+                    label: labels[i],
+                  ),
+                ).map((NavigationDestination d) {
+                  return NavigationRailDestination(
+                    icon: d.icon,
+                    selectedIcon: d.selectedIcon,
+                    label: Text(d.label),
+                  );
+                }).toList(),
           ),
           const VerticalDivider(width: 1),
           Expanded(child: OfflineBanner(child: child)),
@@ -238,13 +248,15 @@ class _DesktopShell extends StatelessWidget {
                   icon: _NavTabIcon(
                     index: i,
                     semanticLabel: a11yLabels[i],
-                    icon: ResponsiveAppNav._destinations[i].icon ??
+                    icon:
+                        ResponsiveAppNav._destinations[i].icon ??
                         const Icon(Icons.circle),
                   ),
                   selectedIcon: _NavTabIcon(
                     index: i,
                     semanticLabel: a11yLabels[i],
-                    icon: ResponsiveAppNav._destinations[i].selectedIcon ??
+                    icon:
+                        ResponsiveAppNav._destinations[i].selectedIcon ??
                         ResponsiveAppNav._destinations[i].icon ??
                         const Icon(Icons.circle),
                   ),
@@ -274,12 +286,13 @@ class _NavTabIcon extends StatelessWidget {
   static const _cartTabIndex = 1;
 
   Key? get _navKey => switch (index) {
-        0 => TestKeys.homeNavTab,
-        1 => TestKeys.cartNavTab,
-        2 => TestKeys.ordersNavTab,
-        3 => TestKeys.profileNavTab,
-        _ => null,
-      };
+    0 => TestKeys.homeNavTab,
+    1 => TestKeys.cartNavTab,
+    2 => TestKeys.categoriesNavTab,
+    3 => TestKeys.ordersNavTab,
+    4 => TestKeys.profileNavTab,
+    _ => null,
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -292,10 +305,7 @@ class _NavTabIcon extends StatelessWidget {
             builder: (BuildContext context, int count) {
               final bool disableAnimations =
                   kIsWeb || MediaQuery.of(context).disableAnimations;
-              final Widget label = Text(
-                '$count',
-                key: ValueKey<int>(count),
-              );
+              final Widget label = Text('$count', key: ValueKey<int>(count));
 
               return Badge(
                 isLabelVisible: count > 0,
@@ -305,11 +315,11 @@ class _NavTabIcon extends StatelessWidget {
                         duration: const Duration(milliseconds: 220),
                         transitionBuilder:
                             (Widget child, Animation<double> animation) {
-                          return ScaleTransition(
-                            scale: animation,
-                            child: child,
-                          );
-                        },
+                              return ScaleTransition(
+                                scale: animation,
+                                child: child,
+                              );
+                            },
                         child: label,
                       ),
                 child: icon,

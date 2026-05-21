@@ -314,6 +314,12 @@ abstract class AppLocalizations {
   /// **'No products match your filters.'**
   String get catalogEmpty;
 
+  /// No description provided for @catalogEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Try adjusting your search or clearing filters to see more products.'**
+  String get catalogEmptyBody;
+
   /// No description provided for @productDetailLoadingTitle.
   ///
   /// In en, this message translates to:
@@ -835,6 +841,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cart tab'**
   String get navCartA11y;
+
+  /// No description provided for @navCategoriesA11y.
+  ///
+  /// In en, this message translates to:
+  /// **'Categories tab'**
+  String get navCategoriesA11y;
 
   /// No description provided for @navOrdersA11y.
   ///

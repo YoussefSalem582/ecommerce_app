@@ -43,6 +43,7 @@
   "catalogSearchHint": "ابحث عن منتجات",
   "catalogAllCategories": "الكل",
   "catalogEmpty": "لا توجد منتجات مطابقة للفلاتر.",
+  "catalogEmptyBody": "جرّب تعديل البحث أو مسح الفلاتر لعرض المزيد من المنتجات.",
   "productDetailLoadingTitle": "المنتج",
   "productRatingLabel": "{rating} • {count} تقييم",
   "@productRatingLabel": {
@@ -161,6 +162,7 @@
   "settingsEnvironmentStripeOff": "Stripe غير مضبوط — دفع تجريبي فقط",
   "navHomeA11y": "تبويب الرئيسية",
   "navCartA11y": "تبويب السلة",
+  "navCategoriesA11y": "تبويب الفئات",
   "navOrdersA11y": "تبويب الطلبات",
   "navProfileA11y": "تبويب الملف الشخصي",
   "categoriesTitle": "الفئات",

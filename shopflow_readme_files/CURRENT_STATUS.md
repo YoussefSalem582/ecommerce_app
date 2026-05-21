@@ -10,13 +10,13 @@
 | Auth (email + session) | ✅ | Fake Store / showcase |
 | Google Sign-In | ✅ | Stub — ADR 004; conditional test path |
 | JWT refresh | ✅ | Showcase — ADR 005 |
-| Product catalog | ✅ | Hive cache, search, category chips, **sort/filter**, **categories page**, **recently viewed** |
+| Product catalog | ✅ | Hive cache, search, **refactored home widgets**, category FilterChips, sort/filter, categories page, recently viewed |
 | Product detail | ✅ | Hero gallery, wishlist, **mock reviews**, **related products**, **share** |
 | Cart & wishlist | ✅ | Local-first; dedicated wishlist page |
 | Checkout + Stripe | ✅ | Demo path + banner; **promo codes**, **saved addresses**; Payment Sheet when env set — ADR 006 |
 | Orders | ✅ | Offline journal; order-success demo notification when prefs enabled |
 | Profile & settings | ✅ | Theme, locale, avatar; **currency**, **notifications**, **addresses**, **change password**; env row in debug |
-| Responsive shell | ✅ | Nav adapts by width; wide cart/checkout/profile |
+| Responsive shell | ✅ | Bottom nav: Home · Cart · Categories · Orders · Profile (`< 900px`) |
 | AR / EN l10n | ✅ | `assets/l10n/*.arb` (~40 new showcase strings) |
 | Agent tooling | ✅ | `AGENTS.md`, skills, CI docs + test workflows |
 | Showcase tests | ✅ | 16 widget/golden/layout tests; 6 integration flows |

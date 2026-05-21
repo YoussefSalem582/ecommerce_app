@@ -122,6 +122,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get catalogEmpty => 'No products match your filters.';
 
   @override
+  String get catalogEmptyBody =>
+      'Try adjusting your search or clearing filters to see more products.';
+
+  @override
   String get productDetailLoadingTitle => 'Product';
 
   @override
@@ -404,6 +408,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get navCartA11y => 'Cart tab';
+
+  @override
+  String get navCategoriesA11y => 'Categories tab';
 
   @override
   String get navOrdersA11y => 'Orders tab';

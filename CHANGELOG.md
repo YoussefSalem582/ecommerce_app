@@ -22,6 +22,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Shell navigation** — Added Categories tab after Cart in main bottom nav / rail / drawer; removed home catalog bottom bar.
+- **Home catalog bottom bar** — Categories browse row; list view and wishlist moved to app bar actions with icon + label.
+- **Home screen refactor** — Split monolithic `home_page.dart` into `presentation/widgets/` (`HomeAppBar`, `HomeBody`, `CatalogSearchBar`, category chips, product viewport, etc.); polished search bar, FilterChip categories, welcome subtitle, and dedicated `catalogEmptyBody` copy.
 - **Checkout integration test** — Uses `flow_helpers` and cart nav tab path; targeted pumps instead of long `pumpAndSettle`.
 - **Coverage baseline** — ~17.5% line coverage (690/3951 lines, widget tests).
 - **`PriceFormatter`** — Reads `CurrencyCubit` for showcase FX conversion on all price labels.
