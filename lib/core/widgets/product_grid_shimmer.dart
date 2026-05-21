@@ -29,12 +29,14 @@ class ProductGridShimmer extends StatelessWidget {
   Widget build(BuildContext context) {
     final palette = context.appPalette;
     final disable = MediaQuery.of(context).disableAnimations;
+    final borderColor = palette.muted.withValues(alpha: 0.2);
 
     Widget tile() {
       final box = Container(
         decoration: BoxDecoration(
-          color: disable ? palette.surface : null,
+          color: disable ? Colors.white : null,
           borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: borderColor),
         ),
         padding: const EdgeInsets.all(12),
         child: Column(
@@ -75,8 +77,8 @@ class ProductGridShimmer extends StatelessWidget {
       }
 
       return Shimmer.fromColors(
-        baseColor: palette.surface,
-        highlightColor: palette.primary.withValues(alpha: 0.12),
+        baseColor: palette.muted.withValues(alpha: 0.12),
+        highlightColor: palette.primary.withValues(alpha: 0.18),
         child: box,
       );
     }

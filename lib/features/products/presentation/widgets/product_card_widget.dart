@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
+import 'package:shop_flow/core/l10n/gen/app_localizations.dart';
 import 'package:shop_flow/core/theme/theme_extensions.dart';
 import 'package:shop_flow/core/utils/price_formatter.dart';
 import 'package:shop_flow/features/products/domain/entities/product_entity.dart';
@@ -81,6 +82,8 @@ class _GridProductBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -95,12 +98,42 @@ class _GridProductBody extends StatelessWidget {
           style: Theme.of(context).textTheme.titleSmall,
         ),
         const SizedBox(height: 6),
-        Text(
-          PriceFormatter.formatUsd(context, product.price),
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: palette.primary,
-                fontWeight: FontWeight.w700,
+        Row(
+          children: <Widget>[
+            Expanded(
+              child: Text(
+                PriceFormatter.formatUsd(context, product.price),
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: palette.primary,
+                      fontWeight: FontWeight.w700,
+                    ),
               ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(
+                color: palette.accent.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Text(
+                product.ratingRate.toStringAsFixed(1),
+                style: Theme.of(context)
+                    .textTheme
+                    .labelSmall
+                    ?.copyWith(color: palette.accent),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 2),
+        Text(
+          l10n.productRatingLabel(
+            product.ratingRate.toStringAsFixed(1),
+            product.ratingCount,
+          ),
+          style: Theme.of(context).textTheme.labelSmall,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
       ],
     );
@@ -118,6 +151,8 @@ class _ListProductBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -144,6 +179,13 @@ class _ListProductBody extends StatelessWidget {
                       color: palette.primary,
                       fontWeight: FontWeight.w700,
                     ),
+              ),
+              Text(
+                l10n.productRatingLabel(
+                  product.ratingRate.toStringAsFixed(1),
+                  product.ratingCount,
+                ),
+                style: Theme.of(context).textTheme.labelSmall,
               ),
             ],
           ),
@@ -202,17 +244,29 @@ class _WishlistButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Material(
       color: Colors.transparent,
       child: BlocBuilder<WishlistCubit, WishlistState>(
         builder: (BuildContext context, WishlistState wl) {
           final bool isFav = wl is WishlistReady && wl.contains(productId);
-          return IconButton.filledTonal(
-            padding: EdgeInsets.zero,
-            constraints: const BoxConstraints.tightFor(width: 36, height: 36),
-            iconSize: 20,
-            onPressed: () => context.read<WishlistCubit>().toggleId(productId),
-            icon: Icon(isFav ? Icons.favorite : Icons.favorite_border),
+          return Semantics(
+            label: isFav
+                ? l10n.removeFromWishlistA11y
+                : l10n.addToWishlistA11y,
+            button: true,
+            child: IconButton.filledTonal(
+              tooltip: isFav
+                  ? l10n.removeFromWishlistA11y
+                  : l10n.addToWishlistA11y,
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints.tightFor(width: 36, height: 36),
+              iconSize: 20,
+              onPressed: () =>
+                  context.read<WishlistCubit>().toggleId(productId),
+              icon: Icon(isFav ? Icons.favorite : Icons.favorite_border),
+            ),
           );
         },
       ),
