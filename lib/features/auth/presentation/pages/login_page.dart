@@ -76,75 +76,91 @@ class _LoginPageState extends State<LoginPage> {
 
           return AbsorbPointer(
             absorbing: loading,
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: <Widget>[
-                    Icon(Icons.lock_outline, size: 56, color: palette.primary),
-                    const SizedBox(height: 24),
-                    TextFormField(
-                      controller: _username,
-                      textInputAction: TextInputAction.next,
-                      decoration: InputDecoration(
-                        labelText: l10n.usernameLabel,
+            child: LayoutBuilder(
+              builder: (BuildContext context, BoxConstraints constraints) {
+                final form = Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>[
+                      Icon(Icons.lock_outline,
+                          size: 56, color: palette.primary),
+                      const SizedBox(height: 24),
+                      TextFormField(
+                        controller: _username,
+                        textInputAction: TextInputAction.next,
+                        decoration: InputDecoration(
+                          labelText: l10n.usernameLabel,
+                        ),
+                        validator: (String? value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return l10n.fieldRequired;
+                          }
+                          return null;
+                        },
                       ),
-                      validator: (String? value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return l10n.fieldRequired;
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _password,
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        labelText: l10n.passwordLabel,
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: _password,
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          labelText: l10n.passwordLabel,
+                        ),
+                        validator: (String? value) {
+                          if (value == null || value.isEmpty) {
+                            return l10n.fieldRequired;
+                          }
+                          if (value.length < 3) {
+                            return l10n.passwordTooShort;
+                          }
+                          return null;
+                        },
                       ),
-                      validator: (String? value) {
-                        if (value == null || value.isEmpty) {
-                          return l10n.fieldRequired;
-                        }
-                        if (value.length < 3) {
-                          return l10n.passwordTooShort;
-                        }
-                        return null;
-                      },
+                      const SizedBox(height: 24),
+                      FilledButton(
+                        key: TestKeys.loginSubmitButton,
+                        onPressed: loading ? null : () => _submit(context),
+                        child: loading
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child:
+                                    CircularProgressIndicator(strokeWidth: 2),
+                              )
+                            : Text(l10n.loginButton),
+                      ),
+                      const SizedBox(height: 8),
+                      TextButton(
+                        onPressed: loading
+                            ? null
+                            : () => context.push(AppRoutes.register),
+                        child: Text(l10n.createAccountLink),
+                      ),
+                      const SizedBox(height: 8),
+                      GoogleSignInButton(
+                        key: TestKeys.googleSignInButton,
+                        onPressed: loading
+                            ? null
+                            : () => context
+                                .read<AuthBloc>()
+                                .add(const AuthGoogleSignInRequested()),
+                      ),
+                    ],
+                  ),
+                );
+
+                return SingleChildScrollView(
+                  padding: const EdgeInsets.all(24),
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxWidth: constraints.maxWidth >= 600 ? 480 : double.infinity,
+                      ),
+                      child: form,
                     ),
-                    const SizedBox(height: 24),
-                    FilledButton(
-                      onPressed: loading ? null : () => _submit(context),
-                      child: loading
-                          ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : Text(l10n.loginButton),
-                    ),
-                    const SizedBox(height: 8),
-                    TextButton(
-                      onPressed: loading
-                          ? null
-                          : () => context.push(AppRoutes.register),
-                      child: Text(l10n.createAccountLink),
-                    ),
-                    const SizedBox(height: 8),
-                    GoogleSignInButton(
-                      key: TestKeys.googleSignInButton,
-                      onPressed: loading
-                          ? null
-                          : () => context
-                              .read<AuthBloc>()
-                              .add(const AuthGoogleSignInRequested()),
-                    ),
-                  ],
-                ),
-              ),
+                  ),
+                );
+              },
             ),
           );
         },

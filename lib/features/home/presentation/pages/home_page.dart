@@ -6,6 +6,7 @@ import 'package:shop_flow/core/constants/test_keys.dart';
 import 'package:shop_flow/core/l10n/gen/app_localizations.dart';
 import 'package:shop_flow/core/router/app_routes.dart';
 import 'package:shop_flow/core/theme/theme_extensions.dart';
+import 'package:shop_flow/core/utils/app_breakpoints.dart';
 import 'package:shop_flow/core/widgets/app_empty_view.dart';
 import 'package:shop_flow/core/widgets/app_error_view.dart';
 import 'package:shop_flow/core/widgets/product_grid_shimmer.dart';
@@ -124,173 +125,194 @@ class _HomePageState extends State<HomePage> {
                       child: const Icon(Icons.bug_report_outlined),
                     )
                   : null,
-              body: Column(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-                    child: Row(
-                      children: <Widget>[
-                        Expanded(
-                          child: Semantics(
-                            label: l10n.catalogSearchA11y,
-                            child: TextField(
-                              controller: _searchController,
-                              textInputAction: TextInputAction.search,
-                              decoration: InputDecoration(
-                                hintText: l10n.catalogSearchHint,
-                                prefixIcon: const Icon(Icons.search_rounded),
-                              ),
-                              onSubmitted: (_) => _submitSearch(),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        IconButton.filled(
-                          tooltip: l10n.catalogSearchA11y,
-                          onPressed: _submitSearch,
-                          icon: const Icon(Icons.search_rounded),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  if (listState is ProductListLoaded &&
-                      listState.categories.isNotEmpty)
-                    SizedBox(
-                      height: 44,
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        children: <Widget>[
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 4),
-                            child: ChoiceChip(
-                              label: Text(l10n.catalogAllCategories),
-                              selected: listState.selectedCategory == null,
-                              onSelected: (_) => context
-                                  .read<ProductListBloc>()
-                                  .add(const ProductListCategorySelected(null)),
-                            ),
-                          ),
-                          ...listState.categories.map(
-                            (String c) => Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 4),
-                              child: ChoiceChip(
-                                label: Text(c),
-                                selected: listState.selectedCategory == c,
-                                onSelected: (_) => context
-                                    .read<ProductListBloc>()
-                                    .add(ProductListCategorySelected(c)),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  Expanded(
-                    child: LayoutBuilder(
-                      builder:
-                          (BuildContext context, BoxConstraints constraints) {
-                        final cols = ProductGridShimmer.columnsForWidth(
-                          constraints.maxWidth,
-                        );
-
-                        if (listState is ProductListInitial ||
-                            listState is ProductListLoading) {
-                          return ProductGridShimmer(crossAxisCount: cols);
-                        }
-
-                        if (listState is ProductListFailure) {
-                          return AppErrorView(
-                            message: listState.message,
-                            onRetry: () => context
-                                .read<ProductListBloc>()
-                                .add(const ProductListStarted()),
-                          );
-                        }
-
-                        if (listState is ProductListLoaded) {
-                          final products = listState.products;
-                          if (products.isEmpty) {
-                            return AppEmptyView(
-                              icon: Icons.inventory_2_outlined,
-                              title: l10n.catalogEmpty,
-                              body: l10n.cartEmptyBody,
-                            );
-                          }
-
-                          return RefreshIndicator(
-                            color: palette.primary,
-                            onRefresh: () async {
-                              final ProductListBloc bloc =
-                                  context.read<ProductListBloc>();
-                              bloc.add(const ProductListRefreshRequested());
-                              await bloc.stream.firstWhere(
-                                (ProductListState s) =>
-                                    s is ProductListLoaded ||
-                                    s is ProductListFailure,
-                              );
-                            },
-                            child: listState.viewMode ==
-                                    ProductListViewMode.list
-                                ? ListView.builder(
-                                    padding: const EdgeInsets.all(16),
-                                    itemCount: products.length,
-                                    itemBuilder:
-                                        (BuildContext context, int index) {
-                                      final ProductEntity product =
-                                          products[index];
-                                      return Padding(
-                                        padding: const EdgeInsets.only(
-                                          bottom: 12,
-                                        ),
-                                        child: ProductCard(
-                                          key: index == 0
-                                              ? TestKeys.firstProductCard
-                                              : null,
-                                          product: product,
-                                          onTap: () => context.push(
-                                            AppRoutes.product(product.id),
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  )
-                                : GridView.builder(
-                                    padding: const EdgeInsets.all(16),
-                                    gridDelegate:
-                                        SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: cols,
-                                      mainAxisSpacing: 16,
-                                      crossAxisSpacing: 16,
-                                      childAspectRatio: 0.72,
-                                    ),
-                                    itemCount: products.length,
-                                    itemBuilder:
-                                        (BuildContext context, int index) {
-                                      final ProductEntity product =
-                                          products[index];
-                                      return ProductCard(
-                                        key: index == 0
-                                            ? TestKeys.firstProductCard
-                                            : null,
-                                        product: product,
-                                        onTap: () => context.push(
-                                          AppRoutes.product(product.id),
-                                        ),
-                                      );
-                                    },
+              body: LayoutBuilder(
+                builder: (BuildContext context, BoxConstraints constraints) {
+                  final bool wide =
+                      constraints.maxWidth >= AppBreakpoints.tablet;
+                  final Widget content = Column(
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                        child: Row(
+                          children: <Widget>[
+                            Expanded(
+                              child: Semantics(
+                                label: l10n.catalogSearchA11y,
+                                child: TextField(
+                                  key: TestKeys.catalogSearchField,
+                                  controller: _searchController,
+                                  textInputAction: TextInputAction.search,
+                                  decoration: InputDecoration(
+                                    hintText: l10n.catalogSearchHint,
+                                    prefixIcon:
+                                        const Icon(Icons.search_rounded),
                                   ),
-                          );
-                        }
+                                  onSubmitted: (_) => _submitSearch(),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            IconButton.filled(
+                              tooltip: l10n.catalogSearchA11y,
+                              onPressed: _submitSearch,
+                              icon: const Icon(Icons.search_rounded),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      if (listState is ProductListLoaded &&
+                          listState.categories.isNotEmpty)
+                        SizedBox(
+                          height: 44,
+                          child: ListView(
+                            scrollDirection: Axis.horizontal,
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 12),
+                            children: <Widget>[
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 4),
+                                child: ChoiceChip(
+                                  label: Text(l10n.catalogAllCategories),
+                                  selected: listState.selectedCategory == null,
+                                  onSelected: (_) => context
+                                      .read<ProductListBloc>()
+                                      .add(const ProductListCategorySelected(
+                                          null)),
+                                ),
+                              ),
+                              ...listState.categories.map(
+                                (String c) => Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 4),
+                                  child: ChoiceChip(
+                                    label: Text(c),
+                                    selected: listState.selectedCategory == c,
+                                    onSelected: (_) => context
+                                        .read<ProductListBloc>()
+                                        .add(ProductListCategorySelected(c)),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      Expanded(
+                        child: LayoutBuilder(
+                          builder: (BuildContext context,
+                              BoxConstraints gridConstraints) {
+                            final cols = ProductGridShimmer.columnsForWidth(
+                              gridConstraints.maxWidth,
+                            );
 
-                        return const SizedBox.shrink();
-                      },
+                            if (listState is ProductListInitial ||
+                                listState is ProductListLoading) {
+                              return ProductGridShimmer(crossAxisCount: cols);
+                            }
+
+                            if (listState is ProductListFailure) {
+                              return AppErrorView(
+                                message: listState.message,
+                                onRetry: () => context
+                                    .read<ProductListBloc>()
+                                    .add(const ProductListStarted()),
+                              );
+                            }
+
+                            if (listState is ProductListLoaded) {
+                              final products = listState.products;
+                              if (products.isEmpty) {
+                                return AppEmptyView(
+                                  icon: Icons.inventory_2_outlined,
+                                  title: l10n.catalogEmpty,
+                                  body: l10n.cartEmptyBody,
+                                );
+                              }
+
+                              return RefreshIndicator(
+                                color: palette.primary,
+                                onRefresh: () async {
+                                  final ProductListBloc bloc =
+                                      context.read<ProductListBloc>();
+                                  bloc.add(const ProductListRefreshRequested());
+                                  await bloc.stream.firstWhere(
+                                    (ProductListState s) =>
+                                        s is ProductListLoaded ||
+                                        s is ProductListFailure,
+                                  );
+                                },
+                                child: listState.viewMode ==
+                                        ProductListViewMode.list
+                                    ? ListView.builder(
+                                        padding: const EdgeInsets.all(16),
+                                        itemCount: products.length,
+                                        itemBuilder: (BuildContext context,
+                                            int index) {
+                                          final ProductEntity product =
+                                              products[index];
+                                          return Padding(
+                                            padding: const EdgeInsets.only(
+                                              bottom: 12,
+                                            ),
+                                            child: ProductCard(
+                                              key: index == 0
+                                                  ? TestKeys.firstProductCard
+                                                  : null,
+                                              product: product,
+                                              onTap: () => context.push(
+                                                AppRoutes.product(product.id),
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      )
+                                    : GridView.builder(
+                                        padding: const EdgeInsets.all(16),
+                                        gridDelegate:
+                                            SliverGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisCount: cols,
+                                          mainAxisSpacing: 16,
+                                          crossAxisSpacing: 16,
+                                          childAspectRatio: 0.72,
+                                        ),
+                                        itemCount: products.length,
+                                        itemBuilder: (BuildContext context,
+                                            int index) {
+                                          final ProductEntity product =
+                                              products[index];
+                                          return ProductCard(
+                                            key: index == 0
+                                                ? TestKeys.firstProductCard
+                                                : null,
+                                            product: product,
+                                            onTap: () => context.push(
+                                              AppRoutes.product(product.id),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                              );
+                            }
+
+                            return const SizedBox.shrink();
+                          },
+                        ),
+                      ),
+                    ],
+                  );
+
+                  if (!wide) {
+                    return content;
+                  }
+
+                  return Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 1200),
+                      child: content,
                     ),
-                  ),
-                ],
+                  );
+                },
               ),
             );
           },

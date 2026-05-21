@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:shop_flow/core/constants/test_keys.dart';
 import 'package:shop_flow/core/l10n/gen/app_localizations.dart';
 import 'package:shop_flow/core/router/app_routes.dart';
 import 'package:shop_flow/core/theme/theme_extensions.dart';
 import 'package:shop_flow/core/utils/price_formatter.dart';
+import 'package:shop_flow/core/utils/app_breakpoints.dart';
 import 'package:shop_flow/core/widgets/app_empty_view.dart';
 import 'package:shop_flow/core/widgets/app_error_view.dart';
 import 'package:shop_flow/core/widgets/app_loading_view.dart';
@@ -65,7 +67,7 @@ class _OrdersPageState extends State<OrdersPage> {
           }
           if (state is OrdersLoaded) {
             final List<OrderEntity> orders = state.orders;
-            return RefreshIndicator(
+            final listView = RefreshIndicator(
               color: palette.primary,
               onRefresh: () async {
                 context.read<OrdersBloc>().add(const OrdersRefreshRequested());
@@ -84,6 +86,7 @@ class _OrdersPageState extends State<OrdersPage> {
                     Localizations.localeOf(context).toString(),
                   ).format(o.createdAt);
                   return Card(
+                    key: index == 0 ? TestKeys.firstOrderTile : null,
                     child: ListTile(
                       title: Text('${l10n.ordersOrderIdLabel}: ${o.id}'),
                       subtitle: Text(
@@ -101,6 +104,20 @@ class _OrdersPageState extends State<OrdersPage> {
                   );
                 },
               ),
+            );
+
+            return LayoutBuilder(
+              builder: (BuildContext context, BoxConstraints constraints) {
+                if (constraints.maxWidth < AppBreakpoints.tablet) {
+                  return listView;
+                }
+                return Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 800),
+                    child: listView,
+                  ),
+                );
+              },
             );
           }
           return const SizedBox.shrink();

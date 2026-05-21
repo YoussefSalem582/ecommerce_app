@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shop_flow/core/constants/test_keys.dart';
 import 'package:shop_flow/core/l10n/gen/app_localizations.dart';
 import 'package:shop_flow/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:shop_flow/features/auth/presentation/bloc/auth_event.dart';
@@ -175,6 +176,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   ),
                   const SizedBox(height: 24),
                   FilledButton(
+                    key: TestKeys.saveProfileButton,
                     onPressed: state is EditProfileLoading ? null : _submit,
                     child: Text(l10n.saveProfile),
                   ),

@@ -110,6 +110,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                         : l10n.addToWishlistA11y,
                     button: true,
                     child: IconButton(
+                      key: TestKeys.wishlistToggleButton,
                       tooltip: isFav
                           ? l10n.removeFromWishlistA11y
                           : l10n.addToWishlistA11y,
