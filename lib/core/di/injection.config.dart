@@ -22,6 +22,9 @@ import 'package:shop_flow/core/network/connectivity_cubit.dart' as _i1045;
 import 'package:shop_flow/core/network/dio_client.dart' as _i475;
 import 'package:shop_flow/core/network/token_refresher.dart' as _i543;
 import 'package:shop_flow/core/network/token_storage.dart' as _i671;
+import 'package:shop_flow/core/preferences/currency_cubit.dart' as _i206;
+import 'package:shop_flow/core/preferences/notification_prefs_cubit.dart'
+    as _i71;
 import 'package:shop_flow/core/router/app_router.dart' as _i305;
 import 'package:shop_flow/core/router/auth_refresh_notifier.dart' as _i70;
 import 'package:shop_flow/core/theme/theme_cubit.dart' as _i714;
@@ -37,6 +40,8 @@ import 'package:shop_flow/features/auth/data/repositories/auth_repository_impl.d
     as _i320;
 import 'package:shop_flow/features/auth/domain/repositories/auth_repository.dart'
     as _i285;
+import 'package:shop_flow/features/auth/domain/usecases/change_password_usecase.dart'
+    as _i62;
 import 'package:shop_flow/features/auth/domain/usecases/google_sign_in_usecase.dart'
     as _i369;
 import 'package:shop_flow/features/auth/domain/usecases/login_usecase.dart'
@@ -97,6 +102,8 @@ import 'package:shop_flow/features/orders/presentation/bloc/orders_bloc.dart'
     as _i13;
 import 'package:shop_flow/features/products/data/datasources/local_products_datasource.dart'
     as _i185;
+import 'package:shop_flow/features/products/data/datasources/local_recently_viewed_datasource.dart'
+    as _i455;
 import 'package:shop_flow/features/products/data/datasources/products_remote_datasource.dart'
     as _i437;
 import 'package:shop_flow/features/products/data/repositories/products_repository_impl.dart'
@@ -115,16 +122,30 @@ import 'package:shop_flow/features/products/presentation/bloc/product_detail_blo
     as _i814;
 import 'package:shop_flow/features/products/presentation/bloc/product_list_bloc.dart'
     as _i428;
+import 'package:shop_flow/features/products/presentation/cubit/recently_viewed_cubit.dart'
+    as _i244;
+import 'package:shop_flow/features/profile/data/datasources/local_addresses_datasource.dart'
+    as _i97;
 import 'package:shop_flow/features/profile/data/datasources/local_profile_datasource.dart'
     as _i197;
+import 'package:shop_flow/features/profile/data/repositories/addresses_repository_impl.dart'
+    as _i128;
 import 'package:shop_flow/features/profile/data/repositories/profile_repository_impl.dart'
     as _i925;
+import 'package:shop_flow/features/profile/domain/repositories/addresses_repository.dart'
+    as _i938;
 import 'package:shop_flow/features/profile/domain/repositories/profile_repository.dart'
     as _i151;
+import 'package:shop_flow/features/profile/domain/usecases/delete_address_usecase.dart'
+    as _i130;
+import 'package:shop_flow/features/profile/domain/usecases/get_addresses_usecase.dart'
+    as _i537;
 import 'package:shop_flow/features/profile/domain/usecases/get_avatar_path_usecase.dart'
     as _i111;
 import 'package:shop_flow/features/profile/domain/usecases/get_profile_usecase.dart'
     as _i220;
+import 'package:shop_flow/features/profile/domain/usecases/save_address_usecase.dart'
+    as _i291;
 import 'package:shop_flow/features/profile/domain/usecases/save_avatar_path_usecase.dart'
     as _i81;
 import 'package:shop_flow/features/profile/domain/usecases/update_profile_usecase.dart'
@@ -133,6 +154,8 @@ import 'package:shop_flow/features/profile/presentation/bloc/edit_profile_bloc.d
     as _i1060;
 import 'package:shop_flow/features/profile/presentation/bloc/profile_bloc.dart'
     as _i827;
+import 'package:shop_flow/features/profile/presentation/cubit/addresses_cubit.dart'
+    as _i360;
 import 'package:shop_flow/features/wishlist/data/datasources/local_wishlist_datasource.dart'
     as _i1027;
 import 'package:shop_flow/features/wishlist/data/repositories/wishlist_repository_impl.dart'
@@ -162,6 +185,7 @@ extension GetItInjectableX on _i174.GetIt {
       () => registerModule.prefs,
       preResolve: true,
     );
+    gh.factory<_i62.ChangePasswordUseCase>(() => _i62.ChangePasswordUseCase());
     gh.factory<_i824.CreateOrderEntityUseCase>(
       () => _i824.CreateOrderEntityUseCase(),
     );
@@ -195,6 +219,21 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i706.SyncCartUseCase(gh<_i32.CartRepository>()),
     );
     await gh.factoryAsync<_i986.Box<String>>(
+      () => registerModule.addresses,
+      instanceName: 'addresses',
+      preResolve: true,
+    );
+    await gh.factoryAsync<_i986.Box<String>>(
+      () => registerModule.recentlyViewed,
+      instanceName: 'recentlyViewed',
+      preResolve: true,
+    );
+    gh.lazySingleton<_i97.LocalAddressesDatasource>(
+      () => _i97.LocalAddressesDatasource(
+        gh<_i986.Box<String>>(instanceName: 'addresses'),
+      ),
+    );
+    await gh.factoryAsync<_i986.Box<String>>(
       () => registerModule.wishlist,
       instanceName: 'wishlist',
       preResolve: true,
@@ -210,6 +249,12 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i615.LanguageCubit>(
       () => _i615.LanguageCubit(gh<_i460.SharedPreferences>()),
     );
+    gh.lazySingleton<_i206.CurrencyCubit>(
+      () => _i206.CurrencyCubit(gh<_i460.SharedPreferences>()),
+    );
+    gh.lazySingleton<_i71.NotificationPrefsCubit>(
+      () => _i71.NotificationPrefsCubit(gh<_i460.SharedPreferences>()),
+    );
     gh.lazySingleton<_i714.ThemeCubit>(
       () => _i714.ThemeCubit(gh<_i460.SharedPreferences>()),
     );
@@ -218,6 +263,11 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i891.GoogleAuthDatasource>(
       () => _i505.ShowcaseGoogleAuthDatasource(gh<_i993.Talker>()),
+    );
+    gh.lazySingleton<_i455.LocalRecentlyViewedDatasource>(
+      () => _i455.LocalRecentlyViewedDatasource(
+        gh<_i986.Box<String>>(instanceName: 'recentlyViewed'),
+      ),
     );
     await gh.factoryAsync<_i986.Box<String>>(
       () => registerModule.productsCache,
@@ -278,11 +328,20 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i986.Box<String>>(instanceName: 'ordersCache'),
       ),
     );
+    gh.lazySingleton<_i938.AddressesRepository>(
+      () => _i128.AddressesRepositoryImpl(gh<_i97.LocalAddressesDatasource>()),
+    );
     gh.lazySingleton<_i866.WishlistCubit>(
       () => _i866.WishlistCubit(
         gh<_i1048.GetWishlistIdsUseCase>(),
         gh<_i192.ToggleWishlistUseCase>(),
         gh<_i993.Talker>(),
+      ),
+    );
+    gh.lazySingleton<_i244.RecentlyViewedCubit>(
+      () => _i244.RecentlyViewedCubit(
+        gh<_i455.LocalRecentlyViewedDatasource>(),
+        gh<_i961.GetProductByIdUseCase>(),
       ),
     );
     gh.factory<_i848.GetOrderByIdUseCase>(
@@ -302,6 +361,12 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i70.AuthRefreshNotifier>(
       () => _i70.AuthRefreshNotifier(gh<_i430.AuthBloc>()),
+    );
+    gh.lazySingleton<_i814.ProductDetailBloc>(
+      () => _i814.ProductDetailBloc(
+        gh<_i961.GetProductByIdUseCase>(),
+        gh<_i438.GetProductsUseCase>(),
+      ),
     );
     gh.lazySingleton<_i888.LocalCartDatasource>(
       () => _i888.LocalCartDatasource(
@@ -343,9 +408,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i543.TokenRefresher>(
       () => _i543.TokenRefresher(gh<_i297.RefreshTokenUseCase>()),
     );
-    gh.lazySingleton<_i814.ProductDetailBloc>(
-      () => _i814.ProductDetailBloc(gh<_i961.GetProductByIdUseCase>()),
-    );
     gh.lazySingleton<_i480.CartBloc>(
       () => _i480.CartBloc(
         gh<_i828.GetCartLinesUseCase>(),
@@ -377,6 +439,15 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i438.GetProductsUseCase>(),
       ),
     );
+    gh.factory<_i130.DeleteAddressUseCase>(
+      () => _i130.DeleteAddressUseCase(gh<_i938.AddressesRepository>()),
+    );
+    gh.factory<_i537.GetAddressesUseCase>(
+      () => _i537.GetAddressesUseCase(gh<_i938.AddressesRepository>()),
+    );
+    gh.factory<_i291.SaveAddressUseCase>(
+      () => _i291.SaveAddressUseCase(gh<_i938.AddressesRepository>()),
+    );
     gh.lazySingleton<_i13.OrdersBloc>(
       () => _i13.OrdersBloc(gh<_i129.GetOrdersUseCase>()),
     );
@@ -396,6 +467,7 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i935.SaveOrderUseCase>(),
         gh<_i56.ClearCartUseCase>(),
         gh<_i341.CheckoutPaymentGateway>(),
+        gh<_i291.SaveAddressUseCase>(),
         gh<_i910.AppConfig>(),
         gh<_i993.Talker>(),
       ),
@@ -418,6 +490,13 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i910.AppConfig>(),
         gh<_i207.Talker>(),
         gh<_i475.DioClient>(),
+      ),
+    );
+    gh.lazySingleton<_i360.AddressesCubit>(
+      () => _i360.AddressesCubit(
+        gh<_i537.GetAddressesUseCase>(),
+        gh<_i291.SaveAddressUseCase>(),
+        gh<_i130.DeleteAddressUseCase>(),
       ),
     );
     gh.lazySingleton<_i851.ProductsRepositoryImpl>(

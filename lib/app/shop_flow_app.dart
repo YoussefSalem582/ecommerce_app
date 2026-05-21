@@ -5,6 +5,9 @@ import 'package:shop_flow/core/di/injection.dart';
 import 'package:shop_flow/core/l10n/gen/app_localizations.dart';
 import 'package:shop_flow/core/l10n/language_cubit.dart';
 import 'package:shop_flow/core/network/connectivity_cubit.dart';
+import 'package:shop_flow/core/preferences/app_currency.dart';
+import 'package:shop_flow/core/preferences/currency_cubit.dart';
+import 'package:shop_flow/core/preferences/notification_prefs_cubit.dart';
 import 'package:shop_flow/core/router/app_router.dart';
 import 'package:shop_flow/core/theme/app_theme.dart';
 import 'package:shop_flow/core/theme/theme_cubit.dart';
@@ -14,8 +17,10 @@ import 'package:shop_flow/features/checkout/presentation/bloc/checkout_bloc.dart
 import 'package:shop_flow/features/orders/presentation/bloc/orders_bloc.dart';
 import 'package:shop_flow/features/products/presentation/bloc/product_detail_bloc.dart';
 import 'package:shop_flow/features/products/presentation/bloc/product_list_bloc.dart';
+import 'package:shop_flow/features/products/presentation/cubit/recently_viewed_cubit.dart';
 import 'package:shop_flow/features/profile/presentation/bloc/edit_profile_bloc.dart';
 import 'package:shop_flow/features/profile/presentation/bloc/profile_bloc.dart';
+import 'package:shop_flow/features/profile/presentation/cubit/addresses_cubit.dart';
 import 'package:shop_flow/features/wishlist/presentation/cubit/wishlist_cubit.dart';
 
 /// Root widget wiring localization, theme, routing, and cross-cutting cubits.
@@ -45,31 +50,45 @@ class ShopFlowApp extends StatelessWidget {
         ),
         BlocProvider<ProfileBloc>.value(value: getIt<ProfileBloc>()),
         BlocProvider<EditProfileBloc>.value(value: getIt<EditProfileBloc>()),
+        BlocProvider<RecentlyViewedCubit>.value(
+          value: getIt<RecentlyViewedCubit>(),
+        ),
+        BlocProvider<AddressesCubit>.value(value: getIt<AddressesCubit>()),
+        BlocProvider<CurrencyCubit>.value(value: getIt<CurrencyCubit>()),
+        BlocProvider<NotificationPrefsCubit>.value(
+          value: getIt<NotificationPrefsCubit>(),
+        ),
       ],
-      child: BlocBuilder<ThemeCubit, ThemeMode>(
-        builder: (BuildContext context, ThemeMode themeMode) {
-          return BlocBuilder<LanguageCubit, Locale>(
-            builder: (BuildContext context, Locale locale) {
-              final rtl = locale.languageCode == 'ar';
+      child: BlocBuilder<CurrencyCubit, AppCurrency>(
+        builder: (BuildContext context, AppCurrency _) {
+          return BlocBuilder<ThemeCubit, ThemeMode>(
+            builder: (BuildContext context, ThemeMode themeMode) {
+              return BlocBuilder<LanguageCubit, Locale>(
+                builder: (BuildContext context, Locale locale) {
+                  final rtl = locale.languageCode == 'ar';
 
-              return MaterialApp.router(
-                debugShowCheckedModeBanner: false,
-                theme: AppTheme.light(),
-                darkTheme: AppTheme.dark(),
-                themeMode: themeMode,
-                locale: locale,
-                supportedLocales: AppLocalizations.supportedLocales,
-                localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
-                  AppLocalizations.delegate,
-                  GlobalMaterialLocalizations.delegate,
-                  GlobalWidgetsLocalizations.delegate,
-                  GlobalCupertinoLocalizations.delegate,
-                ],
-                routerConfig: router,
-                builder: (BuildContext context, Widget? child) {
-                  return Directionality(
-                    textDirection: rtl ? TextDirection.rtl : TextDirection.ltr,
-                    child: child ?? const SizedBox.shrink(),
+                  return MaterialApp.router(
+                    debugShowCheckedModeBanner: false,
+                    theme: AppTheme.light(),
+                    darkTheme: AppTheme.dark(),
+                    themeMode: themeMode,
+                    locale: locale,
+                    supportedLocales: AppLocalizations.supportedLocales,
+                    localizationsDelegates:
+                        const <LocalizationsDelegate<dynamic>>[
+                      AppLocalizations.delegate,
+                      GlobalMaterialLocalizations.delegate,
+                      GlobalWidgetsLocalizations.delegate,
+                      GlobalCupertinoLocalizations.delegate,
+                    ],
+                    routerConfig: router,
+                    builder: (BuildContext context, Widget? child) {
+                      return Directionality(
+                        textDirection:
+                            rtl ? TextDirection.rtl : TextDirection.ltr,
+                        child: child ?? const SizedBox.shrink(),
+                      );
+                    },
                   );
                 },
               );

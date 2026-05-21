@@ -18,6 +18,15 @@ abstract final class AppRoutes {
   /// Edit profile form (full-screen over shell).
   static const editProfile = '/edit-profile';
 
+  /// Saved shipping addresses list.
+  static const addresses = '/addresses';
+
+  /// Add or edit a saved address.
+  static const addAddress = '/add-address';
+
+  /// Change password form.
+  static const changePassword = '/change-password';
+
   /// PDP pattern `/product/:id`.
   static const productPath = '/product';
 
@@ -38,6 +47,9 @@ abstract final class AppRoutes {
 
   /// Saved favorites grid.
   static const wishlist = '/wishlist';
+
+  /// Category browse grid.
+  static const categories = '/categories';
 
   /// Address + payment orchestration.
   static const checkout = '/checkout';

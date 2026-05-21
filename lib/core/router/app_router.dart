@@ -10,6 +10,7 @@ import 'package:shop_flow/core/router/auth_refresh_notifier.dart';
 import 'package:shop_flow/core/widgets/debug_logs_page.dart';
 import 'package:shop_flow/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:shop_flow/features/auth/presentation/bloc/auth_state.dart';
+import 'package:shop_flow/features/auth/presentation/pages/change_password_page.dart';
 import 'package:shop_flow/features/auth/presentation/pages/login_page.dart';
 import 'package:shop_flow/features/auth/presentation/pages/register_page.dart';
 import 'package:shop_flow/features/cart/presentation/pages/cart_page.dart';
@@ -19,7 +20,11 @@ import 'package:shop_flow/features/onboarding/presentation/pages/onboarding_page
 import 'package:shop_flow/features/orders/presentation/pages/order_detail_page.dart';
 import 'package:shop_flow/features/orders/presentation/pages/order_success_page.dart';
 import 'package:shop_flow/features/orders/presentation/pages/orders_page.dart';
+import 'package:shop_flow/features/products/presentation/pages/categories_page.dart';
 import 'package:shop_flow/features/products/presentation/pages/product_detail_page.dart';
+import 'package:shop_flow/features/profile/domain/entities/saved_address_entity.dart';
+import 'package:shop_flow/features/profile/presentation/pages/add_address_page.dart';
+import 'package:shop_flow/features/profile/presentation/pages/addresses_page.dart';
 import 'package:shop_flow/features/profile/presentation/pages/edit_profile_page.dart';
 import 'package:shop_flow/features/profile/presentation/pages/profile_page.dart';
 import 'package:shop_flow/features/profile/presentation/pages/settings_page.dart';
@@ -133,6 +138,12 @@ class AppRouter {
         ],
       ),
       GoRoute(
+        path: AppRoutes.categories,
+        name: 'categories',
+        builder: (BuildContext context, GoRouterState state) =>
+            const CategoriesPage(),
+      ),
+      GoRoute(
         path: AppRoutes.wishlist,
         name: 'wishlist',
         builder: (BuildContext context, GoRouterState state) {
@@ -147,6 +158,27 @@ class AppRouter {
         name: 'checkout',
         builder: (BuildContext context, GoRouterState state) =>
             const CheckoutPage(),
+      ),
+      GoRoute(
+        path: AppRoutes.addresses,
+        name: 'addresses',
+        builder: (BuildContext context, GoRouterState state) =>
+            const AddressesPage(),
+      ),
+      GoRoute(
+        path: AppRoutes.addAddress,
+        name: 'addAddress',
+        builder: (BuildContext context, GoRouterState state) {
+          final SavedAddressEntity? existing =
+              state.extra as SavedAddressEntity?;
+          return AddAddressPage(existing: existing);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.changePassword,
+        name: 'changePassword',
+        builder: (BuildContext context, GoRouterState state) =>
+            const ChangePasswordPage(),
       ),
       GoRoute(
         path: AppRoutes.settings,

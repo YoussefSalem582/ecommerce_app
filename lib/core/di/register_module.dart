@@ -54,6 +54,17 @@ abstract class RegisterModule {
   Future<Box<String>> get ordersCache =>
       Hive.openBox<String>('orders_cache');
 
+  /// Recently viewed SKU ids JSON bucket.
+  @preResolve
+  @Named('recentlyViewed')
+  Future<Box<String>> get recentlyViewed =>
+      Hive.openBox<String>('recently_viewed');
+
+  /// Saved shipping addresses JSON bucket.
+  @preResolve
+  @Named('addresses')
+  Future<Box<String>> get addresses => Hive.openBox<String>('addresses');
+
   /// Fake Store HTTP unless `APP_ENV=demo`, then in-memory fake datasource.
   @lazySingleton
   AuthRemoteDatasource authRemoteDatasource(
