@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shop_flow/core/l10n/gen/app_localizations.dart';
 import 'package:shop_flow/core/router/app_routes.dart';
+import 'package:shop_flow/core/theme/theme_extensions.dart';
 import 'package:shop_flow/features/home/presentation/widgets/home_spacing.dart';
 import 'package:shop_flow/features/products/domain/entities/product_entity.dart';
 import 'package:shop_flow/features/products/presentation/cubit/recently_viewed_cubit.dart';
@@ -17,6 +18,7 @@ class HomeRecentlyViewedSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final AppLocalizations l10n = AppLocalizations.of(context);
+    final palette = context.appPalette;
 
     return BlocBuilder<RecentlyViewedCubit, RecentlyViewedState>(
       builder: (BuildContext context, RecentlyViewedState rvState) {
@@ -29,9 +31,24 @@ class HomeRecentlyViewedSection extends StatelessWidget {
           children: <Widget>[
             Padding(
               padding: HomeSpacing.sectionHeaderPadding,
-              child: Text(
-                l10n.recentlyViewedTitle,
-                style: Theme.of(context).textTheme.titleMedium,
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                    child: Text(
+                      l10n.recentlyViewedTitle,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () => context.go(AppRoutes.categories),
+                    child: Text(
+                      l10n.catalogBrowseCategories,
+                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        color: palette.primary,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             SizedBox(

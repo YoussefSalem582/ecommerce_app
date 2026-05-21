@@ -452,6 +452,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get catalogClearFilters => 'مسح التصفية';
 
   @override
+  String get catalogBrowseCategories => 'تصفح الفئات';
+
+  @override
   String get recentlyViewedTitle => 'شوهد مؤخراً';
 
   @override

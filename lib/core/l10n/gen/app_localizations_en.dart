@@ -454,6 +454,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get catalogClearFilters => 'Clear filters';
 
   @override
+  String get catalogBrowseCategories => 'Browse categories';
+
+  @override
   String get recentlyViewedTitle => 'Recently viewed';
 
   @override

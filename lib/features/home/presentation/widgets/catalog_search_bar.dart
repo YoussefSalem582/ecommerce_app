@@ -69,7 +69,7 @@ class _CatalogSearchBarState extends State<CatalogSearchBar> {
     return Padding(
       padding: HomeSpacing.searchPadding,
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           Expanded(
             child: Semantics(

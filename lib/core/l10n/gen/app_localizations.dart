@@ -926,6 +926,12 @@ abstract class AppLocalizations {
   /// **'Clear filters'**
   String get catalogClearFilters;
 
+  /// No description provided for @catalogBrowseCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse categories'**
+  String get catalogBrowseCategories;
+
   /// No description provided for @recentlyViewedTitle.
   ///
   /// In en, this message translates to:

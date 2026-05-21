@@ -10,7 +10,7 @@
 | Auth (email + session) | ✅ | Fake Store / showcase |
 | Google Sign-In | ✅ | Stub — ADR 004; conditional test path |
 | JWT refresh | ✅ | Showcase — ADR 005 |
-| Product catalog | ✅ | Hive cache, search, **refactored home widgets**, category FilterChips, sort/filter, categories page, recently viewed |
+| Product catalog | ✅ | Hive cache, search, **sliver home catalog** (pinned search), category FilterChips, sort/filter, categories page, recently viewed |
 | Product detail | ✅ | Hero gallery, wishlist, **mock reviews**, **related products**, **share** |
 | Cart & wishlist | ✅ | Local-first; dedicated wishlist page |
 | Checkout + Stripe | ✅ | Demo path + banner; **promo codes**, **saved addresses**; Payment Sheet when env set — ADR 006 |

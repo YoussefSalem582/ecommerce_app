@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shop_flow/core/constants/test_keys.dart';
 import 'package:shop_flow/core/l10n/gen/app_localizations.dart';
+import 'package:shop_flow/core/router/app_shell_branches.dart';
 import 'package:shop_flow/core/widgets/offline_banner.dart';
 import 'package:shop_flow/core/utils/app_breakpoints.dart';
 import 'package:shop_flow/features/cart/presentation/bloc/cart_bloc.dart';
@@ -45,15 +46,30 @@ class ResponsiveAppNav extends StatelessWidget {
     ),
   ];
 
-  void _onTap(int index) {
-    navigationShell.goBranch(
-      index,
-      initialLocation: index == navigationShell.currentIndex,
-    );
+  void _onTap(BuildContext context, int index) {
+    if (index < 0 || index >= AppShellBranches.length) {
+      return;
+    }
+
+    final int branchCount = navigationShell.route.branches.length;
+    if (index < branchCount) {
+      navigationShell.goBranch(
+        index,
+        initialLocation: index == navigationShell.currentIndex,
+      );
+      return;
+    }
+
+    // Hot-restart can leave a stale shell branch count; navigate by path.
+    context.go(AppShellBranches.paths[index]);
   }
 
   @override
   Widget build(BuildContext context) {
+    assert(
+      _destinations.length == AppShellBranches.length,
+      'Nav destinations must match StatefulShellRoute branches',
+    );
     final l10n = AppLocalizations.of(context);
     final width = MediaQuery.sizeOf(context).width;
     final labels = <String>[
@@ -71,12 +87,14 @@ class ResponsiveAppNav extends StatelessWidget {
       l10n.navProfileA11y,
     ];
 
+    void onTap(int index) => _onTap(context, index);
+
     if (width >= AppBreakpoints.desktop) {
       return _DesktopShell(
         currentIndex: navigationShell.currentIndex,
         labels: labels,
         a11yLabels: a11yLabels,
-        onTap: _onTap,
+        onTap: onTap,
         child: navigationShell,
       );
     }
@@ -86,7 +104,7 @@ class ResponsiveAppNav extends StatelessWidget {
         currentIndex: navigationShell.currentIndex,
         labels: labels,
         a11yLabels: a11yLabels,
-        onTap: _onTap,
+        onTap: onTap,
         child: navigationShell,
       );
     }
@@ -95,7 +113,7 @@ class ResponsiveAppNav extends StatelessWidget {
       currentIndex: navigationShell.currentIndex,
       labels: labels,
       a11yLabels: a11yLabels,
-      onTap: _onTap,
+      onTap: onTap,
       child: navigationShell,
     );
   }

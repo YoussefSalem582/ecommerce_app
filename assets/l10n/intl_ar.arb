@@ -176,6 +176,7 @@
   "catalogFilterRatingLabel": "الحد الأدنى للتقييم: {rating}",
   "catalogFilterApply": "تطبيق التصفية",
   "catalogClearFilters": "مسح التصفية",
+  "catalogBrowseCategories": "تصفح الفئات",
   "recentlyViewedTitle": "شوهد مؤخراً",
   "relatedProductsTitle": "منتجات ذات صلة",
   "productReviewsTitle": "مراجعات العملاء",

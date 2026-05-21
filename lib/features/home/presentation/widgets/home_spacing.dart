@@ -12,7 +12,13 @@ abstract final class HomeSpacing {
   static const double chipGap = 4;
 
   /// Vertical gap between major body sections.
-  static const double sectionGap = 8;
+  static const double sectionGap = 12;
+
+  /// Fixed height of the pinned search header sliver.
+  static const double pinnedSearchHeight = 76;
+
+  /// Extra bottom padding so grid tiles clear shell navigation.
+  static const double shellBottomClearance = 80;
 
   /// Height of the horizontal category chip row.
   static const double chipRowHeight = 44;
