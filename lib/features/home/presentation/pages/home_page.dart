@@ -6,7 +6,8 @@ import 'package:shop_flow/core/constants/test_keys.dart';
 import 'package:shop_flow/core/l10n/gen/app_localizations.dart';
 import 'package:shop_flow/core/router/app_routes.dart';
 import 'package:shop_flow/core/theme/theme_extensions.dart';
-import 'package:shop_flow/core/widgets/offline_banner.dart';
+import 'package:shop_flow/core/widgets/app_empty_view.dart';
+import 'package:shop_flow/core/widgets/app_error_view.dart';
 import 'package:shop_flow/core/widgets/product_grid_shimmer.dart';
 import 'package:shop_flow/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:shop_flow/features/auth/presentation/bloc/auth_state.dart';
@@ -61,14 +62,7 @@ class _HomePageState extends State<HomePage> {
     final l10n = AppLocalizations.of(context);
     final palette = context.appPalette;
 
-    return BlocConsumer<ProductListBloc, ProductListState>(
-      listener: (BuildContext context, ProductListState state) {
-        if (state is ProductListFailure) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message)),
-          );
-        }
-      },
+    return BlocBuilder<ProductListBloc, ProductListState>(
       builder: (BuildContext context, ProductListState listState) {
         return BlocBuilder<AuthBloc, AuthState>(
           builder: (BuildContext context, AuthState authState) {
@@ -112,166 +106,129 @@ class _HomePageState extends State<HomePage> {
                       child: const Icon(Icons.bug_report_outlined),
                     )
                   : null,
-              body: OfflineBanner(
-                child: Column(
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-                      child: Row(
-                        children: <Widget>[
-                          Expanded(
+              body: Column(
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                    child: Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: Semantics(
+                            label: l10n.catalogSearchA11y,
                             child: TextField(
                               controller: _searchController,
                               textInputAction: TextInputAction.search,
                               decoration: InputDecoration(
                                 hintText: l10n.catalogSearchHint,
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                isDense: true,
+                                prefixIcon: const Icon(Icons.search_rounded),
                               ),
                               onSubmitted: (_) => _submitSearch(),
                             ),
                           ),
-                          const SizedBox(width: 8),
-                          IconButton.filled(
-                            onPressed: _submitSearch,
-                            icon: const Icon(Icons.search_rounded),
+                        ),
+                        const SizedBox(width: 8),
+                        IconButton.filled(
+                          tooltip: l10n.catalogSearchA11y,
+                          onPressed: _submitSearch,
+                          icon: const Icon(Icons.search_rounded),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  if (listState is ProductListLoaded &&
+                      listState.categories.isNotEmpty)
+                    SizedBox(
+                      height: 44,
+                      child: ListView(
+                        scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        children: <Widget>[
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 4),
+                            child: ChoiceChip(
+                              label: Text(l10n.catalogAllCategories),
+                              selected: listState.selectedCategory == null,
+                              onSelected: (_) => context
+                                  .read<ProductListBloc>()
+                                  .add(const ProductListCategorySelected(null)),
+                            ),
+                          ),
+                          ...listState.categories.map(
+                            (String c) => Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 4),
+                              child: ChoiceChip(
+                                label: Text(c),
+                                selected: listState.selectedCategory == c,
+                                onSelected: (_) => context
+                                    .read<ProductListBloc>()
+                                    .add(ProductListCategorySelected(c)),
+                              ),
+                            ),
                           ),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    if (listState is ProductListLoaded &&
-                        listState.categories.isNotEmpty)
-                      SizedBox(
-                        height: 44,
-                        child: ListView(
-                          scrollDirection: Axis.horizontal,
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          children: <Widget>[
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 4),
-                              child: ChoiceChip(
-                                label: Text(l10n.catalogAllCategories),
-                                selected: listState.selectedCategory == null,
-                                onSelected: (_) => context
-                                    .read<ProductListBloc>()
-                                    .add(const ProductListCategorySelected(null)),
-                              ),
-                            ),
-                            ...listState.categories.map(
-                              (String c) => Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 4),
-                                child: ChoiceChip(
-                                  label: Text(c),
-                                  selected: listState.selectedCategory == c,
-                                  onSelected: (_) => context
-                                      .read<ProductListBloc>()
-                                      .add(ProductListCategorySelected(c)),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    Expanded(
-                      child: LayoutBuilder(
-                        builder:
-                            (BuildContext context, BoxConstraints constraints) {
-                          final cols = ProductGridShimmer.columnsForWidth(
-                            constraints.maxWidth,
+                  Expanded(
+                    child: LayoutBuilder(
+                      builder:
+                          (BuildContext context, BoxConstraints constraints) {
+                        final cols = ProductGridShimmer.columnsForWidth(
+                          constraints.maxWidth,
+                        );
+
+                        if (listState is ProductListInitial ||
+                            listState is ProductListLoading) {
+                          return ProductGridShimmer(crossAxisCount: cols);
+                        }
+
+                        if (listState is ProductListFailure) {
+                          return AppErrorView(
+                            message: listState.message,
+                            onRetry: () => context
+                                .read<ProductListBloc>()
+                                .add(const ProductListStarted()),
                           );
+                        }
 
-                          if (listState is ProductListInitial ||
-                              listState is ProductListLoading) {
-                            return ProductGridShimmer(crossAxisCount: cols);
-                          }
-
-                          if (listState is ProductListFailure) {
-                            return Center(
-                              child: Padding(
-                                padding: const EdgeInsets.all(24),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    Text(
-                                      listState.message,
-                                      textAlign: TextAlign.center,
-                                    ),
-                                    const SizedBox(height: 16),
-                                    FilledButton(
-                                      onPressed: () => context
-                                          .read<ProductListBloc>()
-                                          .add(const ProductListStarted()),
-                                      child: Text(l10n.retry),
-                                    ),
-                                  ],
-                                ),
-                              ),
+                        if (listState is ProductListLoaded) {
+                          final products = listState.products;
+                          if (products.isEmpty) {
+                            return AppEmptyView(
+                              icon: Icons.inventory_2_outlined,
+                              title: l10n.catalogEmpty,
+                              body: l10n.cartEmptyBody,
                             );
                           }
 
-                          if (listState is ProductListLoaded) {
-                            final products = listState.products;
-                            if (products.isEmpty) {
-                              return Center(child: Text(l10n.catalogEmpty));
-                            }
-
-                            return RefreshIndicator(
-                              color: palette.primary,
-                              onRefresh: () async {
-                                final ProductListBloc bloc =
-                                    context.read<ProductListBloc>();
-                                bloc.add(const ProductListRefreshRequested());
-                                await bloc.stream.firstWhere(
-                                  (ProductListState s) =>
-                                      s is ProductListLoaded ||
-                                      s is ProductListFailure,
-                                );
-                              },
-                              child: listState.viewMode ==
-                                      ProductListViewMode.list
-                                  ? ListView.builder(
-                                      padding: const EdgeInsets.all(16),
-                                      itemCount: products.length,
-                                      itemBuilder:
-                                          (BuildContext context, int index) {
-                                        final ProductEntity product =
-                                            products[index];
-                                        return Padding(
-                                          padding: const EdgeInsets.only(
-                                            bottom: 12,
-                                          ),
-                                          child: ProductCard(
-                                            key: index == 0
-                                                ? TestKeys.firstProductCard
-                                                : null,
-                                            product: product,
-                                            onTap: () => context.push(
-                                              AppRoutes.product(product.id),
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                    )
-                                  : GridView.builder(
-                                      padding: const EdgeInsets.all(16),
-                                      gridDelegate:
-                                          SliverGridDelegateWithFixedCrossAxisCount(
-                                        crossAxisCount: cols,
-                                        mainAxisSpacing: 16,
-                                        crossAxisSpacing: 16,
-                                        childAspectRatio: 0.72,
-                                      ),
-                                      itemCount: products.length,
-                                      itemBuilder:
-                                          (BuildContext context, int index) {
-                                        final ProductEntity product =
-                                            products[index];
-                                        return ProductCard(
+                          return RefreshIndicator(
+                            color: palette.primary,
+                            onRefresh: () async {
+                              final ProductListBloc bloc =
+                                  context.read<ProductListBloc>();
+                              bloc.add(const ProductListRefreshRequested());
+                              await bloc.stream.firstWhere(
+                                (ProductListState s) =>
+                                    s is ProductListLoaded ||
+                                    s is ProductListFailure,
+                              );
+                            },
+                            child: listState.viewMode ==
+                                    ProductListViewMode.list
+                                ? ListView.builder(
+                                    padding: const EdgeInsets.all(16),
+                                    itemCount: products.length,
+                                    itemBuilder:
+                                        (BuildContext context, int index) {
+                                      final ProductEntity product =
+                                          products[index];
+                                      return Padding(
+                                        padding: const EdgeInsets.only(
+                                          bottom: 12,
+                                        ),
+                                        child: ProductCard(
                                           key: index == 0
                                               ? TestKeys.firstProductCard
                                               : null,
@@ -279,18 +236,43 @@ class _HomePageState extends State<HomePage> {
                                           onTap: () => context.push(
                                             AppRoutes.product(product.id),
                                           ),
-                                        );
-                                      },
+                                        ),
+                                      );
+                                    },
+                                  )
+                                : GridView.builder(
+                                    padding: const EdgeInsets.all(16),
+                                    gridDelegate:
+                                        SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: cols,
+                                      mainAxisSpacing: 16,
+                                      crossAxisSpacing: 16,
+                                      childAspectRatio: 0.72,
                                     ),
-                            );
-                          }
+                                    itemCount: products.length,
+                                    itemBuilder:
+                                        (BuildContext context, int index) {
+                                      final ProductEntity product =
+                                          products[index];
+                                      return ProductCard(
+                                        key: index == 0
+                                            ? TestKeys.firstProductCard
+                                            : null,
+                                        product: product,
+                                        onTap: () => context.push(
+                                          AppRoutes.product(product.id),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                          );
+                        }
 
-                          return const SizedBox.shrink();
-                        },
-                      ),
+                        return const SizedBox.shrink();
+                      },
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             );
           },
