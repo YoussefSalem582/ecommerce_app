@@ -111,7 +111,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         return null;
                       },
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 16),
                     TextFormField(
                       controller: _username,
                       decoration:
@@ -123,7 +123,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         return null;
                       },
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 16),
                     TextFormField(
                       controller: _password,
                       obscureText: true,
@@ -139,7 +139,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         return null;
                       },
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 16),
                     TextFormField(
                       controller: _firstName,
                       textCapitalization: TextCapitalization.words,
@@ -152,7 +152,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         return null;
                       },
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 16),
                     TextFormField(
                       controller: _lastName,
                       textCapitalization: TextCapitalization.words,

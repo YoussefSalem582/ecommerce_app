@@ -102,8 +102,23 @@ class _SplashPageState extends State<SplashPage> {
                 l10n.appTitle,
                 style: Theme.of(context).textTheme.headlineLarge,
               ),
-              const SizedBox(height: 8),
-              Text(l10n.splashLoading),
+              const SizedBox(height: 16),
+              if (!disableAnimations)
+                SizedBox(
+                  width: 28,
+                  height: 28,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2.5,
+                    color: palette.primary,
+                  ),
+                )
+              else
+                Icon(Icons.hourglass_top_rounded, color: palette.primary),
+              const SizedBox(height: 12),
+              Text(
+                l10n.splashLoading,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
             ],
           ),
         ),

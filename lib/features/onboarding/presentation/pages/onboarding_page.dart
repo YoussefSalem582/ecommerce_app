@@ -107,16 +107,20 @@ class _OnboardingPageState extends State<OnboardingPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: List<Widget>.generate(_slideCount, (int i) {
-                return AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  margin: const EdgeInsets.symmetric(horizontal: 4),
-                  width: _index == i ? 24 : 8,
-                  height: 8,
-                  decoration: BoxDecoration(
-                    color: _index == i
-                        ? palette.primary
-                        : palette.primary.withValues(alpha: 0.3),
-                    borderRadius: BorderRadius.circular(4),
+                return Semantics(
+                  label: l10n.onboardingPageIndicator(i + 1, _slideCount),
+                  selected: _index == i,
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                    width: _index == i ? 24 : 8,
+                    height: 8,
+                    decoration: BoxDecoration(
+                      color: _index == i
+                          ? palette.primary
+                          : palette.primary.withValues(alpha: 0.3),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
                   ),
                 );
               }),

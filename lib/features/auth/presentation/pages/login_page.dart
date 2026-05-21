@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -5,6 +6,7 @@ import 'package:shop_flow/core/constants/test_keys.dart';
 import 'package:shop_flow/core/l10n/gen/app_localizations.dart';
 import 'package:shop_flow/core/router/app_routes.dart';
 import 'package:shop_flow/core/theme/theme_extensions.dart';
+import 'package:shop_flow/core/widgets/google_sign_in_button.dart';
 import 'package:shop_flow/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:shop_flow/features/auth/presentation/bloc/auth_event.dart';
 import 'package:shop_flow/features/auth/presentation/bloc/auth_state.dart';
@@ -22,14 +24,12 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  /// Demo Fake Store credentials prefilled for reviewer convenience.
   final TextEditingController _username = TextEditingController(
-    text: 'mor_2314',
+    text: kDebugMode ? 'mor_2314' : '',
   );
 
-  /// Matches Fake Store demo password for user `mor_2314`.
   final TextEditingController _password = TextEditingController(
-    text: '83r5^_',
+    text: kDebugMode ? '83r5^_' : '',
   );
 
   @override
@@ -126,20 +126,21 @@ class _LoginPageState extends State<LoginPage> {
                             )
                           : Text(l10n.loginButton),
                     ),
+                    const SizedBox(height: 8),
                     TextButton(
                       onPressed: loading
                           ? null
                           : () => context.push(AppRoutes.register),
                       child: Text(l10n.createAccountLink),
                     ),
-                    TextButton(
+                    const SizedBox(height: 8),
+                    GoogleSignInButton(
                       key: TestKeys.googleSignInButton,
                       onPressed: loading
                           ? null
                           : () => context
                               .read<AuthBloc>()
                               .add(const AuthGoogleSignInRequested()),
-                      child: Text(l10n.googleSignInButton),
                     ),
                   ],
                 ),
