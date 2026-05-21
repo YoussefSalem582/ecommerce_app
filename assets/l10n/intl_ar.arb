@@ -134,7 +134,7 @@
   "onboardingSlide1Title": "تسوق بدون اتصال",
   "onboardingSlide1Body": "تصفح المنتجات المخزنة حتى عند انقطاع الاتصال. Hive يحافظ على توفر الكatalog.",
   "onboardingSlide2Title": "ادفع عبر Stripe",
-  "onboardingSlide2Body": "الدفع عبر Stripe Payment Sheet مع بطاقات اختبار للعرض التوضيحي.",
+  "onboardingSlide2Body": "عند ضبط مفاتيح Stripe، يفتح الدفع Payment Sheet ببطاقات اختبار. وإلا يكتمل الدفع محلياً في وضع العرض التوضيحي.",
   "onboardingSlide3Title": "عربي وإنجليزي",
   "onboardingSlide3Body": "بدّل اللغة فوراً مع دعم RTL كامل — دون إعادة تشغيل التطبيق.",
   "googleSignInSuccess": "تم تسجيل الدخول عبر جوجل (عرض توضيحي)",
@@ -152,5 +152,15 @@
   "cancelButton": "إلغاء",
   "copyOrderId": "نسخ رقم الطلب",
   "orderIdCopied": "تم نسخ رقم الطلب",
-  "onboardingPageIndicator": "الصفحة {current} من {total}"
+  "onboardingPageIndicator": "الصفحة {current} من {total}",
+  "demoModeBannerTitle": "وضع العرض التوضيحي",
+  "demoModeBannerBody": "لا توجد رسوم حقيقية — تُحفظ الطلبات محلياً في هذا العرض.",
+  "settingsEnvironmentSection": "البيئة",
+  "settingsEnvironmentAppEnv": "بيئة التطبيق: {env}",
+  "settingsEnvironmentStripeOn": "Stripe Payment Sheet مفعّل",
+  "settingsEnvironmentStripeOff": "Stripe غير مضبوط — دفع تجريبي فقط",
+  "navHomeA11y": "تبويب الرئيسية",
+  "navCartA11y": "تبويب السلة",
+  "navOrdersA11y": "تبويب الطلبات",
+  "navProfileA11y": "تبويب الملف الشخصي"
 }

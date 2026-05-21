@@ -677,7 +677,7 @@ abstract class AppLocalizations {
   /// No description provided for @onboardingSlide2Body.
   ///
   /// In en, this message translates to:
-  /// **'Checkout uses Stripe Payment Sheet with sandbox test cards for a real payment flow demo.'**
+  /// **'When Stripe keys are configured, checkout opens Payment Sheet with sandbox test cards. Otherwise demo mode completes checkout locally.'**
   String get onboardingSlide2Body;
 
   /// No description provided for @onboardingSlide3Title.
@@ -787,6 +787,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Page {current} of {total}'**
   String onboardingPageIndicator(int current, int total);
+
+  /// No description provided for @demoModeBannerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Demo mode'**
+  String get demoModeBannerTitle;
+
+  /// No description provided for @demoModeBannerBody.
+  ///
+  /// In en, this message translates to:
+  /// **'No real charges — orders are saved locally in this showcase build.'**
+  String get demoModeBannerBody;
+
+  /// No description provided for @settingsEnvironmentSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Environment'**
+  String get settingsEnvironmentSection;
+
+  /// No description provided for @settingsEnvironmentAppEnv.
+  ///
+  /// In en, this message translates to:
+  /// **'App environment: {env}'**
+  String settingsEnvironmentAppEnv(String env);
+
+  /// No description provided for @settingsEnvironmentStripeOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Stripe Payment Sheet enabled'**
+  String get settingsEnvironmentStripeOn;
+
+  /// No description provided for @settingsEnvironmentStripeOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Stripe not configured — demo checkout only'**
+  String get settingsEnvironmentStripeOff;
+
+  /// No description provided for @navHomeA11y.
+  ///
+  /// In en, this message translates to:
+  /// **'Home tab'**
+  String get navHomeA11y;
+
+  /// No description provided for @navCartA11y.
+  ///
+  /// In en, this message translates to:
+  /// **'Cart tab'**
+  String get navCartA11y;
+
+  /// No description provided for @navOrdersA11y.
+  ///
+  /// In en, this message translates to:
+  /// **'Orders tab'**
+  String get navOrdersA11y;
+
+  /// No description provided for @navProfileA11y.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile tab'**
+  String get navProfileA11y;
 }
 
 class _AppLocalizationsDelegate

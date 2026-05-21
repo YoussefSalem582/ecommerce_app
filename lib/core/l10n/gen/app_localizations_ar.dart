@@ -315,7 +315,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get onboardingSlide2Body =>
-      'الدفع عبر Stripe Payment Sheet مع بطاقات اختبار للعرض التوضيحي.';
+      'عند ضبط مفاتيح Stripe، يفتح الدفع Payment Sheet ببطاقات اختبار. وإلا يكتمل الدفع محلياً في وضع العرض التوضيحي.';
 
   @override
   String get onboardingSlide3Title => 'عربي وإنجليزي';
@@ -374,4 +374,38 @@ class AppLocalizationsAr extends AppLocalizations {
   String onboardingPageIndicator(int current, int total) {
     return 'الصفحة $current من $total';
   }
+
+  @override
+  String get demoModeBannerTitle => 'وضع العرض التوضيحي';
+
+  @override
+  String get demoModeBannerBody =>
+      'لا توجد رسوم حقيقية — تُحفظ الطلبات محلياً في هذا العرض.';
+
+  @override
+  String get settingsEnvironmentSection => 'البيئة';
+
+  @override
+  String settingsEnvironmentAppEnv(String env) {
+    return 'بيئة التطبيق: $env';
+  }
+
+  @override
+  String get settingsEnvironmentStripeOn => 'Stripe Payment Sheet مفعّل';
+
+  @override
+  String get settingsEnvironmentStripeOff =>
+      'Stripe غير مضبوط — دفع تجريبي فقط';
+
+  @override
+  String get navHomeA11y => 'تبويب الرئيسية';
+
+  @override
+  String get navCartA11y => 'تبويب السلة';
+
+  @override
+  String get navOrdersA11y => 'تبويب الطلبات';
+
+  @override
+  String get navProfileA11y => 'تبويب الملف الشخصي';
 }

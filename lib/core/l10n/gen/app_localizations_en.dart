@@ -317,7 +317,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onboardingSlide2Body =>
-      'Checkout uses Stripe Payment Sheet with sandbox test cards for a real payment flow demo.';
+      'When Stripe keys are configured, checkout opens Payment Sheet with sandbox test cards. Otherwise demo mode completes checkout locally.';
 
   @override
   String get onboardingSlide3Title => 'Arabic & English';
@@ -376,4 +376,38 @@ class AppLocalizationsEn extends AppLocalizations {
   String onboardingPageIndicator(int current, int total) {
     return 'Page $current of $total';
   }
+
+  @override
+  String get demoModeBannerTitle => 'Demo mode';
+
+  @override
+  String get demoModeBannerBody =>
+      'No real charges — orders are saved locally in this showcase build.';
+
+  @override
+  String get settingsEnvironmentSection => 'Environment';
+
+  @override
+  String settingsEnvironmentAppEnv(String env) {
+    return 'App environment: $env';
+  }
+
+  @override
+  String get settingsEnvironmentStripeOn => 'Stripe Payment Sheet enabled';
+
+  @override
+  String get settingsEnvironmentStripeOff =>
+      'Stripe not configured — demo checkout only';
+
+  @override
+  String get navHomeA11y => 'Home tab';
+
+  @override
+  String get navCartA11y => 'Cart tab';
+
+  @override
+  String get navOrdersA11y => 'Orders tab';
+
+  @override
+  String get navProfileA11y => 'Profile tab';
 }
