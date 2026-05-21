@@ -8,6 +8,8 @@ import 'package:shop_flow/features/auth/presentation/bloc/auth_event.dart';
 import 'package:shop_flow/features/profile/presentation/bloc/edit_profile_bloc.dart';
 import 'package:shop_flow/features/profile/presentation/bloc/edit_profile_event.dart';
 import 'package:shop_flow/features/profile/presentation/bloc/edit_profile_state.dart';
+import 'package:shop_flow/core/widgets/app_error_view.dart';
+import 'package:shop_flow/core/widgets/app_loading_view.dart';
 import 'package:shop_flow/features/profile/presentation/widgets/profile_avatar_widget.dart';
 
 /// Form for editing locally cached profile fields and avatar.
@@ -98,24 +100,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
         },
         builder: (BuildContext context, EditProfileState state) {
           if (state is EditProfileLoading || state is EditProfileInitial) {
-            return const Center(child: CircularProgressIndicator());
+            return const AppLoadingView();
           }
 
           if (state is EditProfileFailure) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Text(state.message, textAlign: TextAlign.center),
-                  const SizedBox(height: 16),
-                  FilledButton(
-                    onPressed: () => context
-                        .read<EditProfileBloc>()
-                        .add(const EditProfileStarted()),
-                    child: Text(l10n.retry),
-                  ),
-                ],
-              ),
+            return AppErrorView(
+              message: state.message,
+              onRetry: () => context
+                  .read<EditProfileBloc>()
+                  .add(const EditProfileStarted()),
             );
           }
 
@@ -155,13 +148,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       if (value == null || value.trim().isEmpty) {
                         return l10n.fieldRequired;
                       }
-                      if (!value.contains('@')) {
+                      if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
+                          .hasMatch(value.trim())) {
                         return l10n.invalidEmailHint;
                       }
                       return null;
                     },
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 16),
                   TextFormField(
                     controller: _firstNameController,
                     decoration: InputDecoration(
@@ -174,7 +168,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       return null;
                     },
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 16),
                   TextFormField(
                     controller: _lastNameController,
                     decoration: InputDecoration(labelText: l10n.lastNameLabel),
