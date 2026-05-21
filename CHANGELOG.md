@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Showcase feature expansion** — Catalog sort/filter + categories browse page; recently viewed strip; PDP reviews (mock), related products, share (`share_plus`); checkout promo codes (`SAVE10`, `WELCOME5`) and saved addresses; settings currency (USD/EUR/SAR) and notification toggle; change-password showcase form.
 - **Showcase enhancement pass** — Integration flows (`auth`, `catalog`, `orders`, `settings`, `stripe`), shared `flow_helpers.dart`, extended `TestKeys`, `TestBootstrapOptions`.
 - **Golden tests** — Login, home grid, checkout form at mobile/tablet (`test/goldens/`).
 - **Responsive polish** — Home max-width, cart side-by-side summary, auth card centering, orders/profile/settings wide layouts.
@@ -23,6 +24,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Checkout integration test** — Uses `flow_helpers` and cart nav tab path; targeted pumps instead of long `pumpAndSettle`.
 - **Coverage baseline** — ~17.5% line coverage (690/3951 lines, widget tests).
+- **`PriceFormatter`** — Reads `CurrencyCubit` for showcase FX conversion on all price labels.
+
+### Fixed
+
+- **Duplicate Hero tags on home/PDP** — Recently viewed and related-product `ProductCard`s set `enableHero: false` so the same SKU is not tagged twice with `product-hero-{id}` alongside the catalog grid.
 
 ### Added (prior unreleased batch)
 - **`.env.example`** — Documented env template; `.env` added to `.gitignore`.

@@ -4,6 +4,17 @@ Reverse-chronological log of doc/agent-tooling changes (not app release notes �
 
 ---
 
+## 2026-05-21 — Showcase feature expansion (11 features)
+
+- **Catalog:** client-side sort/filter, categories browse page, recently viewed Hive strip
+- **PDP:** mock reviews, related products, share via `share_plus`
+- **Checkout:** promo codes (`SAVE10`, `WELCOME5`), saved addresses (Hive) + picker
+- **Settings:** currency cubit (USD/EUR/SAR), notification prefs toggle
+- **Profile:** addresses CRUD, change-password showcase form
+- New routes: `/categories`, `/addresses`, `/add-address`, `/change-password`
+- Extended `TestKeys`, ARB (~40 keys EN+AR), `test/features/showcase/showcase_features_test.dart`
+- Updated `CURRENT_STATUS.md` feature matrix
+
 ## 2026-05-21 — Showcase enhancement pass
 
 - Added 5 integration flows + `flow_helpers.dart`, extended `TestKeys`, golden tests (login/home/checkout)
