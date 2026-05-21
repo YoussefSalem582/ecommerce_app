@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shop_flow/core/constants/test_keys.dart';
 import 'package:shop_flow/core/l10n/gen/app_localizations.dart';
 import 'package:shop_flow/core/router/app_routes.dart';
 import 'package:shop_flow/core/theme/theme_extensions.dart';
@@ -132,6 +133,7 @@ class _LoginPageState extends State<LoginPage> {
                       child: Text(l10n.createAccountLink),
                     ),
                     TextButton(
+                      key: TestKeys.googleSignInButton,
                       onPressed: loading
                           ? null
                           : () => context

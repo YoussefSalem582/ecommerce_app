@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shop_flow/core/constants/test_keys.dart';
 import 'package:shop_flow/core/l10n/gen/app_localizations.dart';
 import 'package:shop_flow/core/router/app_routes.dart';
 import 'package:shop_flow/core/theme/theme_extensions.dart';
@@ -245,6 +246,9 @@ class _HomePageState extends State<HomePage> {
                                             bottom: 12,
                                           ),
                                           child: ProductCard(
+                                            key: index == 0
+                                                ? TestKeys.firstProductCard
+                                                : null,
                                             product: product,
                                             onTap: () => context.push(
                                               AppRoutes.product(product.id),
@@ -268,6 +272,9 @@ class _HomePageState extends State<HomePage> {
                                         final ProductEntity product =
                                             products[index];
                                         return ProductCard(
+                                          key: index == 0
+                                              ? TestKeys.firstProductCard
+                                              : null,
                                           product: product,
                                           onTap: () => context.push(
                                             AppRoutes.product(product.id),

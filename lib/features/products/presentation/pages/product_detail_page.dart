@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shop_flow/core/constants/test_keys.dart';
 import 'package:shop_flow/core/l10n/gen/app_localizations.dart';
 import 'package:shop_flow/core/router/app_routes.dart';
 import 'package:shop_flow/core/theme/theme_extensions.dart';
@@ -30,9 +31,6 @@ class ProductDetailPage extends StatefulWidget {
 }
 
 class _ProductDetailPageState extends State<ProductDetailPage> {
-  final GlobalKey _cartIconKey = GlobalKey();
-  final GlobalKey _addToCartButtonKey = GlobalKey();
-
   @override
   void initState() {
     super.initState();
@@ -51,8 +49,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     ProductEntity product,
     AppLocalizations l10n,
   ) {
-    final BuildContext? btnCtx = _addToCartButtonKey.currentContext;
-    final BuildContext? cartCtx = _cartIconKey.currentContext;
+    final BuildContext? btnCtx = TestKeys.addToCartButton.currentContext;
+    final BuildContext? cartCtx = TestKeys.pdpCartButton.currentContext;
     if (btnCtx != null && cartCtx != null) {
       final RenderObject? roBtn = btnCtx.findRenderObject();
       final RenderObject? roCart = cartCtx.findRenderObject();
@@ -137,10 +135,10 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   ),
                 ),
                 child: IconButton(
-                  key: _cartIconKey,
+                  key: TestKeys.pdpCartButton,
                   tooltip: l10n.cartTooltip,
                   icon: const Icon(Icons.shopping_cart_outlined),
-                  onPressed: () => context.push(AppRoutes.cart),
+                  onPressed: () => context.go(AppRoutes.cart),
                 ),
               );
             },
@@ -234,7 +232,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                         ),
                         const SizedBox(height: 24),
                         FilledButton.icon(
-                          key: _addToCartButtonKey,
+                          key: TestKeys.addToCartButton,
                           onPressed: () =>
                               _handleAddToCart(context, product, l10n),
                           icon: const Icon(Icons.shopping_cart_outlined),
