@@ -20,4 +20,10 @@ abstract final class StorageKeys {
 
   /// Local avatar image filesystem path.
   static const avatarPath = 'avatar_path';
+
+  /// Persisted display currency token (`usd`, `eur`, `sar`).
+  static const currencyCode = 'currency_code';
+
+  /// Showcase order-update notification toggle.
+  static const orderUpdatesEnabled = 'order_updates_enabled';
 }
