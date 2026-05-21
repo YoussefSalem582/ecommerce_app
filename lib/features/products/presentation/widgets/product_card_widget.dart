@@ -32,29 +32,33 @@ class ProductCard extends StatelessWidget {
     final disableAnimations =
         kIsWeb || MediaQuery.of(context).disableAnimations;
 
-    Widget card = Card(
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: LayoutBuilder(
-            builder: (BuildContext context, BoxConstraints constraints) {
-              final bool gridTile = constraints.maxHeight.isFinite;
-              return Stack(
-                clipBehavior: Clip.none,
-                children: <Widget>[
-                  gridTile
-                      ? _GridProductBody(product: product, palette: palette)
-                      : _ListProductBody(product: product, palette: palette),
-                  Positioned(
-                    top: -4,
-                    right: -4,
-                    child: _WishlistButton(productId: product.id),
-                  ),
-                ],
-              );
-            },
+    Widget card = Semantics(
+      label: product.title,
+      button: true,
+      child: Card(
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: LayoutBuilder(
+              builder: (BuildContext context, BoxConstraints constraints) {
+                final bool gridTile = constraints.maxHeight.isFinite;
+                return Stack(
+                  clipBehavior: Clip.none,
+                  children: <Widget>[
+                    gridTile
+                        ? _GridProductBody(product: product, palette: palette)
+                        : _ListProductBody(product: product, palette: palette),
+                    Positioned(
+                      top: -4,
+                      right: -4,
+                      child: _WishlistButton(productId: product.id),
+                    ),
+                  ],
+                );
+              },
+            ),
           ),
         ),
       ),

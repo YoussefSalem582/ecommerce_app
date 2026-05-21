@@ -60,11 +60,18 @@ class ResponsiveAppNav extends StatelessWidget {
       l10n.ordersTitle,
       l10n.profileTitle,
     ];
+    final a11yLabels = <String>[
+      l10n.navHomeA11y,
+      l10n.navCartA11y,
+      l10n.navOrdersA11y,
+      l10n.navProfileA11y,
+    ];
 
     if (width >= AppBreakpoints.desktop) {
       return _DesktopShell(
         currentIndex: navigationShell.currentIndex,
         labels: labels,
+        a11yLabels: a11yLabels,
         onTap: _onTap,
         child: navigationShell,
       );
@@ -74,6 +81,7 @@ class ResponsiveAppNav extends StatelessWidget {
       return _TabletShell(
         currentIndex: navigationShell.currentIndex,
         labels: labels,
+        a11yLabels: a11yLabels,
         onTap: _onTap,
         child: navigationShell,
       );
@@ -82,6 +90,7 @@ class ResponsiveAppNav extends StatelessWidget {
     return _MobileShell(
       currentIndex: navigationShell.currentIndex,
       labels: labels,
+      a11yLabels: a11yLabels,
       onTap: _onTap,
       child: navigationShell,
     );
@@ -92,12 +101,14 @@ class _MobileShell extends StatelessWidget {
   const _MobileShell({
     required this.currentIndex,
     required this.labels,
+    required this.a11yLabels,
     required this.onTap,
     required this.child,
   });
 
   final int currentIndex;
   final List<String> labels;
+  final List<String> a11yLabels;
   final ValueChanged<int> onTap;
   final Widget child;
 
@@ -111,12 +122,14 @@ class _MobileShell extends StatelessWidget {
         destinations: List<NavigationDestination>.generate(
           ResponsiveAppNav._destinations.length,
           (int i) => NavigationDestination(
-            icon: _CartBadgeIcon(
+            icon: _NavTabIcon(
               index: i,
+              semanticLabel: a11yLabels[i],
               icon: ResponsiveAppNav._destinations[i].icon ?? const Icon(Icons.circle),
             ),
-            selectedIcon: _CartBadgeIcon(
+            selectedIcon: _NavTabIcon(
               index: i,
+              semanticLabel: a11yLabels[i],
               icon: ResponsiveAppNav._destinations[i].selectedIcon ??
                   ResponsiveAppNav._destinations[i].icon ??
                   const Icon(Icons.circle),
@@ -133,12 +146,14 @@ class _TabletShell extends StatelessWidget {
   const _TabletShell({
     required this.currentIndex,
     required this.labels,
+    required this.a11yLabels,
     required this.onTap,
     required this.child,
   });
 
   final int currentIndex;
   final List<String> labels;
+  final List<String> a11yLabels;
   final ValueChanged<int> onTap;
   final Widget child;
 
@@ -154,13 +169,15 @@ class _TabletShell extends StatelessWidget {
             destinations: List<NavigationDestination>.generate(
               ResponsiveAppNav._destinations.length,
               (int i) => NavigationDestination(
-                icon: _CartBadgeIcon(
+                icon: _NavTabIcon(
                   index: i,
+                  semanticLabel: a11yLabels[i],
                   icon: ResponsiveAppNav._destinations[i].icon ??
                       const Icon(Icons.circle),
                 ),
-                selectedIcon: _CartBadgeIcon(
+                selectedIcon: _NavTabIcon(
                   index: i,
+                  semanticLabel: a11yLabels[i],
                   icon: ResponsiveAppNav._destinations[i].selectedIcon ??
                       ResponsiveAppNav._destinations[i].icon ??
                       const Icon(Icons.circle),
@@ -187,12 +204,14 @@ class _DesktopShell extends StatelessWidget {
   const _DesktopShell({
     required this.currentIndex,
     required this.labels,
+    required this.a11yLabels,
     required this.onTap,
     required this.child,
   });
 
   final int currentIndex;
   final List<String> labels;
+  final List<String> a11yLabels;
   final ValueChanged<int> onTap;
   final Widget child;
 
@@ -216,13 +235,15 @@ class _DesktopShell extends StatelessWidget {
               ),
               ...List<Widget>.generate(labels.length, (int i) {
                 return NavigationDrawerDestination(
-                  icon: _CartBadgeIcon(
+                  icon: _NavTabIcon(
                     index: i,
+                    semanticLabel: a11yLabels[i],
                     icon: ResponsiveAppNav._destinations[i].icon ??
                         const Icon(Icons.circle),
                   ),
-                  selectedIcon: _CartBadgeIcon(
+                  selectedIcon: _NavTabIcon(
                     index: i,
+                    semanticLabel: a11yLabels[i],
                     icon: ResponsiveAppNav._destinations[i].selectedIcon ??
                         ResponsiveAppNav._destinations[i].icon ??
                         const Icon(Icons.circle),
@@ -239,52 +260,73 @@ class _DesktopShell extends StatelessWidget {
   }
 }
 
-class _CartBadgeIcon extends StatelessWidget {
-  const _CartBadgeIcon({
+class _NavTabIcon extends StatelessWidget {
+  const _NavTabIcon({
     required this.index,
+    required this.semanticLabel,
     required this.icon,
   });
 
   final int index;
+  final String semanticLabel;
   final Widget icon;
 
   static const _cartTabIndex = 1;
 
+  Key? get _navKey => switch (index) {
+        0 => TestKeys.homeNavTab,
+        1 => TestKeys.cartNavTab,
+        2 => TestKeys.ordersNavTab,
+        3 => TestKeys.profileNavTab,
+        _ => null,
+      };
+
   @override
   Widget build(BuildContext context) {
-    if (index != _cartTabIndex) {
-      return icon;
-    }
+    final Widget child = index == _cartTabIndex
+        ? BlocSelector<CartBloc, CartState, int>(
+            selector: (CartState s) => switch (s) {
+              CartLoaded(:final totalQuantity) => totalQuantity,
+              _ => 0,
+            },
+            builder: (BuildContext context, int count) {
+              final bool disableAnimations =
+                  kIsWeb || MediaQuery.of(context).disableAnimations;
+              final Widget label = Text(
+                '$count',
+                key: ValueKey<int>(count),
+              );
 
-    final Widget badge = BlocSelector<CartBloc, CartState, int>(
-      selector: (CartState s) => switch (s) {
-        CartLoaded(:final totalQuantity) => totalQuantity,
-        _ => 0,
-      },
-      builder: (BuildContext context, int count) {
-        final bool disableAnimations =
-            kIsWeb || MediaQuery.of(context).disableAnimations;
-        final Widget label = Text(
-          '$count',
-          key: ValueKey<int>(count),
-        );
+              return Badge(
+                isLabelVisible: count > 0,
+                label: disableAnimations
+                    ? label
+                    : AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 220),
+                        transitionBuilder:
+                            (Widget child, Animation<double> animation) {
+                          return ScaleTransition(
+                            scale: animation,
+                            child: child,
+                          );
+                        },
+                        child: label,
+                      ),
+                child: icon,
+              );
+            },
+          )
+        : icon;
 
-        return Badge(
-          isLabelVisible: count > 0,
-          label: disableAnimations
-              ? label
-              : AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 220),
-                  transitionBuilder: (Widget child, Animation<double> animation) {
-                    return ScaleTransition(scale: animation, child: child);
-                  },
-                  child: label,
-                ),
-          child: icon,
-        );
-      },
+    final Key? navKey = _navKey;
+    final Widget semanticChild = Semantics(
+      label: semanticLabel,
+      button: true,
+      child: child,
     );
-
-    return KeyedSubtree(key: TestKeys.cartNavTab, child: badge);
+    if (navKey == null) {
+      return semanticChild;
+    }
+    return KeyedSubtree(key: navKey, child: semanticChild);
   }
 }
