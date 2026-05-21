@@ -136,6 +136,12 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               const SizedBox(height: 32),
               FilledButton.tonalIcon(
+                onPressed: () => context.push(AppRoutes.wishlist),
+                icon: const Icon(Icons.favorite_outline_rounded),
+                label: Text(l10n.wishlistTitle),
+              ),
+              const SizedBox(height: 12),
+              FilledButton.tonalIcon(
                 onPressed: () async {
                   await context.push(AppRoutes.editProfile);
                   if (!context.mounted) {

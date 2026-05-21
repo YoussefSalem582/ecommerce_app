@@ -143,6 +143,8 @@ import 'package:shop_flow/features/wishlist/domain/usecases/get_wishlist_ids_use
     as _i1048;
 import 'package:shop_flow/features/wishlist/domain/usecases/toggle_wishlist_usecase.dart'
     as _i192;
+import 'package:shop_flow/features/wishlist/presentation/bloc/wishlist_page_bloc.dart'
+    as _i27;
 import 'package:shop_flow/features/wishlist/presentation/cubit/wishlist_cubit.dart'
     as _i866;
 import 'package:talker/talker.dart' as _i993;
@@ -367,6 +369,12 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i1038.WishlistRepositoryImpl(
         gh<_i1027.LocalWishlistDatasource>(),
         gh<_i993.Talker>(),
+      ),
+    );
+    gh.factory<_i27.WishlistPageBloc>(
+      () => _i27.WishlistPageBloc(
+        gh<_i1048.GetWishlistIdsUseCase>(),
+        gh<_i438.GetProductsUseCase>(),
       ),
     );
     gh.lazySingleton<_i13.OrdersBloc>(

@@ -332,12 +332,6 @@ abstract class AppLocalizations {
   /// **'Add to cart'**
   String get addToCartLabel;
 
-  /// No description provided for @addToCartComingSoon.
-  ///
-  /// In en, this message translates to:
-  /// **'Cart sync comes in the next milestone.'**
-  String get addToCartComingSoon;
-
   /// No description provided for @addToCartSuccess.
   ///
   /// In en, this message translates to:
@@ -386,12 +380,6 @@ abstract class AppLocalizations {
   /// **'Checkout'**
   String get cartCheckoutLabel;
 
-  /// No description provided for @cartCheckoutComingSoon.
-  ///
-  /// In en, this message translates to:
-  /// **'Checkout with Stripe arrives in Phase 5.'**
-  String get cartCheckoutComingSoon;
-
   /// No description provided for @cartQuantityA11y.
   ///
   /// In en, this message translates to:
@@ -403,6 +391,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Wishlist'**
   String get wishlistToggleTooltip;
+
+  /// No description provided for @wishlistTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Wishlist'**
+  String get wishlistTitle;
+
+  /// No description provided for @wishlistEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your wishlist is empty'**
+  String get wishlistEmptyTitle;
+
+  /// No description provided for @wishlistEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the heart on any product to save it here.'**
+  String get wishlistEmptyBody;
 
   /// No description provided for @cartTooltip.
   ///

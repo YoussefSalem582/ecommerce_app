@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:injectable/injectable.dart';
+import 'package:shop_flow/core/di/injection.dart';
 import 'package:shop_flow/core/l10n/gen/app_localizations.dart';
 import 'package:shop_flow/core/router/app_routes.dart';
 import 'package:shop_flow/core/router/app_shell.dart';
@@ -22,6 +24,8 @@ import 'package:shop_flow/features/profile/presentation/pages/edit_profile_page.
 import 'package:shop_flow/features/profile/presentation/pages/profile_page.dart';
 import 'package:shop_flow/features/profile/presentation/pages/settings_page.dart';
 import 'package:shop_flow/features/splash/presentation/pages/splash_page.dart';
+import 'package:shop_flow/features/wishlist/presentation/bloc/wishlist_page_bloc.dart';
+import 'package:shop_flow/features/wishlist/presentation/pages/wishlist_page.dart';
 
 /// Application-wide GoRouter configuration with auth-aware redirects.
 @lazySingleton
@@ -127,6 +131,16 @@ class AppRouter {
             ],
           ),
         ],
+      ),
+      GoRoute(
+        path: AppRoutes.wishlist,
+        name: 'wishlist',
+        builder: (BuildContext context, GoRouterState state) {
+          return BlocProvider<WishlistPageBloc>(
+            create: (_) => getIt<WishlistPageBloc>(),
+            child: const WishlistPage(),
+          );
+        },
       ),
       GoRoute(
         path: AppRoutes.checkout,

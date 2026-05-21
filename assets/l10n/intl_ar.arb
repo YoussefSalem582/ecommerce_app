@@ -56,7 +56,6 @@
     }
   },
   "addToCartLabel": "أضف إلى السلة",
-  "addToCartComingSoon": "مزامنة السلة في المرحلة القادمة.",
   "addToCartSuccess": "تمت الإضافة إلى السلة",
   "pageNotFoundTitle": "الصفحة غير موجودة",
   "pageNotFoundBody": "هذا المسار غير موجود.",
@@ -65,7 +64,6 @@
   "cartEmptyBody": "تصفح المنتجات واضغط «أضف إلى السلة» على أي منتج.",
   "cartSubtotalLabel": "المجموع الفرعي",
   "cartCheckoutLabel": "إتمام الشراء",
-  "cartCheckoutComingSoon": "الدفع عبر Stripe سيصل في المرحلة الخامسة.",
   "cartQuantityA11y": "الكمية {quantity}",
   "@cartQuantityA11y": {
     "placeholders": {
@@ -75,6 +73,9 @@
     }
   },
   "wishlistToggleTooltip": "قائمة الرغبات",
+  "wishlistTitle": "قائمة الرغبات",
+  "wishlistEmptyTitle": "قائمة رغباتك فارغة",
+  "wishlistEmptyBody": "اضغط على القلب على أي منتج لحفظه هنا.",
   "cartTooltip": "السلة",
   "cartBadgeA11y": "{count} عناصر في السلة",
   "@cartBadgeA11y": {

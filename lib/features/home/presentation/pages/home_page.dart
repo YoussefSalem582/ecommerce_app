@@ -19,6 +19,8 @@ import 'package:shop_flow/features/products/presentation/bloc/product_list_event
 import 'package:shop_flow/features/products/presentation/bloc/product_list_state.dart';
 import 'package:shop_flow/features/products/presentation/bloc/product_list_view_mode.dart';
 import 'package:shop_flow/features/products/presentation/widgets/product_card_widget.dart';
+import 'package:shop_flow/features/wishlist/presentation/cubit/wishlist_cubit.dart';
+import 'package:shop_flow/features/wishlist/presentation/cubit/wishlist_state.dart';
 
 /// Authenticated catalog shell — responsive grid, chips, search, shimmer.
 class HomePage extends StatefulWidget {
@@ -83,6 +85,22 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
                 actions: <Widget>[
+                  BlocBuilder<WishlistCubit, WishlistState>(
+                    builder: (BuildContext context, WishlistState wishlistState) {
+                      final int count = wishlistState is WishlistReady
+                          ? wishlistState.sortedIds.length
+                          : 0;
+                      return IconButton(
+                        tooltip: l10n.wishlistTitle,
+                        onPressed: () => context.push(AppRoutes.wishlist),
+                        icon: Badge(
+                          isLabelVisible: count > 0,
+                          label: Text('$count'),
+                          child: const Icon(Icons.favorite_outline_rounded),
+                        ),
+                      );
+                    },
+                  ),
                   if (listState is ProductListLoaded)
                     IconButton(
                       tooltip: listState.viewMode == ProductListViewMode.grid

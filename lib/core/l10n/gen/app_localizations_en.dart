@@ -133,9 +133,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addToCartLabel => 'Add to cart';
 
   @override
-  String get addToCartComingSoon => 'Cart sync comes in the next milestone.';
-
-  @override
   String get addToCartSuccess => 'Added to your cart';
 
   @override
@@ -161,16 +158,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cartCheckoutLabel => 'Checkout';
 
   @override
-  String get cartCheckoutComingSoon =>
-      'Checkout with Stripe arrives in Phase 5.';
-
-  @override
   String cartQuantityA11y(int quantity) {
     return 'Quantity $quantity';
   }
 
   @override
   String get wishlistToggleTooltip => 'Wishlist';
+
+  @override
+  String get wishlistTitle => 'Wishlist';
+
+  @override
+  String get wishlistEmptyTitle => 'Your wishlist is empty';
+
+  @override
+  String get wishlistEmptyBody =>
+      'Tap the heart on any product to save it here.';
 
   @override
   String get cartTooltip => 'Cart';

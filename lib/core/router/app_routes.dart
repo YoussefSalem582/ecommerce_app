@@ -36,6 +36,9 @@ abstract final class AppRoutes {
   /// Shopping bag review route.
   static const cart = '/cart';
 
+  /// Saved favorites grid.
+  static const wishlist = '/wishlist';
+
   /// Address + payment orchestration.
   static const checkout = '/checkout';
 

@@ -59,7 +59,6 @@
     }
   },
   "addToCartLabel": "Add to cart",
-  "addToCartComingSoon": "Cart sync comes in the next milestone.",
   "addToCartSuccess": "Added to your cart",
   "pageNotFoundTitle": "Page not found",
   "pageNotFoundBody": "That route does not exist.",
@@ -68,7 +67,6 @@
   "cartEmptyBody": "Browse the catalog and tap add to cart on any product.",
   "cartSubtotalLabel": "Subtotal",
   "cartCheckoutLabel": "Checkout",
-  "cartCheckoutComingSoon": "Checkout with Stripe arrives in Phase 5.",
   "cartQuantityA11y": "Quantity {quantity}",
   "@cartQuantityA11y": {
     "placeholders": {
@@ -78,6 +76,9 @@
     }
   },
   "wishlistToggleTooltip": "Wishlist",
+  "wishlistTitle": "Wishlist",
+  "wishlistEmptyTitle": "Your wishlist is empty",
+  "wishlistEmptyBody": "Tap the heart on any product to save it here.",
   "cartTooltip": "Cart",
   "cartBadgeA11y": "{count} items in cart",
   "@cartBadgeA11y": {

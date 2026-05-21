@@ -8,6 +8,9 @@ abstract final class TestKeys {
   /// First product card on home catalog grid.
   static const firstProductCard = ValueKey<String>('first_product_card');
 
+  /// First product card on wishlist page grid.
+  static const firstWishlistCard = ValueKey<String>('first_wishlist_card');
+
   /// Add-to-cart button on product detail (GlobalKey for layout + tests).
   static final addToCartButton = GlobalKey(debugLabel: 'add_to_cart_button');
 

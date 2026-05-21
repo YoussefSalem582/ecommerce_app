@@ -133,9 +133,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get addToCartLabel => 'أضف إلى السلة';
 
   @override
-  String get addToCartComingSoon => 'مزامنة السلة في المرحلة القادمة.';
-
-  @override
   String get addToCartSuccess => 'تمت الإضافة إلى السلة';
 
   @override
@@ -161,16 +158,21 @@ class AppLocalizationsAr extends AppLocalizations {
   String get cartCheckoutLabel => 'إتمام الشراء';
 
   @override
-  String get cartCheckoutComingSoon =>
-      'الدفع عبر Stripe سيصل في المرحلة الخامسة.';
-
-  @override
   String cartQuantityA11y(int quantity) {
     return 'الكمية $quantity';
   }
 
   @override
   String get wishlistToggleTooltip => 'قائمة الرغبات';
+
+  @override
+  String get wishlistTitle => 'قائمة الرغبات';
+
+  @override
+  String get wishlistEmptyTitle => 'قائمة رغباتك فارغة';
+
+  @override
+  String get wishlistEmptyBody => 'اضغط على القلب على أي منتج لحفظه هنا.';
 
   @override
   String get cartTooltip => 'السلة';
