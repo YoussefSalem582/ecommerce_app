@@ -136,5 +136,20 @@
   "onboardingSlide2Body": "الدفع عبر Stripe Payment Sheet مع بطاقات اختبار للعرض التوضيحي.",
   "onboardingSlide3Title": "عربي وإنجليزي",
   "onboardingSlide3Body": "بدّل اللغة فوراً مع دعم RTL كامل — دون إعادة تشغيل التطبيق.",
-  "googleSignInSuccess": "تم تسجيل الدخول عبر جوجل (عرض توضيحي)"
+  "googleSignInSuccess": "تم تسجيل الدخول عبر جوجل (عرض توضيحي)",
+  "catalogSearchA11y": "البحث عن المنتجات",
+  "decreaseQuantityA11y": "تقليل الكمية",
+  "increaseQuantityA11y": "زيادة الكمية",
+  "swipeToDeleteA11y": "اسحب لليسار لإزالة العنصر من السلة",
+  "cartItemRemovedSnackbar": "تمت إزالة العنصر من السلة",
+  "cartUndoRemove": "تراجع",
+  "addToWishlistA11y": "إضافة إلى المفضلة",
+  "removeFromWishlistA11y": "إزالة من المفضلة",
+  "logoutConfirmTitle": "تسجيل الخروج؟",
+  "logoutConfirmBody": "ستحتاج لتسجيل الدخول مجدداً للوصول إلى سلتك وطلباتك.",
+  "logoutConfirmButton": "تسجيل الخروج",
+  "cancelButton": "إلغاء",
+  "copyOrderId": "نسخ رقم الطلب",
+  "orderIdCopied": "تم نسخ رقم الطلب",
+  "onboardingPageIndicator": "الصفحة {current} من {total}"
 }

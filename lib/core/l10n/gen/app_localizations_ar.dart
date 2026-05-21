@@ -324,4 +324,52 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get googleSignInSuccess => 'تم تسجيل الدخول عبر جوجل (عرض توضيحي)';
+
+  @override
+  String get catalogSearchA11y => 'البحث عن المنتجات';
+
+  @override
+  String get decreaseQuantityA11y => 'تقليل الكمية';
+
+  @override
+  String get increaseQuantityA11y => 'زيادة الكمية';
+
+  @override
+  String get swipeToDeleteA11y => 'اسحب لليسار لإزالة العنصر من السلة';
+
+  @override
+  String get cartItemRemovedSnackbar => 'تمت إزالة العنصر من السلة';
+
+  @override
+  String get cartUndoRemove => 'تراجع';
+
+  @override
+  String get addToWishlistA11y => 'إضافة إلى المفضلة';
+
+  @override
+  String get removeFromWishlistA11y => 'إزالة من المفضلة';
+
+  @override
+  String get logoutConfirmTitle => 'تسجيل الخروج؟';
+
+  @override
+  String get logoutConfirmBody =>
+      'ستحتاج لتسجيل الدخول مجدداً للوصول إلى سلتك وطلباتك.';
+
+  @override
+  String get logoutConfirmButton => 'تسجيل الخروج';
+
+  @override
+  String get cancelButton => 'إلغاء';
+
+  @override
+  String get copyOrderId => 'نسخ رقم الطلب';
+
+  @override
+  String get orderIdCopied => 'تم نسخ رقم الطلب';
+
+  @override
+  String onboardingPageIndicator(int current, int total) {
+    return 'الصفحة $current من $total';
+  }
 }

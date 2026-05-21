@@ -139,5 +139,26 @@
   "onboardingSlide2Body": "Checkout uses Stripe Payment Sheet with sandbox test cards for a real payment flow demo.",
   "onboardingSlide3Title": "Arabic & English",
   "onboardingSlide3Body": "Switch language instantly with full RTL support — no app restart required.",
-  "googleSignInSuccess": "Signed in with Google (showcase stub)"
+  "googleSignInSuccess": "Signed in with Google (showcase stub)",
+  "catalogSearchA11y": "Search products",
+  "decreaseQuantityA11y": "Decrease quantity",
+  "increaseQuantityA11y": "Increase quantity",
+  "swipeToDeleteA11y": "Swipe left to remove item from cart",
+  "cartItemRemovedSnackbar": "Item removed from cart",
+  "cartUndoRemove": "Undo",
+  "addToWishlistA11y": "Add to wishlist",
+  "removeFromWishlistA11y": "Remove from wishlist",
+  "logoutConfirmTitle": "Sign out?",
+  "logoutConfirmBody": "You will need to sign in again to access your cart and orders.",
+  "logoutConfirmButton": "Sign out",
+  "cancelButton": "Cancel",
+  "copyOrderId": "Copy order ID",
+  "orderIdCopied": "Order ID copied",
+  "onboardingPageIndicator": "Page {current} of {total}",
+  "@onboardingPageIndicator": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  }
 }

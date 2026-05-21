@@ -325,4 +325,52 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get googleSignInSuccess => 'Signed in with Google (showcase stub)';
+
+  @override
+  String get catalogSearchA11y => 'Search products';
+
+  @override
+  String get decreaseQuantityA11y => 'Decrease quantity';
+
+  @override
+  String get increaseQuantityA11y => 'Increase quantity';
+
+  @override
+  String get swipeToDeleteA11y => 'Swipe left to remove item from cart';
+
+  @override
+  String get cartItemRemovedSnackbar => 'Item removed from cart';
+
+  @override
+  String get cartUndoRemove => 'Undo';
+
+  @override
+  String get addToWishlistA11y => 'Add to wishlist';
+
+  @override
+  String get removeFromWishlistA11y => 'Remove from wishlist';
+
+  @override
+  String get logoutConfirmTitle => 'Sign out?';
+
+  @override
+  String get logoutConfirmBody =>
+      'You will need to sign in again to access your cart and orders.';
+
+  @override
+  String get logoutConfirmButton => 'Sign out';
+
+  @override
+  String get cancelButton => 'Cancel';
+
+  @override
+  String get copyOrderId => 'Copy order ID';
+
+  @override
+  String get orderIdCopied => 'Order ID copied';
+
+  @override
+  String onboardingPageIndicator(int current, int total) {
+    return 'Page $current of $total';
+  }
 }

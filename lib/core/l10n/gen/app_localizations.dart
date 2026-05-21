@@ -691,6 +691,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Signed in with Google (showcase stub)'**
   String get googleSignInSuccess;
+
+  /// No description provided for @catalogSearchA11y.
+  ///
+  /// In en, this message translates to:
+  /// **'Search products'**
+  String get catalogSearchA11y;
+
+  /// No description provided for @decreaseQuantityA11y.
+  ///
+  /// In en, this message translates to:
+  /// **'Decrease quantity'**
+  String get decreaseQuantityA11y;
+
+  /// No description provided for @increaseQuantityA11y.
+  ///
+  /// In en, this message translates to:
+  /// **'Increase quantity'**
+  String get increaseQuantityA11y;
+
+  /// No description provided for @swipeToDeleteA11y.
+  ///
+  /// In en, this message translates to:
+  /// **'Swipe left to remove item from cart'**
+  String get swipeToDeleteA11y;
+
+  /// No description provided for @cartItemRemovedSnackbar.
+  ///
+  /// In en, this message translates to:
+  /// **'Item removed from cart'**
+  String get cartItemRemovedSnackbar;
+
+  /// No description provided for @cartUndoRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get cartUndoRemove;
+
+  /// No description provided for @addToWishlistA11y.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to wishlist'**
+  String get addToWishlistA11y;
+
+  /// No description provided for @removeFromWishlistA11y.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from wishlist'**
+  String get removeFromWishlistA11y;
+
+  /// No description provided for @logoutConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out?'**
+  String get logoutConfirmTitle;
+
+  /// No description provided for @logoutConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You will need to sign in again to access your cart and orders.'**
+  String get logoutConfirmBody;
+
+  /// No description provided for @logoutConfirmButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out'**
+  String get logoutConfirmButton;
+
+  /// No description provided for @cancelButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancelButton;
+
+  /// No description provided for @copyOrderId.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy order ID'**
+  String get copyOrderId;
+
+  /// No description provided for @orderIdCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Order ID copied'**
+  String get orderIdCopied;
+
+  /// No description provided for @onboardingPageIndicator.
+  ///
+  /// In en, this message translates to:
+  /// **'Page {current} of {total}'**
+  String onboardingPageIndicator(int current, int total);
 }
 
 class _AppLocalizationsDelegate
