@@ -11,7 +11,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Wishlist screen** — `/wishlist` route, `WishlistPageBloc`, home app-bar entry + profile link, EN/AR strings.
+- **Showcase enhancement pass** — Integration flows (`auth`, `catalog`, `orders`, `settings`, `stripe`), shared `flow_helpers.dart`, extended `TestKeys`, `TestBootstrapOptions`.
+- **Golden tests** — Login, home grid, checkout form at mobile/tablet (`test/goldens/`).
+- **Responsive polish** — Home max-width, cart side-by-side summary, auth card centering, orders/profile/settings wide layouts.
+- **A11y & demo UX** — Nav tab semantics, product card labels, cart stepper touch targets, checkout demo banner, onboarding Stripe copy update.
+- **Demo vs live doc** — [`shopflow_readme_files/10_demo_vs_live_paths.md`](shopflow_readme_files/10_demo_vs_live_paths.md).
+- **CI test workflow** — [`.github/workflows/test.yml`](.github/workflows/test.yml) (analyze + `flutter test --coverage`).
+- **Settings environment row** — Debug build shows `APP_ENV` and Stripe configuration status.
+
+### Changed
+
+- **Checkout integration test** — Uses `flow_helpers` and cart nav tab path; targeted pumps instead of long `pumpAndSettle`.
+- **Coverage baseline** — ~17.5% line coverage (690/3951 lines, widget tests).
+
+### Added (prior unreleased batch)
 - **`.env.example`** — Documented env template; `.env` added to `.gitignore`.
 - **ADRs 004–006** — Google Sign-In stub, JWT refresh stub, Stripe PaymentIntent workflow.
 - **Widget & integration tests** — Wishlist page/bloc tests, `integration_test/catalog_cart_flow_test.dart`.

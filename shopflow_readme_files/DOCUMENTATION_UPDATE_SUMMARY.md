@@ -4,6 +4,14 @@ Reverse-chronological log of doc/agent-tooling changes (not app release notes �
 
 ---
 
+## 2026-05-21 — Showcase enhancement pass
+
+- Added 5 integration flows + `flow_helpers.dart`, extended `TestKeys`, golden tests (login/home/checkout)
+- Responsive layouts: home, cart, auth, orders, profile, settings
+- A11y: nav semantics, product cards, cart steppers; checkout demo banner; l10n keys (EN+AR)
+- Added `10_demo_vs_live_paths.md`, settings env indicator, `stripe_checkout_test.dart` (`@Tags(['stripe'])`)
+- Added `.github/workflows/test.yml`; coverage baseline ~17.5%
+
 ## 2026-05-21 — Spec audit gap closure
 
 - Added wishlist screen, route, l10n, tests
