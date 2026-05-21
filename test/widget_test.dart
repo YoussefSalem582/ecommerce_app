@@ -1,40 +1,22 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
-import 'package:hive/hive.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shop_flow/app/shop_flow_app.dart';
-import 'package:shop_flow/core/di/injection.dart';
-import 'package:shop_flow/core/network/token_storage.dart';
 import 'package:shop_flow/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:shop_flow/features/auth/presentation/bloc/auth_event.dart';
+
+import 'support/app_test_bootstrap.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  late Directory hiveDir;
-
   setUpAll(() async {
-    SharedPreferences.setMockInitialValues(<String, Object>{});
-    FlutterSecureStorage.setMockInitialValues(<String, String>{});
-    hiveDir = await Directory.systemTemp.createTemp('shop_flow_hive_test');
-    Hive.init(hiveDir.path);
-    await dotenv.load(fileName: 'assets/env/default.env');
-    await configureDependencies();
-    await getIt<TokenStorage>().hydrate();
-    getIt<AuthBloc>().add(const AuthSessionRequested());
+    await bootstrapShopFlowTests();
+    GetIt.instance<AuthBloc>().add(const AuthSessionRequested());
   });
 
   tearDownAll(() async {
-    await Hive.close();
-    await GetIt.instance.reset();
-    if (hiveDir.existsSync()) {
-      hiveDir.deleteSync(recursive: true);
-    }
+    await tearDownShopFlowTests();
   });
 
   testWidgets('ShopFlow renders root MaterialApp', (WidgetTester tester) async {
