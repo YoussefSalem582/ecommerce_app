@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shop_flow/core/constants/test_keys.dart';
 import 'package:shop_flow/core/l10n/gen/app_localizations.dart';
 import 'package:shop_flow/core/utils/app_breakpoints.dart';
 import 'package:shop_flow/features/cart/presentation/bloc/cart_bloc.dart';
@@ -253,8 +254,11 @@ class _CartBadgeIcon extends StatelessWidget {
       return icon;
     }
 
-    return BlocSelector<CartBloc, CartState, int>(
-      selector: (CartState s) => s is CartLoaded ? s.totalQuantity : 0,
+    final Widget badge = BlocSelector<CartBloc, CartState, int>(
+      selector: (CartState s) => switch (s) {
+        CartLoaded(:final totalQuantity) => totalQuantity,
+        _ => 0,
+      },
       builder: (BuildContext context, int count) {
         return Badge(
           isLabelVisible: count > 0,
@@ -272,5 +276,7 @@ class _CartBadgeIcon extends StatelessWidget {
         );
       },
     );
+
+    return KeyedSubtree(key: TestKeys.cartNavTab, child: badge);
   }
 }
