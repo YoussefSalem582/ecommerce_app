@@ -847,6 +847,324 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Profile tab'**
   String get navProfileA11y;
+
+  /// No description provided for @categoriesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Categories'**
+  String get categoriesTitle;
+
+  /// No description provided for @catalogSortLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort'**
+  String get catalogSortLabel;
+
+  /// No description provided for @catalogSortPriceAsc.
+  ///
+  /// In en, this message translates to:
+  /// **'Price: low to high'**
+  String get catalogSortPriceAsc;
+
+  /// No description provided for @catalogSortPriceDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Price: high to low'**
+  String get catalogSortPriceDesc;
+
+  /// No description provided for @catalogSortRatingDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Top rated'**
+  String get catalogSortRatingDesc;
+
+  /// No description provided for @catalogSortTitleAsc.
+  ///
+  /// In en, this message translates to:
+  /// **'Name: A–Z'**
+  String get catalogSortTitleAsc;
+
+  /// No description provided for @catalogFilterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Filters'**
+  String get catalogFilterTitle;
+
+  /// No description provided for @catalogFilterPriceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Price range'**
+  String get catalogFilterPriceLabel;
+
+  /// No description provided for @catalogFilterRatingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum rating: {rating}'**
+  String catalogFilterRatingLabel(String rating);
+
+  /// No description provided for @catalogFilterApply.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply filters'**
+  String get catalogFilterApply;
+
+  /// No description provided for @catalogClearFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear filters'**
+  String get catalogClearFilters;
+
+  /// No description provided for @recentlyViewedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Recently viewed'**
+  String get recentlyViewedTitle;
+
+  /// No description provided for @relatedProductsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Related products'**
+  String get relatedProductsTitle;
+
+  /// No description provided for @productReviewsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer reviews'**
+  String get productReviewsTitle;
+
+  /// No description provided for @productReviewsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} reviews'**
+  String productReviewsCount(int count);
+
+  /// No description provided for @productShareTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Share product'**
+  String get productShareTooltip;
+
+  /// No description provided for @productShareMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Check out {title} on ShopFlow: {url}'**
+  String productShareMessage(String title, String url);
+
+  /// No description provided for @productShareFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open share sheet'**
+  String get productShareFailed;
+
+  /// No description provided for @checkoutPromoLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Promo code'**
+  String get checkoutPromoLabel;
+
+  /// No description provided for @checkoutPromoHint.
+  ///
+  /// In en, this message translates to:
+  /// **'SAVE10 or WELCOME5'**
+  String get checkoutPromoHint;
+
+  /// No description provided for @checkoutPromoApply.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get checkoutPromoApply;
+
+  /// No description provided for @checkoutPromoClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get checkoutPromoClear;
+
+  /// No description provided for @checkoutPromoInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid promo code'**
+  String get checkoutPromoInvalid;
+
+  /// No description provided for @checkoutPromoMinSubtotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum order {amount} USD required for this code'**
+  String checkoutPromoMinSubtotal(String amount);
+
+  /// No description provided for @checkoutPromoApplied.
+  ///
+  /// In en, this message translates to:
+  /// **'Promo applied: {label}'**
+  String checkoutPromoApplied(String label);
+
+  /// No description provided for @checkoutDiscountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Discount'**
+  String get checkoutDiscountLabel;
+
+  /// No description provided for @checkoutTotalLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get checkoutTotalLabel;
+
+  /// No description provided for @checkoutSavedAddressLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Use saved address'**
+  String get checkoutSavedAddressLabel;
+
+  /// No description provided for @checkoutSaveAddressLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Save this address for next time'**
+  String get checkoutSaveAddressLabel;
+
+  /// No description provided for @addressesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved addresses'**
+  String get addressesTitle;
+
+  /// No description provided for @addressesEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No saved addresses'**
+  String get addressesEmptyTitle;
+
+  /// No description provided for @addressesEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a shipping address to speed up checkout.'**
+  String get addressesEmptyBody;
+
+  /// No description provided for @addAddressTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add address'**
+  String get addAddressTitle;
+
+  /// No description provided for @editAddressTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit address'**
+  String get editAddressTitle;
+
+  /// No description provided for @addressDefaultLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Default address'**
+  String get addressDefaultLabel;
+
+  /// No description provided for @addressSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Address saved'**
+  String get addressSaved;
+
+  /// No description provided for @settingsCurrencySection.
+  ///
+  /// In en, this message translates to:
+  /// **'Currency'**
+  String get settingsCurrencySection;
+
+  /// No description provided for @settingsNotificationsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get settingsNotificationsSection;
+
+  /// No description provided for @settingsOrderUpdatesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Order updates'**
+  String get settingsOrderUpdatesLabel;
+
+  /// No description provided for @settingsOrderUpdatesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Showcase only — no push delivery in demo builds'**
+  String get settingsOrderUpdatesHint;
+
+  /// No description provided for @currencyUsd.
+  ///
+  /// In en, this message translates to:
+  /// **'US Dollar (USD)'**
+  String get currencyUsd;
+
+  /// No description provided for @currencyEur.
+  ///
+  /// In en, this message translates to:
+  /// **'Euro (EUR)'**
+  String get currencyEur;
+
+  /// No description provided for @currencySar.
+  ///
+  /// In en, this message translates to:
+  /// **'Saudi Riyal (SAR)'**
+  String get currencySar;
+
+  /// No description provided for @changePasswordTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Change password'**
+  String get changePasswordTitle;
+
+  /// No description provided for @changePasswordHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Showcase form — password is not sent to a server in demo mode.'**
+  String get changePasswordHint;
+
+  /// No description provided for @changePasswordCurrentLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Current password'**
+  String get changePasswordCurrentLabel;
+
+  /// No description provided for @changePasswordNewLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'New password'**
+  String get changePasswordNewLabel;
+
+  /// No description provided for @changePasswordConfirmLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm new password'**
+  String get changePasswordConfirmLabel;
+
+  /// No description provided for @changePasswordSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Update password'**
+  String get changePasswordSubmit;
+
+  /// No description provided for @changePasswordSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Password updated (showcase)'**
+  String get changePasswordSuccess;
+
+  /// No description provided for @changePasswordCurrentInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your current password'**
+  String get changePasswordCurrentInvalid;
+
+  /// No description provided for @changePasswordMismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match'**
+  String get changePasswordMismatch;
+
+  /// No description provided for @orderUpdateNotificationDemo.
+  ///
+  /// In en, this message translates to:
+  /// **'Order update notifications are enabled (showcase — no push sent)'**
+  String get orderUpdateNotificationDemo;
 }
 
 class _AppLocalizationsDelegate

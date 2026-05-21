@@ -410,4 +410,177 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get navProfileA11y => 'Profile tab';
+
+  @override
+  String get categoriesTitle => 'Categories';
+
+  @override
+  String get catalogSortLabel => 'Sort';
+
+  @override
+  String get catalogSortPriceAsc => 'Price: low to high';
+
+  @override
+  String get catalogSortPriceDesc => 'Price: high to low';
+
+  @override
+  String get catalogSortRatingDesc => 'Top rated';
+
+  @override
+  String get catalogSortTitleAsc => 'Name: A–Z';
+
+  @override
+  String get catalogFilterTitle => 'Filters';
+
+  @override
+  String get catalogFilterPriceLabel => 'Price range';
+
+  @override
+  String catalogFilterRatingLabel(String rating) {
+    return 'Minimum rating: $rating';
+  }
+
+  @override
+  String get catalogFilterApply => 'Apply filters';
+
+  @override
+  String get catalogClearFilters => 'Clear filters';
+
+  @override
+  String get recentlyViewedTitle => 'Recently viewed';
+
+  @override
+  String get relatedProductsTitle => 'Related products';
+
+  @override
+  String get productReviewsTitle => 'Customer reviews';
+
+  @override
+  String productReviewsCount(int count) {
+    return '$count reviews';
+  }
+
+  @override
+  String get productShareTooltip => 'Share product';
+
+  @override
+  String productShareMessage(String title, String url) {
+    return 'Check out $title on ShopFlow: $url';
+  }
+
+  @override
+  String get productShareFailed => 'Could not open share sheet';
+
+  @override
+  String get checkoutPromoLabel => 'Promo code';
+
+  @override
+  String get checkoutPromoHint => 'SAVE10 or WELCOME5';
+
+  @override
+  String get checkoutPromoApply => 'Apply';
+
+  @override
+  String get checkoutPromoClear => 'Remove';
+
+  @override
+  String get checkoutPromoInvalid => 'Invalid promo code';
+
+  @override
+  String checkoutPromoMinSubtotal(String amount) {
+    return 'Minimum order $amount USD required for this code';
+  }
+
+  @override
+  String checkoutPromoApplied(String label) {
+    return 'Promo applied: $label';
+  }
+
+  @override
+  String get checkoutDiscountLabel => 'Discount';
+
+  @override
+  String get checkoutTotalLabel => 'Total';
+
+  @override
+  String get checkoutSavedAddressLabel => 'Use saved address';
+
+  @override
+  String get checkoutSaveAddressLabel => 'Save this address for next time';
+
+  @override
+  String get addressesTitle => 'Saved addresses';
+
+  @override
+  String get addressesEmptyTitle => 'No saved addresses';
+
+  @override
+  String get addressesEmptyBody =>
+      'Add a shipping address to speed up checkout.';
+
+  @override
+  String get addAddressTitle => 'Add address';
+
+  @override
+  String get editAddressTitle => 'Edit address';
+
+  @override
+  String get addressDefaultLabel => 'Default address';
+
+  @override
+  String get addressSaved => 'Address saved';
+
+  @override
+  String get settingsCurrencySection => 'Currency';
+
+  @override
+  String get settingsNotificationsSection => 'Notifications';
+
+  @override
+  String get settingsOrderUpdatesLabel => 'Order updates';
+
+  @override
+  String get settingsOrderUpdatesHint =>
+      'Showcase only — no push delivery in demo builds';
+
+  @override
+  String get currencyUsd => 'US Dollar (USD)';
+
+  @override
+  String get currencyEur => 'Euro (EUR)';
+
+  @override
+  String get currencySar => 'Saudi Riyal (SAR)';
+
+  @override
+  String get changePasswordTitle => 'Change password';
+
+  @override
+  String get changePasswordHint =>
+      'Showcase form — password is not sent to a server in demo mode.';
+
+  @override
+  String get changePasswordCurrentLabel => 'Current password';
+
+  @override
+  String get changePasswordNewLabel => 'New password';
+
+  @override
+  String get changePasswordConfirmLabel => 'Confirm new password';
+
+  @override
+  String get changePasswordSubmit => 'Update password';
+
+  @override
+  String get changePasswordSuccess => 'Password updated (showcase)';
+
+  @override
+  String get changePasswordCurrentInvalid => 'Enter your current password';
+
+  @override
+  String get changePasswordMismatch => 'Passwords do not match';
+
+  @override
+  String get orderUpdateNotificationDemo =>
+      'Order update notifications are enabled (showcase — no push sent)';
 }

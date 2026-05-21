@@ -408,4 +408,176 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get navProfileA11y => 'تبويب الملف الشخصي';
+
+  @override
+  String get categoriesTitle => 'الفئات';
+
+  @override
+  String get catalogSortLabel => 'ترتيب';
+
+  @override
+  String get catalogSortPriceAsc => 'السعر: من الأقل للأعلى';
+
+  @override
+  String get catalogSortPriceDesc => 'السعر: من الأعلى للأقل';
+
+  @override
+  String get catalogSortRatingDesc => 'الأعلى تقييماً';
+
+  @override
+  String get catalogSortTitleAsc => 'الاسم: أ–ي';
+
+  @override
+  String get catalogFilterTitle => 'تصفية';
+
+  @override
+  String get catalogFilterPriceLabel => 'نطاق السعر';
+
+  @override
+  String catalogFilterRatingLabel(String rating) {
+    return 'الحد الأدنى للتقييم: $rating';
+  }
+
+  @override
+  String get catalogFilterApply => 'تطبيق التصفية';
+
+  @override
+  String get catalogClearFilters => 'مسح التصفية';
+
+  @override
+  String get recentlyViewedTitle => 'شوهد مؤخراً';
+
+  @override
+  String get relatedProductsTitle => 'منتجات ذات صلة';
+
+  @override
+  String get productReviewsTitle => 'مراجعات العملاء';
+
+  @override
+  String productReviewsCount(int count) {
+    return '$count مراجعة';
+  }
+
+  @override
+  String get productShareTooltip => 'مشاركة المنتج';
+
+  @override
+  String productShareMessage(String title, String url) {
+    return 'اطّلع على $title في ShopFlow: $url';
+  }
+
+  @override
+  String get productShareFailed => 'تعذّر فتح نافذة المشاركة';
+
+  @override
+  String get checkoutPromoLabel => 'رمز الخصم';
+
+  @override
+  String get checkoutPromoHint => 'SAVE10 أو WELCOME5';
+
+  @override
+  String get checkoutPromoApply => 'تطبيق';
+
+  @override
+  String get checkoutPromoClear => 'إزالة';
+
+  @override
+  String get checkoutPromoInvalid => 'رمز خصم غير صالح';
+
+  @override
+  String checkoutPromoMinSubtotal(String amount) {
+    return 'الحد الأدنى للطلب $amount USD لهذا الرمز';
+  }
+
+  @override
+  String checkoutPromoApplied(String label) {
+    return 'تم تطبيق الخصم: $label';
+  }
+
+  @override
+  String get checkoutDiscountLabel => 'الخصم';
+
+  @override
+  String get checkoutTotalLabel => 'الإجمالي';
+
+  @override
+  String get checkoutSavedAddressLabel => 'استخدام عنوان محفوظ';
+
+  @override
+  String get checkoutSaveAddressLabel => 'حفظ هذا العنوان للمرة القادمة';
+
+  @override
+  String get addressesTitle => 'العناوين المحفوظة';
+
+  @override
+  String get addressesEmptyTitle => 'لا توجد عناوين محفوظة';
+
+  @override
+  String get addressesEmptyBody => 'أضف عنوان شحن لتسريع الدفع.';
+
+  @override
+  String get addAddressTitle => 'إضافة عنوان';
+
+  @override
+  String get editAddressTitle => 'تعديل العنوان';
+
+  @override
+  String get addressDefaultLabel => 'العنوان الافتراضي';
+
+  @override
+  String get addressSaved => 'تم حفظ العنوان';
+
+  @override
+  String get settingsCurrencySection => 'العملة';
+
+  @override
+  String get settingsNotificationsSection => 'الإشعارات';
+
+  @override
+  String get settingsOrderUpdatesLabel => 'تحديثات الطلب';
+
+  @override
+  String get settingsOrderUpdatesHint =>
+      'عرض تجريبي فقط — لا إشعارات push في النسخة التجريبية';
+
+  @override
+  String get currencyUsd => 'دولار أمريكي (USD)';
+
+  @override
+  String get currencyEur => 'يورو (EUR)';
+
+  @override
+  String get currencySar => 'ريال سعودي (SAR)';
+
+  @override
+  String get changePasswordTitle => 'تغيير كلمة المرور';
+
+  @override
+  String get changePasswordHint =>
+      'نموذج تجريبي — لا يُرسل إلى الخادم في وضع العرض.';
+
+  @override
+  String get changePasswordCurrentLabel => 'كلمة المرور الحالية';
+
+  @override
+  String get changePasswordNewLabel => 'كلمة المرور الجديدة';
+
+  @override
+  String get changePasswordConfirmLabel => 'تأكيد كلمة المرور الجديدة';
+
+  @override
+  String get changePasswordSubmit => 'تحديث كلمة المرور';
+
+  @override
+  String get changePasswordSuccess => 'تم تحديث كلمة المرور (عرض تجريبي)';
+
+  @override
+  String get changePasswordCurrentInvalid => 'أدخل كلمة المرور الحالية';
+
+  @override
+  String get changePasswordMismatch => 'كلمتا المرور غير متطابقتين';
+
+  @override
+  String get orderUpdateNotificationDemo =>
+      'إشعارات تحديث الطلب مفعّلة (عرض تجريبي — لا push)';
 }

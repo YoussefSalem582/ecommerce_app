@@ -176,5 +176,84 @@
   "navHomeA11y": "Home tab",
   "navCartA11y": "Cart tab",
   "navOrdersA11y": "Orders tab",
-  "navProfileA11y": "Profile tab"
+  "navProfileA11y": "Profile tab",
+  "categoriesTitle": "Categories",
+  "catalogSortLabel": "Sort",
+  "catalogSortPriceAsc": "Price: low to high",
+  "catalogSortPriceDesc": "Price: high to low",
+  "catalogSortRatingDesc": "Top rated",
+  "catalogSortTitleAsc": "Name: A–Z",
+  "catalogFilterTitle": "Filters",
+  "catalogFilterPriceLabel": "Price range",
+  "catalogFilterRatingLabel": "Minimum rating: {rating}",
+  "@catalogFilterRatingLabel": {
+    "placeholders": {
+      "rating": { "type": "String" }
+    }
+  },
+  "catalogFilterApply": "Apply filters",
+  "catalogClearFilters": "Clear filters",
+  "recentlyViewedTitle": "Recently viewed",
+  "relatedProductsTitle": "Related products",
+  "productReviewsTitle": "Customer reviews",
+  "productReviewsCount": "{count} reviews",
+  "@productReviewsCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "productShareTooltip": "Share product",
+  "productShareMessage": "Check out {title} on ShopFlow: {url}",
+  "@productShareMessage": {
+    "placeholders": {
+      "title": { "type": "String" },
+      "url": { "type": "String" }
+    }
+  },
+  "productShareFailed": "Could not open share sheet",
+  "checkoutPromoLabel": "Promo code",
+  "checkoutPromoHint": "SAVE10 or WELCOME5",
+  "checkoutPromoApply": "Apply",
+  "checkoutPromoClear": "Remove",
+  "checkoutPromoInvalid": "Invalid promo code",
+  "checkoutPromoMinSubtotal": "Minimum order {amount} USD required for this code",
+  "@checkoutPromoMinSubtotal": {
+    "placeholders": {
+      "amount": { "type": "String" }
+    }
+  },
+  "checkoutPromoApplied": "Promo applied: {label}",
+  "@checkoutPromoApplied": {
+    "placeholders": {
+      "label": { "type": "String" }
+    }
+  },
+  "checkoutDiscountLabel": "Discount",
+  "checkoutTotalLabel": "Total",
+  "checkoutSavedAddressLabel": "Use saved address",
+  "checkoutSaveAddressLabel": "Save this address for next time",
+  "addressesTitle": "Saved addresses",
+  "addressesEmptyTitle": "No saved addresses",
+  "addressesEmptyBody": "Add a shipping address to speed up checkout.",
+  "addAddressTitle": "Add address",
+  "editAddressTitle": "Edit address",
+  "addressDefaultLabel": "Default address",
+  "addressSaved": "Address saved",
+  "settingsCurrencySection": "Currency",
+  "settingsNotificationsSection": "Notifications",
+  "settingsOrderUpdatesLabel": "Order updates",
+  "settingsOrderUpdatesHint": "Showcase only — no push delivery in demo builds",
+  "currencyUsd": "US Dollar (USD)",
+  "currencyEur": "Euro (EUR)",
+  "currencySar": "Saudi Riyal (SAR)",
+  "changePasswordTitle": "Change password",
+  "changePasswordHint": "Showcase form — password is not sent to a server in demo mode.",
+  "changePasswordCurrentLabel": "Current password",
+  "changePasswordNewLabel": "New password",
+  "changePasswordConfirmLabel": "Confirm new password",
+  "changePasswordSubmit": "Update password",
+  "changePasswordSuccess": "Password updated (showcase)",
+  "changePasswordCurrentInvalid": "Enter your current password",
+  "changePasswordMismatch": "Passwords do not match",
+  "orderUpdateNotificationDemo": "Order update notifications are enabled (showcase — no push sent)"
 }
