@@ -37,85 +37,23 @@ class ProductCard extends StatelessWidget {
         onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.all(12),
-          child: Stack(
-            clipBehavior: Clip.none,
-            children: <Widget>[
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+          child: LayoutBuilder(
+            builder: (BuildContext context, BoxConstraints constraints) {
+              final bool gridTile = constraints.maxHeight.isFinite;
+              return Stack(
+                clipBehavior: Clip.none,
                 children: <Widget>[
-                  Expanded(
-                    child: Hero(
-                      tag: 'product-hero-${product.id}',
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: CachedNetworkImage(
-                          imageUrl: product.imageUrl,
-                          fit: BoxFit.cover,
-                          width: double.infinity,
-                          placeholder: (_, __) => Container(
-                            color: palette.surface,
-                            alignment: Alignment.center,
-                            child: CircularProgressIndicator(
-                              color: palette.primary,
-                              strokeWidth: 2,
-                            ),
-                          ),
-                          errorWidget: (_, __, ___) => Container(
-                            color: palette.surface,
-                            alignment: Alignment.center,
-                            child: Icon(Icons.image_not_supported_outlined,
-                                color: palette.error),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    product.title,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.titleSmall,
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    PriceFormatter.formatUsd(context, product.price),
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: palette.primary,
-                          fontWeight: FontWeight.w700,
-                        ),
+                  gridTile
+                      ? _GridProductBody(product: product, palette: palette)
+                      : _ListProductBody(product: product, palette: palette),
+                  Positioned(
+                    top: -4,
+                    right: -4,
+                    child: _WishlistButton(productId: product.id),
                   ),
                 ],
-              ),
-              Positioned(
-                top: -4,
-                right: -4,
-                child: Material(
-                  color: Colors.transparent,
-                  child: BlocBuilder<WishlistCubit, WishlistState>(
-                    builder:
-                        (BuildContext context, WishlistState wl) {
-                      final bool isFav =
-                          wl is WishlistReady && wl.contains(product.id);
-                      return IconButton.filledTonal(
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints.tightFor(
-                          width: 36,
-                          height: 36,
-                        ),
-                        iconSize: 20,
-                        onPressed: () => context
-                            .read<WishlistCubit>()
-                            .toggleId(product.id),
-                        icon: Icon(
-                          isFav ? Icons.favorite : Icons.favorite_border,
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ),
-            ],
+              );
+            },
           ),
         ),
       ),
@@ -129,5 +67,155 @@ class ProductCard extends StatelessWidget {
     }
 
     return card;
+  }
+}
+
+class _GridProductBody extends StatelessWidget {
+  const _GridProductBody({
+    required this.product,
+    required this.palette,
+  });
+
+  final ProductEntity product;
+  final AppPalette palette;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Expanded(
+          child: _ProductImage(product: product, palette: palette),
+        ),
+        const SizedBox(height: 10),
+        Text(
+          product.title,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
+        const SizedBox(height: 6),
+        Text(
+          PriceFormatter.formatUsd(context, product.price),
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: palette.primary,
+                fontWeight: FontWeight.w700,
+              ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ListProductBody extends StatelessWidget {
+  const _ListProductBody({
+    required this.product,
+    required this.palette,
+  });
+
+  final ProductEntity product;
+  final AppPalette palette;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        SizedBox(
+          width: 88,
+          height: 88,
+          child: _ProductImage(product: product, palette: palette),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(
+                product.title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
+              const SizedBox(height: 6),
+              Text(
+                PriceFormatter.formatUsd(context, product.price),
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: palette.primary,
+                      fontWeight: FontWeight.w700,
+                    ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ProductImage extends StatelessWidget {
+  const _ProductImage({
+    required this.product,
+    required this.palette,
+  });
+
+  final ProductEntity product;
+  final AppPalette palette;
+
+  @override
+  Widget build(BuildContext context) {
+    return Hero(
+      tag: 'product-hero-${product.id}',
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: CachedNetworkImage(
+          imageUrl: product.imageUrl,
+          fit: BoxFit.cover,
+          width: double.infinity,
+          height: double.infinity,
+          placeholder: (_, __) => Container(
+            color: palette.surface,
+            alignment: Alignment.center,
+            child: CircularProgressIndicator(
+              color: palette.primary,
+              strokeWidth: 2,
+            ),
+          ),
+          errorWidget: (_, __, ___) => Container(
+            color: palette.surface,
+            alignment: Alignment.center,
+            child: Icon(
+              Icons.image_not_supported_outlined,
+              color: palette.error,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _WishlistButton extends StatelessWidget {
+  const _WishlistButton({required this.productId});
+
+  final int productId;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: BlocBuilder<WishlistCubit, WishlistState>(
+        builder: (BuildContext context, WishlistState wl) {
+          final bool isFav = wl is WishlistReady && wl.contains(productId);
+          return IconButton.filledTonal(
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints.tightFor(width: 36, height: 36),
+            iconSize: 20,
+            onPressed: () => context.read<WishlistCubit>().toggleId(productId),
+            icon: Icon(isFav ? Icons.favorite : Icons.favorite_border),
+          );
+        },
+      ),
+    );
   }
 }
