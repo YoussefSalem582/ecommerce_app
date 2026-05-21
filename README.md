@@ -196,6 +196,21 @@ ARB files live in `assets/l10n/` (`intl_en.arb`, `intl_ar.arb`). Codegen is conf
 
 ---
 
+## AI agents & documentation
+
+Canonical instructions for Cursor, Claude Code, Codex, Copilot, and other agents:
+
+| Resource | Purpose |
+|----------|---------|
+| [`AGENTS.md`](AGENTS.md) | Single source of truth (architecture, tokens, API, skills) |
+| [`shopflow_readme_files/INDEX.md`](shopflow_readme_files/INDEX.md) | Doc map and task links |
+| [`.agents/skills/`](.agents/skills/) | Project skills + official Flutter/Dart skills |
+| [`CLAUDE.md`](CLAUDE.md) | Claude Code shim + slash commands |
+
+After changes, update `CHANGELOG.md` and `shopflow_readme_files/CURRENT_STATUS.md` (see `AGENTS.md`).
+
+---
+
 ## Hire / Contact
 
 **Youssef Salem Hassan** — Flutter developer

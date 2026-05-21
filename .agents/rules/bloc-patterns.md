@@ -1,38 +1,16 @@
 ﻿---
-description: "BLoC/Cubit state management patterns and conventions"
-globs: "ecommerce_app/lib/features/**/bloc/**/*.dart,ecommerce_app/lib/features/**/cubit/**/*.dart"
+description: "BLoC and Cubit patterns for ShopFlow"
 alwaysApply: false
 ---
 
 # BLoC & Cubit Patterns
 
-## File Organization
+## File layout
 
-Each BLoC/Cubit has separate files:
-- `<name>_bloc.dart` â€” The BLoC class
-- `<name>_event.dart` â€” Event classes (BLoC only)
-- `<name>_state.dart` â€” State classes
+- BLoC: `<name>_bloc.dart`, `<name>_event.dart`, `<name>_state.dart`
+- Cubit: `<name>_cubit.dart`, `<name>_state.dart` (single file state is OK for small cubits)
 
-## Event Pattern
-
-```dart
-abstract class FeatureEvent extends Equatable {
-  const FeatureEvent();
-  @override
-  List<Object?> get props => [];
-}
-
-class LoadData extends FeatureEvent {}
-
-class ActionWithParams extends FeatureEvent {
-  final int id;
-  const ActionWithParams({required this.id});
-  @override
-  List<Object?> get props => [id];
-}
-```
-
-## State Pattern
+## State pattern
 
 ```dart
 abstract class FeatureState extends Equatable {
@@ -41,54 +19,44 @@ abstract class FeatureState extends Equatable {
   List<Object?> get props => [];
 }
 
-class FeatureInitial extends FeatureState {}
 class FeatureLoading extends FeatureState {}
 class FeatureLoaded extends FeatureState {
-  final DataType data;
   const FeatureLoaded({required this.data});
+  final DataType data;
   @override
   List<Object?> get props => [data];
 }
 class FeatureError extends FeatureState {
-  final String message;
   const FeatureError({required this.message});
+  final String message;
   @override
   List<Object?> get props => [message];
 }
 ```
 
-## BLoC Pattern
+## BLoC handler
 
 ```dart
-class FeatureBloc extends Bloc<FeatureEvent, FeatureState> {
-  final SomeUseCase someUseCase;
-
-  FeatureBloc({required this.someUseCase}) : super(FeatureInitial()) {
-    on<LoadData>(_onLoad);
-  }
-
-  Future<void> _onLoad(LoadData event, Emitter<FeatureState> emit) async {
-    emit(FeatureLoading());
-    final result = await someUseCase(params);
-    result.fold(
-      (failure) => emit(FeatureError(message: failure.message)),
-      (data) => emit(FeatureLoaded(data: data)),
-    );
-  }
-
-  @override
-  void onTransition(Transition<FeatureEvent, FeatureState> transition) {
-    AppLogger.logBlocTransition('FeatureBloc', transition.event, transition.currentState);
-    super.onTransition(transition);
-  }
+Future<void> _onLoad(Load event, Emitter<FeatureState> emit) async {
+  emit(FeatureLoading());
+  final result = await _getFeatureUseCase();
+  result.fold(
+    (failure) => emit(FeatureError(message: failure.message)),
+    (data) => emit(FeatureLoaded(data: data)),
+  );
 }
 ```
 
-## UI Usage
+## UI
 
-- `BlocBuilder<Bloc, State>` for rebuilding UI on state changes
-- `BlocListener<Bloc, State>` for side effects (navigation, snackbars)
-- `BlocConsumer` when you need both
-- Access BLoC via `context.read<FeatureBloc>()` for events
-- Access state via `context.watch<FeatureBloc>().state` in build methods
+- `BlocBuilder` / `BlocListener` / `BlocConsumer`
+- `context.read<FeatureBloc>().add(event)`
+- Do not call repositories from widgets — use cases only via BLoC
 
+## Logging
+
+Global `TalkerBlocObserver` in `main.dart` logs transitions. **Do not** add `AppLogger` — it does not exist in ShopFlow.
+
+## Offline-aware loads
+
+Follow `ProductListBloc` / `ProductsRepositoryImpl`: repository returns cached Hive data when remote fails; UI shows `OfflineBanner` via `ConnectivityCubit` at app level.

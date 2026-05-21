@@ -78,7 +78,7 @@ function Build-Content {
 # $AgentFile - Exclude from $AgentName context
 # AUTO-GENERATED from scripts/ai_ignore_template.txt by scripts/sync_ai_ignores.ps1
 # DO NOT EDIT BY HAND. To change exclusions, edit the template and re-run the sync.
-# Paths are relative to this file's location (ecommerce_app/).
+# Paths are relative to this file's location (ShopFlow / ecommerce_app/).
 # ============================================================
 
 "@

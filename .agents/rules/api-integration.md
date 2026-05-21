@@ -1,60 +1,62 @@
 ﻿---
-description: "API integration patterns â€” endpoints, data sources, response parsing, error handling"
+description: "API integration — Dio, datasources, Fake Store JSON, Hive fallback"
 alwaysApply: false
 ---
 
 # API Integration
 
-## Adding a New Endpoint
+## Adding a new HTTP call
 
-1. Define path in `lib/core/api/api_endpoints.dart`
-   - Static: `static const String name = '/path';`
-   - Dynamic: `static String name(int id) => '/path/$id';`
-   - Group related endpoints under comment banners
-   - Paths do NOT include base URL or `/api/v1` prefix (handled by DioClient)
+1. Add method to feature `data/datasources/*_remote_datasource.dart` (abstract + impl)
+2. Use `DioClient.dio` — paths are relative to `AppConfig.apiBaseUrl` (default Fake Store: `https://fakestoreapi.com`)
+   - Example: `await _dioClient.dio.get<List<dynamic>>('/products')`
+3. Map `DioException` → `ServerException` in the datasource (see `RemoteProductsDatasource._mapDio`)
+4. Parse JSON in `data/models/*_model.dart` with `fromJson` / `toJson`
+5. Add repository method returning `Either<Failure, T>`
+6. Map exceptions in repository impl → `ServerFailure`, `CacheFailure`, `NetworkFailure`, or `UnexpectedFailure`
+7. Add `@injectable` use case with `call()` delegating to repository
+8. Wire into BLoC; register via injectable + `dart run build_runner build --delete-conflicting-outputs`
 
-2. Add HTTP call to remote data source using `DioClient`
-3. Parse response with `ApiResponse.fromJson()`
-4. Create/update model with `fromJson`/`toJson`
-5. Add method to domain repository contract (returns `Either<Failure, T>`)
-6. Implement in repository impl with exception-to-failure mapping
-7. Create use case
-8. Wire into BLoC
-9. Register in `injection_container.dart`
+There is **no** central `api_endpoints.dart` — keep path strings in the datasource next to the call.
 
-## DioClient Methods
+## Demo vs live API
 
-| Method | Signature |
-|--------|-----------|
-| GET | `DioClient.get(path, {queryParameters})` |
-| POST | `DioClient.post(path, {data})` |
-| PUT | `DioClient.put(path, {data})` |
-| PATCH | `DioClient.patch(path, {data})` |
-| DELETE | `DioClient.delete(path)` |
-| Upload | `DioClient.uploadFile(path, {file, fieldName, data})` |
+- `AppConfig.isDemoEnv` → in-memory `Fake*RemoteDatasource` (no HTTP)
+- `APP_ENV=live` → `Remote*RemoteDatasource` via Dio
 
-All return `Response<dynamic>`. Parse with `ApiResponse.fromJson()`.
+Register both in `lib/core/di/register_module.dart` or injectable modules as the project already does.
 
-## Backend Response Format
+## Dio stack (automatic)
 
-Success: `{ "success": true, "message": "...", "data": ..., "pagination": {...} }`
-Error: `{ "success": false, "message": "...", "errors": {} }`
-Validation (422): `{ "message": "...", "errors": { "field": ["msg"] } }`
+| Interceptor | Role |
+|-------------|------|
+| `AuthInterceptor` | `Authorization: Bearer` from `TokenStorage` |
+| `TalkerDioLogger` | Request/response logging (redacts login/register passwords) |
+| `TokenRefreshInterceptor` | Retry once after 401 refresh |
+| `RetryInterceptor` | GET retries on transient failures |
 
-## Error Flow
+Access the client: `getIt<DioClient>().dio` or constructor-inject `DioClient`.
 
-API error â†’ `DioClient` catches `DioException` â†’ maps to Exception (`ServerException`, `AuthException`, `NetworkException`) â†’ Repository catches Exception â†’ maps to Failure â†’ wrapped in `Left<Failure, T>` â†’ BLoC folds into error state â†’ UI displays error
+## Response shapes
 
-## Interceptors (automatic)
+**Fake Store** returns raw JSON arrays/objects (not a `{ success, data }` envelope). Parse directly in models.
 
-1. **Auth**: Adds `Authorization: Bearer <token>` from SecureStorage
-2. **Language**: Adds `lang` and `Accept-Language` headers
-3. **Logging**: `TalkerDioLogger` (disabled in production)
-4. **Retry**: `RetryInterceptor` â€” auto-retries failed GET requests (2 retries, 1s/3s backoff) on transient network errors and 5xx responses. Mutations are NOT retried; they go through `Hive local cache`.
+**Custom backends** may differ — follow the existing datasource in the same feature.
 
-## Offline-First
+## Offline / cache (reads)
 
-- **Reads**: Wrap fetches with `Hive TTL where implemented.evaluate(cachedAt: ...)` â€” return cached data if fresh/stale, only call API when stale (background) or expired
-- **Writes**: Check `ConnectivityCubit` state first; if offline, enqueue via `Hive local cache` and emit an optimistic state instead of calling the API
-- See `core/network/cache_policy.dart` and `core/network/offline_queue.dart`
+Repositories such as `ProductsRepositoryImpl` persist catalog JSON to Hive on success and fall back to cache on `ServerException` or transport errors. Mirror that pattern for new read-heavy features:
 
+- `Local*Datasource` for Hive read/write
+- Repository tries remote first, then `_serveCached(...)`
+
+## Offline (writes)
+
+Cart, wishlist, and orders are **local-first** (Hive / SharedPreferences). For new mutations:
+
+- Check `ConnectivityCubit` when UX must block offline actions
+- Do **not** invent `OfflineQueue` — this app does not use one
+
+## Error flow
+
+`DioException` → datasource throws `ServerException` → repository `Left(ServerFailure(...))` → BLoC `emit(ErrorState)` → UI uses `AppErrorView` or SnackBar

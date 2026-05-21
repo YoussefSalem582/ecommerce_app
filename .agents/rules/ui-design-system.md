@@ -1,72 +1,43 @@
 ﻿---
-description: "Design system tokens â€” colors, spacing, radius, typography for consistent UI"
+description: "ShopFlow design system — emerald brand, AppPalette, typography"
 alwaysApply: false
 ---
 
 # Design System
 
-## Colors (from `AppColors`)
+Reference: `design-system/shopflow/MASTER.md` (brand spec).
 
-- **Primary**: `#5B6EF5` â€” Brand blue (buttons, links, active states)
-- **Primary variants**: `primaryLight` (#8B96F9), `primaryDark` (#3D4ED4), `primaryTint` (#EEF0FE)
-- **Secondary**: `#E9C62B` â€” Accent yellow
-- **Background**: `backgroundLight` (#F2F2F7), `backgroundDark` (#000000)
-- **Surfaces**: iOS-style dark hierarchy â€” `darkSurface` (#1C1C1E), `darkCard` (#2C2C2E), `darkSurfaceContainerHigh` (#3A3A3C)
-- **Frosted Glass**: `frostedLight`, `frostedDark`, `frostedBorderLight`, `frostedBorderDark`
-- **Separators**: `separator` (#C6C6C8), `opaqueSeparator` (#D8D8DC)
-- **Status**: `success` (#34C759), `error` (#FF3B30), `warning` (#FF9500), `info` (#5AC8FA) â€” each with light variant
+## Colors (`AppColors` + `AppPalette`)
 
-Always use `AppColors.primary`, `AppColors.error`, etc. â€” never raw hex or `Colors.*`.
+| Token | Light | Usage |
+|-------|-------|--------|
+| Primary | `#059669` emerald | Buttons, links, brand |
+| Secondary | `#10B981` | Highlights |
+| Accent | `#F97316` orange | CTAs, urgency |
+| Surface | `#ECFDF5` mint | Page background (light) |
+| On-surface | `#064E3B` | Primary text (light) |
 
-## Spacing (from `AppSpacing`)
+Dark theme uses `*Dark` variants in `AppColors`; widgets should read **`AppPalette`** from theme extension, not raw hex.
 
-| Token | Value | Usage |
-|-------|-------|-------|
-| `xxs` | 2 | Tight gaps |
-| `xs` | 4 | Icon padding |
-| `sm` | 8 | Small gaps |
-| `md` | 12 | Medium gaps |
-| `base` | 16 | Default spacing |
-| `lg` | 20 | Section gaps |
-| `xl` | 24 | Large gaps |
-| `xxl` | 32 | Section dividers |
-| `xxxl` | 40 | Page sections |
-| `huge` | 48 | Extra-large gaps |
-| `massive` | 64 | Maximum spacing |
+Never use `Color(0xFF...)` or `Colors.green` in feature code.
 
-Helpers: `AppSpacing.verticalBase`, `AppSpacing.horizontalSM`, `AppSpacing.pagePadding`, `AppSpacing.screenPadding`
+## Typography (`AppTypography`)
 
-## Radius (from `AppRadius`)
+- Headings: **Rubik** via `GoogleFonts.rubikTextTheme()`
+- Body: **Nunito Sans** via `GoogleFonts.nunitoSansTextTheme()`
+- Access in widgets: `Theme.of(context).textTheme.titleMedium`, etc.
 
-| Token | Value |
-|-------|-------|
-| `xs` | 4 |
-| `sm` | 6 |
-| `md` | 8 |
-| `base` | 10 |
-| `lg` | 12 |
-| `xl` | 16 |
-| `xxl` | 20 |
-| `round` | 100 |
+## Layout & responsive
 
-## Typography (from `AppTextStyles`)
+- Breakpoints: `lib/core/utils/app_breakpoints.dart`
+- Shell navigation: `ResponsiveAppNav` (bottom bar / rail / drawer)
+- Product grid: follow `home_page.dart` / `product_card_widget.dart` patterns
 
-- Font: PublicSans (EN) / Tajawal (AR) â€” locale-aware via `AppFonts.forLocale`; fallback: Roboto
-- Material Design type scale: `displayLarge` â†’ `labelSmall`
-- iOS HIG-inspired: negative `letterSpacing` on headlines, increased `fontWeight` contrast
-- Use `AppTextStyles.bodyLarge`, `AppTextStyles.titleMedium`, etc.
+## Motion
 
-## Shared Widgets
+- `flutter_animate`, `animations`, `Hero`, `FlyToCartOverlay` for cart add
+- Shimmer: `ProductGridShimmer` while loading
 
-Check `lib/core/widgets/` before building new UI. Existing components:
+## Shared widgets
 
-**Inputs**: `AppTextField`, `AppPhoneField`, `AppDropdownField`, `AppSearchableDropdownField`, `AppDateField`, `AppDateInputSheet`
-**Buttons**: `AppButton`
-**Cards**: `AppCard`
-**Dialogs**: `AppBottomSheet`, `UnsavedChangesDialog`
-**Banners**: `ConnectivityBanner`, `OfflineBanner`, `AppToast`, `TranslationPendingBanner`
-**Filters**: `AppDateFilter`, `FilterIconButton`, `FilterSheetActions`
-**Feedback**: `AppLoading`, `AppErrorWidget`, `EmptyStateWidget`
-**Layout**: `CustomAppBar`, `ResponsiveLayout`, `AuthPatternBackground`
-**Viewers**: `PdfViewerPage`, `VideoPlayerPage`, `PhotoPickerBottomSheet`
-
+See `dart-conventions.md` § Shared widgets — all live under `lib/core/widgets/`.

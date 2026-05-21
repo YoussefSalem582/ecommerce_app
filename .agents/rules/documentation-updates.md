@@ -1,29 +1,26 @@
 ﻿---
-description: "Mandatory documentation updates after every change â€” CHANGELOG, status, and summary"
+description: "Mandatory documentation updates after ShopFlow changes"
 alwaysApply: true
 ---
 
 # Documentation Updates (Mandatory)
 
-Documentation lives in `ecommerce_app/shopflow_readme_files/`. The changelog is at `ecommerce_app/CHANGELOG.md`.
+After every feature, fix, refactor, or meaningful change:
 
-## After EVERY feature, fix, refactor, or meaningful change, you MUST update:
+1. **`CHANGELOG.md`** — entry under `[Unreleased]` or the current version (`### Added` / `Changed` / `Fixed`)
+2. **`shopflow_readme_files/DOCUMENTATION_UPDATE_SUMMARY.md`** — dated note at top
+3. **`shopflow_readme_files/CURRENT_STATUS.md`** — version, feature matrix, metrics
 
-1. **`CHANGELOG.md`** â€” Add the change under the correct version's `### Added`, `### Changed`, or `### Fixed` section. Follow [Keep a Changelog](https://keepachangelog.com/) format.
-2. **`shopflow_readme_files/DOCUMENTATION_UPDATE_SUMMARY.md`** â€” Add a dated entry at the top documenting: what changed, files created, files modified, key decisions.
-3. **`shopflow_readme_files/CURRENT_STATUS.md`** â€” Update feature status, metrics, progress, and any new sections.
+## Update when relevant
 
-## Conditional updates (only when relevant):
-
-| File | Update whenâ€¦ |
-|------|-------|
-| `01_folder_structure.md` | Adding/removing/moving files or folders |
-| `02_architecture.md` | Changing architecture patterns or layers |
-| `03_how_to_add_new_feature.md` | Changing the feature scaffold process |
-| `04_how_to_add_new_api.md` | Changing API integration patterns |
-| `05_how_to_add_new_language.md` | Adding languages or changing l10n setup |
-| `06_how_to_change_theme_colors.md` | Adding design tokens or changing theme |
-| `07_how_to_create_reusable_component.md` | Adding/changing shared widgets |
-| `08_security_and_environment.md` | Adding secrets, changing auth/security |
-| `09_api_endpoints.md` | Adding/changing API endpoints |
-
+| File | When |
+|------|------|
+| `01_folder_structure.md` | Folder layout changes |
+| `02_architecture.md` | Architecture pattern changes |
+| `03_how_to_add_new_feature.md` | Feature scaffold process changes |
+| `04_how_to_add_new_api.md` | API / Dio patterns change |
+| `05_how_to_add_new_language.md` | l10n pipeline changes |
+| `06_how_to_change_theme_colors.md` | Theme / brand tokens change |
+| `07_how_to_create_reusable_component.md` | New shared widgets in `core/widgets` |
+| `08_security_and_environment.md` | New env vars or auth rules |
+| `decisions/*.md` | New ADR for non-obvious choices |

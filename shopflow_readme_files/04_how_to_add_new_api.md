@@ -1,11 +1,34 @@
 # How to Add a New API Call
 
-Use skill [`add-api`](../.agents/skills/add-api/SKILL.md).
+## HTTP (live / Fake Store)
 
-1. Extend feature `*_remote_datasource.dart` with Dio call against `AppConfig.apiBaseUrl`
-2. Parse JSON in `*_model.dart`
-3. Expose on domain repository → impl with exception mapping
-4. Add use case + BLoC handler
-5. Register in injectable; run build_runner
+1. Open or create `data/datasources/*_remote_datasource.dart`
+2. Inject `DioClient`, call `_dioClient.dio.get/post/...`
+3. Paths are relative to `BASE_URL` (default `https://fakestoreapi.com`), e.g. `/products`, `/auth/login`
+4. Parse JSON in models — Fake Store returns **raw** JSON, not a wrapped envelope
+5. On `DioException`, throw `ServerException` with a safe message
 
-Fake Store paths live in existing datasources (e.g. `fake_products_remote_datasource.dart`) — follow their style for new endpoints.
+## Repository
+
+```dart
+try {
+  final data = await _remote.fetch();
+  await _local.save(...); // optional Hive cache
+  return Right(data);
+} on ServerException catch (e, st) {
+  _talker.handle(e, st);
+  return _serveCached(...); // optional
+}
+```
+
+Map to `ServerFailure`, `CacheFailure`, `NetworkFailure`, or `UnexpectedFailure`.
+
+## Demo stub
+
+When `AppConfig.isDemoEnv`, DI should bind `Fake*RemoteDatasource` (see `FakeProductsRemoteDatasource`, `FakeAuthRemoteDatasource`).
+
+## Register
+
+`@injectable` on datasource, repository, use case → `dart run build_runner build --delete-conflicting-outputs`
+
+Skill: [`add-api`](../.agents/skills/add-api/SKILL.md).

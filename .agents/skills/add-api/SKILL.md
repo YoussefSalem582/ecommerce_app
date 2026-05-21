@@ -1,62 +1,36 @@
 ---
 name: add-api
-description: Add a new API endpoint integration end-to-end through Dio, data source, model, repository, use case, and BLoC. Use when connecting a new HTTP endpoint.
+description: Wire a new Dio HTTP call through ShopFlow datasources, repositories, use cases, and BLoC.
 ---
 
-# Add New API Endpoint
+# Add API — ShopFlow
 
-Connect a new HTTP call through Clean Architecture layers.
+Reference: `shopflow_readme_files/04_how_to_add_new_api.md`
 
-## When to Use
+## Steps
 
-- User asks to integrate a new API endpoint or Fake Store path
-- User says "add API", "connect endpoint"
+1. **Datasource** — add method using `DioClient.dio`:
+   ```dart
+   final response = await _dioClient.dio.get<List<dynamic>>('/your-path');
+   ```
+   Map `DioException` → `ServerException`.
 
-## Instructions
+2. **Model** — parse Fake Store JSON (usually direct array/map, no `{success,data}` wrapper).
 
-Reference `shopflow_readme_files/04_how_to_add_new_api.md`.
+3. **Repository** — `Either<Failure, T>`; on read failures try Hive cache like `ProductsRepositoryImpl`.
 
-### Step 1 — Data source
+4. **Use case** — `@injectable` with `call()`.
 
-In `data/datasources/*_remote_datasource.dart`:
+5. **BLoC** — event + `result.fold()`.
 
-- Add method to abstract class + implementation
-- Use injected `Dio` from `DioClient` (GET/POST/PUT/PATCH/DELETE)
-- Base URL comes from `AppConfig.apiBaseUrl`
-- Parse JSON into models; map snake_case keys
+6. **DI** — build_runner.
 
-### Step 2 — Model / entity
+## Paths
 
-- Update or create `data/models/*_model.dart` with `fromJson`
+Keep URL paths in the datasource file (no `api_endpoints.dart`).
 
-### Step 3 — Domain repository
+Base URL: `AppConfig.apiBaseUrl` (via `DioClient` `BaseOptions`).
 
-- Add `Future<Either<Failure, T>>` method to abstract repository
+## Demo
 
-### Step 4 — Repository impl
-
-- try/catch → map `DioException` and app exceptions to `Failure` types in `lib/core/error/`
-
-### Step 5 — Use case + BLoC
-
-- New use case class
-- New event/handler in feature BLoC
-- For offline-sensitive reads: consult existing Hive datasource patterns in sibling features (`products`, `orders`)
-
-### Step 6 — DI
-
-- Annotate new classes; run build_runner
-- Wire use case into BLoC constructor
-
-### Step 7 — Connectivity
-
-- If the UI must block when offline, read `ConnectivityCubit` before network-only mutations
-
-## Dio reference
-
-| Method | Usage |
-|--------|--------|
-| GET | `dio.get(path, queryParameters: ...)` |
-| POST | `dio.post(path, data: ...)` |
-
-Do not log sensitive auth bodies (see `DioClient` redaction rules).
+Add parallel `Fake*RemoteDatasource` for `isDemoEnv` and register in `register_module.dart`.

@@ -10,7 +10,7 @@
 ### Inline completion
 
 - **Never invent** `Color(0xFF…)`, hardcoded route strings, or API paths. Use `AppColors`, `AppPalette`, `AppRoutes`, `AppConfig`.
-- **Never** suggest user-facing string literals — use generated l10n from `assets/l10n/intl_*.arb`.
+- **Never** suggest user-facing string literals — use `AppLocalizations.of(context)` with keys from `assets/l10n/intl_en.arb` and `intl_ar.arb`.
 - **Never** suggest `SharedPreferences` for JWT — use `TokenStorage`.
 - Respect Clean Architecture layers — no Flutter imports in `domain/`.
 

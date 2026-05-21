@@ -1,10 +1,6 @@
 ---
 name: add-language
-description: Add or update ShopFlow ARB localization. Canonical steps live in the project skill file.
+description: Update ShopFlow ARB localization.
 ---
 
-# add-language (Cursor)
-
-[`.agents/skills/add-language/SKILL.md`](../../.agents/skills/add-language/SKILL.md)
-
-Conventions: [`AGENTS.md`](../../AGENTS.md).
+Follow [`.agents/skills/add-language/SKILL.md`](../../.agents/skills/add-language/SKILL.md) and [`AGENTS.md`](../../AGENTS.md).

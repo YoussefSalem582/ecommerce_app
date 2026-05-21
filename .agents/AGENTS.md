@@ -9,7 +9,7 @@
 
 ## Skills (in this directory)
 
-All skill prompts live in [`./skills/`](./skills/) in universal SKILL.md format.
+All skill prompts live in [`./skills/`](./skills/) in universal SKILL.md format. Start with [`./skills/README.md`](./skills/README.md) for ShopFlow vs official skill overrides.
 
 - **3 project-tuned** (prefer over official skills for overlapping workflows):
   - `add-feature` — Clean Architecture feature + DI + GoRouter + ARB l10n

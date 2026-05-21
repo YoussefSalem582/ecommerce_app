@@ -1,82 +1,58 @@
 ﻿# Review Code
 
-Audit the specified file(s) or feature against all project conventions and report issues.
+Audit against ShopFlow conventions in `AGENTS.md` and `.agents/rules/`.
 
-## When to Use
+## Check
 
-- User asks to "review", "check", "audit", or "inspect" code
-- Before a PR or commit to catch violations early
-- After writing new code to verify quality
+### Architecture
 
-## What to Check
+- Domain imports Flutter or data layer
+- Widget calls repository directly (must use BLoC → use case)
+- Entity with `fromJson` in domain
 
-### 1 â€” Architecture violations
+### Design tokens
 
-- Domain layer importing Flutter or data layer packages
-- Presentation layer calling repository directly (must go via use case)
-- Data layer importing presentation layer
-- Missing layers (e.g., no use case, entity used as model)
+- Raw `Color(0xFF...)` instead of `AppColors` / `AppPalette`
+- Inline `TextStyle` instead of `Theme.of(context).textTheme`
+- Hardcoded routes instead of `AppRoutes`
 
-### 2 â€” Design token violations
+### Localization
 
-Flag any hardcoded value that should use a token:
+- Raw user-facing strings
+- Key in only one ARB file
 
-- `Color(0xFF...)` or `Colors.*` â†’ should be `AppColors.*`
-- Raw `double` spacing (e.g., `SizedBox(height: 16)`) â†’ should be `AppSpacing.*`
-- `BorderRadius.circular(N)` â†’ should be `AppRadius.*`
-- `TextStyle(...)` inline â†’ should be `AppTextStyles.*`
-- Hardcoded asset paths â†’ should be `AppImages.*` / `AppIcons.*`
-- Hardcoded route strings â†’ should be `AppRoutes.*`
+### Security
 
-### 3 â€” Localization violations
+- Hardcoded `BASE_URL`, Stripe keys, tokens
+- JWT in `SharedPreferences`
+- Storage keys not in `StorageKeys`
 
-- User-facing strings not wrapped in `context.l10n.*`
-- ARB key missing in one language file but present in the other
+### BLoC
 
-### 4 â€” Security violations
+- States missing `Equatable` / `props`
+- References to non-existent `AppLogger`, `OfflineQueue`, `CachePolicy`
 
-- Secrets, tokens, client IDs hardcoded in Dart source
-- Auth tokens stored in `SharedPreferences` instead of `FlutterSecureStorage`
-- Storage key strings not using `StorageKeys.*` constants
+### DI
 
-### 5 â€” BLoC pattern issues
+- Missing `@injectable` / build_runner after new types
+- BLoC not provided in `shop_flow_app.dart` when app-wide
 
-- State classes missing `Equatable` / `props`
-- Missing `FeatureLoading` state
-- Error state missing `message` field
-- BLoC not logging transitions via `AppLogger.logBlocTransition()`
+### API
 
-### 6 â€” DI issues
+- References to `ApiClient`, `api_endpoints.dart`, envelope `ApiResponse` (Tech 92 leftovers)
+- Dio calls bypassing `DioClient`
 
-- BLoC registered as `registerLazySingleton` (must be `registerFactory`)
-- Use case or repo registered as `registerFactory` (should be `registerLazySingleton`)
-- Missing `BlocProvider` in `app.dart`
+### Offline
 
-### 7 â€” Code style
+- Read path with no Hive fallback when feature is catalog-like
+- Invented mutation queue instead of local-first cart/order patterns
 
-- Wrong import order (dart: â†’ flutter: â†’ packages â†’ relative)
-- SCREAMING_CASE constants (should be camelCase)
-- Missing `const` constructors where applicable
-
-### 8 â€” Offline-first violations
-
-- **Reads**: BLoC load handler fetches from API without `CachePolicy.evaluate(cachedAt: ...)` (or equivalent) â€” cached data not used when fresh/stale
-- **Writes**: mutation handlers don't read `ConnectivityCubit` first; offline path missing `OfflineQueue` + optimistic state
-- **Writes**: raw API / remote calls for mutations with no connectivity check (POST/PUT/PATCH/DELETE fired while offline without queueing)
-- `ConnectivityCubit` state read directly in widget layer instead of BLoC
-- Raw `SharedPreferences` used for mutation queue instead of `OfflineQueue`
-
-## Output Format
-
-For each issue found, report:
+## Output
 
 ```
-[SEVERITY] File:line â€” Description
-  Rule: <which convention>
-  Fix: <what to change>
+[SEVERITY] path:line — issue
+  Rule: ...
+  Fix: ...
 ```
 
-Severity levels: `ERROR` (must fix), `WARNING` (should fix), `INFO` (consider fixing).
-
-End with a summary: `N errors, M warnings found` or `No issues found`.
-
+Severity: `ERROR` | `WARNING` | `INFO`

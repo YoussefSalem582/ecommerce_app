@@ -19,6 +19,7 @@
 ### … wire an API call
 
 - [04_how_to_add_new_api.md](04_how_to_add_new_api.md)
+- [09_api_endpoints.md](09_api_endpoints.md) — current Fake Store paths
 - Skill: [`add-api`](../.agents/skills/add-api/SKILL.md)
 
 ### … add translations
@@ -59,6 +60,7 @@
 |------|---------|
 | [01_folder_structure.md](01_folder_structure.md) | Repo layout |
 | [02_architecture.md](02_architecture.md) | Clean Architecture + BLoC |
+| [09_api_endpoints.md](09_api_endpoints.md) | Fake Store path catalog |
 | [CURRENT_STATUS.md](CURRENT_STATUS.md) | Live feature matrix |
 | [DOCUMENTATION_UPDATE_SUMMARY.md](DOCUMENTATION_UPDATE_SUMMARY.md) | Change log for docs |
 | [GLOSSARY.md](GLOSSARY.md) | Terms |

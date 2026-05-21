@@ -65,6 +65,7 @@ Flutter e-commerce **freelance showcase** (Android, iOS, Web, desktop). Current 
 | `lib/core/router/app_routes.dart` | All route path constants |
 | `lib/core/config/app_config.dart` | Env-derived API URL, Stripe key, demo flags |
 | `lib/core/network/dio_client.dart` | Shared Dio instance |
+| `shopflow_readme_files/09_api_endpoints.md` | Fake Store path catalog |
 
 ## Feature Architecture
 
@@ -79,7 +80,7 @@ features/<name>/
 ├── domain/
 │   ├── entities/        # Pure Dart + Equatable — no serialization
 │   ├── repositories/    # Abstract contracts → Either<Failure, T>
-│   └── usecases/        # One file per operation
+│   └── usecases/        # @injectable classes with call() — one per operation
 └── presentation/
     ├── bloc/            # *_bloc.dart, *_event.dart, *_state.dart (or cubit)
     ├── pages/
@@ -222,7 +223,7 @@ Prefer project-tuned skills when workflows overlap.
 | `flutter-add-widget-preview` | Widget previews |
 | `flutter-build-responsive-layout` | Breakpoints — pair with `ResponsiveAppNav` / `AppBreakpoints` |
 | `flutter-fix-layout-issues` | Overflow / constraint errors |
-| `flutter-apply-architecture-best-practices` | Generic sanity check only |
+| `flutter-apply-architecture-best-practices` | **Skip** — generic `ApiClient` samples; use `add-feature` |
 | `flutter-implement-json-serialization` | Hand-written JSON (we mostly use manual models) |
 | `flutter-setup-declarative-routing` | **Skip** — GoRouter configured |
 | `flutter-setup-localization` | **Skip** — use `add-language` |
@@ -238,7 +239,7 @@ Prefer project-tuned skills when workflows overlap.
 | `dart-resolve-package-conflicts` | `pub get` failures |
 | `dart-run-static-analysis` | `dart analyze` / `dart fix --apply` |
 | `dart-use-pattern-matching` | Dart 3 patterns |
-| `dart-generate-test-mocks` | **Skip** — prefer manual fakes unless requested |
+| `dart-generate-test-mocks` | **Skip** — examples use `ApiClient`; mock `Dio` or repositories instead |
 | `dart-migrate-to-checks-package` | **Skip** |
 | `dart-build-cli-app` | **Skip** |
 

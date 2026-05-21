@@ -1,34 +1,36 @@
 ﻿---
-description: "Security conventions â€” secrets, token storage, environment variables"
+description: "Security and environment configuration for ShopFlow"
 alwaysApply: false
 ---
 
-# Security Conventions
+# Security
 
-- **Never hardcode** API URLs, tokens, client IDs, or any secret in Dart source
-- All secrets are passed via `--dart-define` at build time and accessed via `EnvConfig` getters
-- Add placeholders for new secrets to `.env.example` (committed to git) and to build scripts
-- Auth tokens MUST use `FlutterSecureStorage` (`encryptedSharedPreferences: true`), NOT `SharedPreferences`
-- Storage key strings are centralized in `core/constants/storage_keys.dart`
-- Release builds use `scripts/build_release.ps1` (`--obfuscate --split-debug-info`)
-- See `shopflow_readme_files/08_security_and_environment.md` for full details
+## Secrets & environment
 
-## Environment Config
+- Default env: `assets/env/default.env` (committed placeholders)
+- Optional override: `.env` at repo root (gitignored) merged in `main.dart`
+- Read values only via **`AppConfig`** (`lib/core/config/app_config.dart`):
+  - `apiBaseUrl` ← `BASE_URL`
+  - `stripePublishableKey` ← `STRIPE_PUBLISHABLE_KEY`
+  - `stripePaymentIntentClientSecret` ← `STRIPE_PAYMENT_INTENT_CLIENT_SECRET`
+  - `appEnv` / `isDemoEnv` ← `APP_ENV`
 
-Access secrets only through `EnvConfig`:
-- `EnvConfig.baseUrl`
-- `EnvConfig.apiVersion`
-- `EnvConfig.googleClientId`
-- `EnvConfig.sentryDsn`
-- `EnvConfig.current.isProduction` / `EnvConfig.current.enableLogging`
+Never hardcode API URLs, Stripe keys, or tokens in Dart source.
 
-## Token Storage
+## Auth tokens
 
-```dart
-// CORRECT â€” FlutterSecureStorage
-final token = await secureStorage.read(key: StorageKeys.accessToken);
+- **`TokenStorage`** + `flutter_secure_storage` for JWT access/refresh tokens
+- Never store tokens in `SharedPreferences`
+- Key strings: `StorageKeys` in `lib/core/constants/storage_keys.dart`
 
-// WRONG â€” SharedPreferences (insecure for tokens)
-final token = prefs.getString('token');
-```
+## Network
 
+- `AuthInterceptor` attaches Bearer token from `TokenStorage`
+- `TokenRefreshInterceptor` handles 401 refresh
+- `DioClient` redacts login/register bodies from Talker logs
+
+## Demo mode
+
+`APP_ENV` unset / `demo` / `development` → `AppConfig.isDemoEnv == true` uses in-memory fake datasources (no real HTTP for auth/catalog).
+
+Set `APP_ENV=live` for real Fake Store HTTP.

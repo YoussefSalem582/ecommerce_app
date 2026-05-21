@@ -1,76 +1,53 @@
 ﻿---
-description: "Dart/Flutter code conventions for the Technology 92 app"
-globs: "ecommerce_app/**/*.dart"
+description: "Dart/Flutter conventions for ShopFlow"
 alwaysApply: false
 ---
 
 # Dart & Flutter Conventions
 
-## Design Tokens â€” Never Hardcode
+## Design tokens — never hardcode
 
-- **Colors**: Use `AppColors.primary`, `AppColors.error`, etc. â€” never `Color(0xFF...)` or `Colors.blue`
-- **Typography**: Use `AppTextStyles.bodyLarge`, `AppTextStyles.titleMedium`, etc.
-- **Spacing**: Use `AppSpacing.verticalBase`, `AppSpacing.paddingAll16`, `AppSpacing.pagePadding`
-- **Radius**: Use `AppRadius.md`, `AppRadius.lg`, etc.
-- **Assets**: Use `AppImages.logo`, `AppIcons.settings` â€” never hardcode asset paths
-- **Routes**: Use `AppRoutes.home`, `AppRoutes.login` â€” never hardcode path strings
+- **Brand colors**: `AppColors.primary`, `AppColors.accent`, etc. (`lib/core/theme/app_colors.dart`)
+- **Semantic UI colors**: `Theme.of(context).extension<AppPalette>()!` — `.primary`, `.surface`, `.muted`, `.error`
+- **Typography**: `Theme.of(context).textTheme` built from `AppTypography` in `app_theme.dart` — not inline `TextStyle` with hardcoded font sizes
+- **Routes**: `AppRoutes.home`, `AppRoutes.product(id)` — never `'/home'`
+- **Test keys**: `TestKeys.*` (`lib/core/constants/test_keys.dart`)
+- **Spacing**: prefer theme padding / `EdgeInsets` constants colocated with widgets; avoid magic numbers without reason
 
 ## Localization
 
-- All user-facing strings go through `context.l10n.someKey`
-- Add keys to BOTH `assets/l10n/intl_en.arb` and `lib/l10n/arb/intl_ar.arb`
-- Run `flutter gen-l10n` after adding keys
+- All user-facing strings: `AppLocalizations.of(context).yourKey`
+- ARB sources: `assets/l10n/intl_en.arb` and `assets/l10n/intl_ar.arb`
+- After edits: `flutter gen-l10n` → `lib/core/l10n/gen/`
 
-## Import Order
+## Import order
 
-1. Dart SDK (`dart:`)
-2. Flutter SDK (`package:flutter/`)
-3. Third-party packages (`package:`)
-4. Project imports (relative)
+1. `dart:`
+2. `package:flutter/`
+3. Other `package:`
+4. `package:shop_flow/...`
 
 ## Naming
 
 - Files: `snake_case.dart`
 - Classes: `PascalCase`
-- Variables/functions: `camelCase`
-- Constants: `camelCase` (Dart convention, not SCREAMING_CASE)
-- Private members: `_prefixed`
+- Members: `camelCase`, private `_prefixed`
 
-## Shared Widgets
+## Shared widgets (`lib/core/widgets/`)
 
-Always check `lib/core/widgets/` before creating new widgets:
-- `AppButton` â€” Elevated/outlined/text/icon/loading button
-- `AppTextField` â€” Text field, password field, dropdown
-- `AppPhoneField` â€” Phone input with country code picker
-- `AppDropdownField` â€” Dropdown selector
-- `AppSearchableDropdownField` â€” Searchable dropdown selector
-- `AppDateField` â€” Date input field
-- `AppDateInputSheet` â€” Date input bottom sheet
-- `AppCard` â€” Themed Card wrapper
-- `AppLoading` â€” Spinner, overlay, shimmer
-- `AppErrorWidget` â€” Error display with retry
-- `EmptyStateWidget` â€” Illustration + title + action
-- `CustomAppBar` â€” Themed AppBar
-- `AppBottomSheet` â€” Bottom sheet helper
-- `UnsavedChangesDialog` â€” Unsaved changes confirmation
-- `PdfViewerPage` â€” Full-screen PDF viewer
-- `VideoPlayerPage` â€” In-app video player
-- `PhotoPickerBottomSheet` â€” Photo picker sheet
-- `ResponsiveLayout` â€” Breakpoint builder
-- `AuthPatternBackground` â€” Auth page background pattern
-- `ConnectivityBanner` â€” Online/offline status banner
-- `OfflineBanner` â€” Offline notification banner
-- `AppToast` â€” Toast notification
-- `TranslationPendingBanner` â€” Translation pending indicator
-- `AppDateFilter` â€” Date range filter widget
-- `FilterIconButton` â€” Filter icon button
-- `FilterSheetActions` â€” Filter sheet action buttons
+Reuse before creating new UI:
 
-## Error Extensions
+- `AppLoadingView`, `AppErrorView`, `AppEmptyView`
+- `OfflineBanner`, `ProductGridShimmer`
+- `ResponsiveAppNav`, `ContinueShoppingButton`, `GoogleSignInButton`
+- `FlyToCartOverlay` (cart animation)
 
-Use `context.showError()`, `context.showSuccess()` from `context_extensions.dart`.
+Feature-specific widgets stay under `lib/features/<name>/presentation/widgets/`.
 
-## Storage Keys
+## Storage keys
 
-Centralize all storage key strings in `core/constants/storage_keys.dart`.
+Centralize in `lib/core/constants/storage_keys.dart`.
 
+## Logging
+
+Use injected `Talker` — `TalkerBlocObserver` is registered in `main.dart`. Do not add a custom `AppLogger`.

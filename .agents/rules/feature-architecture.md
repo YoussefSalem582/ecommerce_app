@@ -1,68 +1,45 @@
 ﻿---
-description: "Clean Architecture patterns for feature modules â€” domain, data, presentation layers"
-globs: "ecommerce_app/lib/features/**/*.dart"
+description: "Clean Architecture feature modules for ShopFlow"
 alwaysApply: false
 ---
 
-# Feature Architecture (Clean Architecture + BLoC)
+# Feature Architecture
 
-Each feature in `lib/features/` follows three layers: `data/ â†’ domain/ â† presentation/`
-
-## Folder Structure
+Each feature under `lib/features/<name>/`:
 
 ```
-features/<feature_name>/
-â”œâ”€â”€ data/
-â”‚   â”œâ”€â”€ datasources/     # Remote/local data sources
-â”‚   â”œâ”€â”€ models/          # Extend entities, add fromJson/toJson
-â”‚   â””â”€â”€ repositories/    # Implement domain contracts
-â”œâ”€â”€ domain/
-â”‚   â”œâ”€â”€ entities/        # Pure Dart, Equatable, no serialization
-â”‚   â”œâ”€â”€ repositories/    # Abstract contracts, return Either<Failure, T>
-â”‚   â””â”€â”€ usecases/        # One per operation, extend UseCase<T, Params>
-â””â”€â”€ presentation/
-    â”œâ”€â”€ bloc/            # Events, States, BLoC (separate files)
-    â”œâ”€â”€ pages/           # Full-screen widgets
-    â””â”€â”€ widgets/         # Feature-specific UI pieces
+data/       → datasources (remote + local), models, repositories
+domain/     → entities, repository contracts, usecases
+presentation/ → bloc or cubit, pages, widgets
 ```
 
-## Dependency Rule
+**Dependency rule:** Presentation → Domain ← Data. Domain has **no** Flutter imports.
 
-Dependencies only point inward: `Presentation â†’ Domain â† Data`
+## Domain
 
-- **Domain**: Zero Flutter imports. Only `dart:core`, `equatable`, `dartz`.
-- **Data**: Implements domain contracts. Uses `DioClient`, maps exceptions â†’ failures.
-- **Presentation**: Talks to Domain through Use Cases only.
+- Entities: `Equatable`, pure Dart, no JSON
+- Repositories: abstract, `Future<Either<Failure, T>>`
+- Use cases: `@injectable` class with `call(...)` — **no** shared `UseCase` base class in this repo
 
-## Domain Layer Rules
+## Data
 
-- Entities extend `Equatable` â€” no `fromJson`/`toJson`
-- Repository contracts are abstract classes returning `Either<Failure, T>`
-- Use cases extend `UseCase<ReturnType, Params>` â€” one file per operation
-- Use `NoParams` when no input is needed
+- Models extend entities + `fromJson` / `toJson`
+- Remote: `DioClient.dio` or `Fake*RemoteDatasource` when `AppConfig.isDemoEnv`
+- Local: Hive / SharedPreferences datasources where needed
+- Repository impl: try/catch, map `ServerException` / `CacheException` → `Failure`
 
-## Data Layer Rules
+## Presentation
 
-- Models extend their entity and add `fromJson(Map<String, dynamic>)` / `toJson()`
-- `fromJson` maps backend snake_case JSON keys to camelCase Dart fields
-- Remote data sources use `DioClient` (get, post, put, patch, delete, uploadFile)
-- Repository impls wrap calls in try/catch and map exceptions to failures:
-  - `AuthException` â†’ `AuthFailure`
-  - `NetworkException` â†’ `NetworkFailure`
-  - `ServerException` â†’ `ServerFailure`
-  - catch-all â†’ `UnexpectedFailure`
+- BLoC: separate `*_event.dart`, `*_state.dart`, `*_bloc.dart`
+- Cubit: for simple state (`WishlistCubit`, `ThemeCubit`, `LanguageCubit`, `ConnectivityCubit`)
+- `result.fold()` in handlers
 
-## Presentation Layer Rules
+## DI & app wiring
 
-- BLoC receives events, calls use cases, emits states
-- Events and states in separate files, extend `Equatable`
-- Use `result.fold()` to map Either to success/error states
-- Log transitions via `AppLogger.logBlocTransition()`
+- Annotate with `@injectable`, `@lazySingleton`, `@singleton`
+- Run `dart run build_runner build --delete-conflicting-outputs`
+- App-wide blocs: `BlocProvider.value` in `lib/app/shop_flow_app.dart` (from `getIt<...>()`)
 
-## DI Registration
+## Existing features
 
-In `injection_container.dart`:
-- Data sources, repos, use cases â†’ `registerLazySingleton`
-- BLoCs â†’ `registerFactory` (new instance per provider)
-- Add `BlocProvider` in `app.dart`
-
+`auth`, `products`, `cart`, `checkout`, `orders`, `profile`, `wishlist`, `home`, `onboarding`, `splash`

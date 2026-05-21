@@ -1,69 +1,48 @@
 ---
 name: add-feature
-description: Scaffold a new Clean Architecture feature with all layers (domain, data, presentation), DI registration, routing, and translations. Use when creating a new feature module.
+description: Scaffold a Clean Architecture feature for ShopFlow with DI, GoRouter, and ARB l10n.
 ---
 
-# Add New Feature
+# Add New Feature — ShopFlow
 
-Scaffold a complete Clean Architecture feature module with all required layers.
+Reference: `shopflow_readme_files/03_how_to_add_new_feature.md`
 
-## When to Use
-
-- User asks to create a new feature, screen, or module
-- User says "add feature", "create feature", "new feature"
-
-## Instructions
-
-Follow these steps in order. Reference `shopflow_readme_files/03_how_to_add_new_feature.md` for examples.
-
-### Step 1 — Folder structure
+## Structure
 
 ```
-lib/features/<feature_name>/
+lib/features/<name>/
 ├── data/{datasources,models,repositories}/
 ├── domain/{entities,repositories,usecases}/
 └── presentation/{bloc,pages,widgets}/
 ```
 
-### Step 2–4 — Domain
+## Domain
 
-- Entity: `Equatable`, no Flutter imports, no JSON
-- Repository: abstract, `Either<Failure, T>`
-- Use cases: one per operation
+- `*_entity.dart` — `Equatable`, no Flutter, no JSON
+- `*_repository.dart` — abstract, `Either<Failure, T>`
+- `*_usecase.dart` — `@injectable`, method `call(...)`
 
-### Step 5–7 — Data
+## Data
 
-- Model extends entity + `fromJson`/`toJson`
-- Remote datasource uses injected `Dio` / `DioClient`
-- Local datasource uses Hive where offline reads matter
-- Repository impl maps exceptions → `Failure`
+- `*_model.dart` — extends entity, `fromJson`/`toJson`
+- `*_remote_datasource.dart` — `DioClient.dio` + `Fake*` impl for `AppConfig.isDemoEnv`
+- `local_*_datasource.dart` — Hive when offline catalog-style reads matter
+- `*_repository_impl.dart` — exceptions → `ServerFailure` / `CacheFailure` / etc.
 
-### Step 8–10 — Presentation BLoC
+## Presentation
 
-- Separate `*_event.dart`, `*_state.dart`, `*_bloc.dart`
-- `result.fold()` for `Either` handling
+- BLoC trio or Cubit for trivial state
+- Reuse `lib/core/widgets/`
+- `AppLocalizations.of(context)` for strings
 
-### Step 11 — UI
+## Wire-up
 
-- Pages under `presentation/pages/`
-- Reuse `lib/core/widgets/` where possible
+1. `@injectable` + `dart run build_runner build --delete-conflicting-outputs`
+2. `BlocProvider` in `lib/app/shop_flow_app.dart` if global
+3. `AppRoutes` + `lib/core/router/app_router.dart`
+4. `assets/l10n/intl_en.arb` + `intl_ar.arb` → `flutter gen-l10n`
+5. Update `CHANGELOG.md`, `DOCUMENTATION_UPDATE_SUMMARY.md`, `CURRENT_STATUS.md`
 
-### Step 12 — DI
+## Not in this project
 
-- Add `@injectable` / `@lazySingleton` annotations
-- Run `dart run build_runner build --delete-conflicting-outputs`
-- Register `BlocProvider` in `lib/app/shop_flow_app.dart` if app-wide
-
-### Step 13 — Routes & l10n
-
-- Add constants to `lib/core/router/app_routes.dart`
-- Add `GoRoute` in `lib/core/router/app_router.dart`
-- Add keys to `assets/l10n/intl_en.arb` and `intl_ar.arb`
-- Run `flutter gen-l10n`
-- Use `AppLocalizations.of(context).keyName` in widgets
-
-## Post-Completion Checklist
-
-- [ ] Three layers + DI + route + ARB keys
-- [ ] `flutter gen-l10n` and `flutter analyze` clean
-- [ ] `CHANGELOG.md`, `DOCUMENTATION_UPDATE_SUMMARY.md`, `CURRENT_STATUS.md` updated
+- `AppLogger`, `OfflineQueue`, `CachePolicy`, `RouteNames`, `injection_container.dart`, `lib/shared/widgets/`
