@@ -7,7 +7,10 @@ import 'package:shop_flow/core/l10n/gen/app_localizations.dart';
 import 'package:shop_flow/core/router/app_routes.dart';
 import 'package:shop_flow/core/theme/theme_extensions.dart';
 import 'package:shop_flow/core/utils/price_formatter.dart';
+import 'package:shop_flow/core/widgets/app_error_view.dart';
+import 'package:shop_flow/core/widgets/app_loading_view.dart';
 import 'package:shop_flow/core/widgets/fly_to_cart_overlay.dart';
+import 'package:shop_flow/core/widgets/offline_banner.dart';
 import 'package:shop_flow/features/cart/presentation/bloc/cart_bloc.dart';
 import 'package:shop_flow/features/cart/presentation/bloc/cart_event.dart';
 import 'package:shop_flow/features/cart/presentation/bloc/cart_state.dart';
@@ -102,13 +105,21 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 builder: (BuildContext context, WishlistState wl) {
                   final bool isFav =
                       wl is WishlistReady && wl.contains(product.id);
-                  return IconButton(
-                    tooltip: l10n.wishlistToggleTooltip,
-                    icon: Icon(
-                      isFav ? Icons.favorite : Icons.favorite_border,
+                  return Semantics(
+                    label: isFav
+                        ? l10n.removeFromWishlistA11y
+                        : l10n.addToWishlistA11y,
+                    button: true,
+                    child: IconButton(
+                      tooltip: isFav
+                          ? l10n.removeFromWishlistA11y
+                          : l10n.addToWishlistA11y,
+                      icon: Icon(
+                        isFav ? Icons.favorite : Icons.favorite_border,
+                      ),
+                      onPressed: () =>
+                          context.read<WishlistCubit>().toggleId(product.id),
                     ),
-                    onPressed: () =>
-                        context.read<WishlistCubit>().toggleId(product.id),
                   );
                 },
               );
@@ -138,115 +149,114 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   key: TestKeys.pdpCartButton,
                   tooltip: l10n.cartTooltip,
                   icon: const Icon(Icons.shopping_cart_outlined),
-                  onPressed: () => context.go(AppRoutes.cart),
+                  onPressed: () => context.push(AppRoutes.cart),
                 ),
               );
             },
           ),
         ],
       ),
-      body: BlocBuilder<ProductDetailBloc, ProductDetailState>(
-        builder: (BuildContext context, ProductDetailState state) {
-          if (state is ProductDetailLoading ||
-              state is ProductDetailInitial) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (state is ProductDetailFailure) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Text(state.message, textAlign: TextAlign.center),
-                    const SizedBox(height: 16),
-                    FilledButton(
-                      onPressed: () => context.read<ProductDetailBloc>().add(
-                            ProductDetailLoadRequested(widget.productId),
-                          ),
-                      child: Text(l10n.retry),
+      body: OfflineBanner(
+        child: BlocBuilder<ProductDetailBloc, ProductDetailState>(
+          builder: (BuildContext context, ProductDetailState state) {
+            if (state is ProductDetailLoading ||
+                state is ProductDetailInitial) {
+              return const AppLoadingView();
+            }
+            if (state is ProductDetailFailure) {
+              return AppErrorView(
+                message: state.message,
+                onRetry: () => context.read<ProductDetailBloc>().add(
+                      ProductDetailLoadRequested(widget.productId),
                     ),
-                  ],
-                ),
-              ),
-            );
-          }
-          if (state is ProductDetailLoaded) {
-            final product = state.product;
-            final palette = context.appPalette;
-            return SingleChildScrollView(
-              padding: const EdgeInsets.only(bottom: 32),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  SizedBox(
-                    height: 300,
-                    child: PageView(
-                      children: <Widget>[
-                        Hero(
-                          tag: 'product-hero-${product.id}',
-                          child: CachedNetworkImage(
-                            imageUrl: product.imageUrl,
-                            fit: BoxFit.contain,
-                            placeholder: (_, __) => Container(
-                              color: palette.surface,
-                              alignment: Alignment.center,
-                              child: CircularProgressIndicator(
-                                color: palette.primary,
-                              ),
+              );
+            }
+            if (state is ProductDetailLoaded) {
+              final product = state.product;
+              final palette = context.appPalette;
+              return SingleChildScrollView(
+                padding: const EdgeInsets.only(bottom: 32),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: <Widget>[
+                    SizedBox(
+                      height: 300,
+                      child: Hero(
+                        tag: 'product-hero-${product.id}',
+                        child: CachedNetworkImage(
+                          imageUrl: product.imageUrl,
+                          fit: BoxFit.contain,
+                          placeholder: (_, __) => Container(
+                            color: palette.surface,
+                            alignment: Alignment.center,
+                            child: CircularProgressIndicator(
+                              color: palette.primary,
                             ),
                           ),
                         ),
-                      ],
+                      ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text(
-                          product.title,
-                          style: Theme.of(context).textTheme.headlineSmall,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          PriceFormatter.formatUsd(context, product.price),
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleLarge
-                              ?.copyWith(color: palette.primary),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          l10n.productRatingLabel(
-                            product.ratingRate.toStringAsFixed(1),
-                            product.ratingCount,
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            product.title,
+                            style: Theme.of(context).textTheme.headlineSmall,
                           ),
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          product.description,
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
-                        const SizedBox(height: 24),
-                        FilledButton.icon(
-                          key: TestKeys.addToCartButton,
-                          onPressed: () =>
-                              _handleAddToCart(context, product, l10n),
-                          icon: const Icon(Icons.shopping_cart_outlined),
-                          label: Text(l10n.addToCartLabel),
-                        ),
-                      ],
+                          const SizedBox(height: 8),
+                          Text(
+                            PriceFormatter.formatUsd(context, product.price),
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleLarge
+                                ?.copyWith(color: palette.primary),
+                          ),
+                          const SizedBox(height: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: palette.accent.withValues(alpha: 0.15),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              l10n.productRatingLabel(
+                                product.ratingRate.toStringAsFixed(1),
+                                product.ratingCount,
+                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .labelLarge
+                                  ?.copyWith(color: palette.accent),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            product.description,
+                            style: Theme.of(context).textTheme.bodyLarge,
+                          ),
+                          const SizedBox(height: 24),
+                          FilledButton.icon(
+                            key: TestKeys.addToCartButton,
+                            onPressed: () =>
+                                _handleAddToCart(context, product, l10n),
+                            icon: const Icon(Icons.shopping_cart_outlined),
+                            label: Text(l10n.addToCartLabel),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            );
-          }
-          return const SizedBox.shrink();
-        },
+                  ],
+                ),
+              );
+            }
+            return const SizedBox.shrink();
+          },
+        ),
       ),
     );
   }
