@@ -147,6 +147,19 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   const SizedBox(height: 12),
                   FilledButton.tonalIcon(
+                    onPressed: () => context.push(AppRoutes.addresses),
+                    icon: const Icon(Icons.location_on_outlined),
+                    label: Text(l10n.addressesTitle),
+                  ),
+                  const SizedBox(height: 12),
+                  FilledButton.tonalIcon(
+                    key: TestKeys.changePasswordButton,
+                    onPressed: () => context.push(AppRoutes.changePassword),
+                    icon: const Icon(Icons.lock_outline),
+                    label: Text(l10n.changePasswordTitle),
+                  ),
+                  const SizedBox(height: 12),
+                  FilledButton.tonalIcon(
                     key: TestKeys.editProfileButton,
                     onPressed: () async {
                       await context.push(AppRoutes.editProfile);
