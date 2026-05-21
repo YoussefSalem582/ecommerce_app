@@ -84,27 +84,26 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       appBar: AppBar(
         title: BlocBuilder<ProductDetailBloc, ProductDetailState>(
           builder: (BuildContext context, ProductDetailState state) {
-            if (state is ProductDetailLoaded) {
-              return Text(
-                state.product.title,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              );
-            }
-            return Text(l10n.productDetailLoadingTitle);
+            return switch (state) {
+              ProductDetailLoaded(:final product) => Text(
+                  product.title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              _ => Text(l10n.productDetailLoadingTitle),
+            };
           },
         ),
         actions: <Widget>[
           BlocBuilder<ProductDetailBloc, ProductDetailState>(
             builder: (BuildContext context, ProductDetailState detailState) {
-              if (detailState is! ProductDetailLoaded) {
-                return const SizedBox.shrink();
-              }
-              final product = detailState.product;
+              if (detailState case ProductDetailLoaded(:final product)) {
               return BlocBuilder<WishlistCubit, WishlistState>(
                 builder: (BuildContext context, WishlistState wl) {
-                  final bool isFav =
-                      wl is WishlistReady && wl.contains(product.id);
+                  final bool isFav = switch (wl) {
+                    WishlistReady ready => ready.contains(product.id),
+                    _ => false,
+                  };
                   return Semantics(
                     label: isFav
                         ? l10n.removeFromWishlistA11y
@@ -123,11 +122,15 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   );
                 },
               );
+              }
+              return const SizedBox.shrink();
             },
           ),
           BlocSelector<CartBloc, CartState, int>(
-            selector: (CartState s) =>
-                s is CartLoaded ? s.totalQuantity : 0,
+            selector: (CartState s) => switch (s) {
+              CartLoaded(:final totalQuantity) => totalQuantity,
+              _ => 0,
+            },
             builder: (BuildContext context, int count) {
               return Badge(
                 isLabelVisible: count > 0,
@@ -159,22 +162,43 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       body: OfflineBanner(
         child: BlocBuilder<ProductDetailBloc, ProductDetailState>(
           builder: (BuildContext context, ProductDetailState state) {
-            if (state is ProductDetailLoading ||
-                state is ProductDetailInitial) {
-              return const AppLoadingView();
-            }
-            if (state is ProductDetailFailure) {
-              return AppErrorView(
-                message: state.message,
-                onRetry: () => context.read<ProductDetailBloc>().add(
-                      ProductDetailLoadRequested(widget.productId),
-                    ),
-              );
-            }
-            if (state is ProductDetailLoaded) {
-              final product = state.product;
-              final palette = context.appPalette;
-              return SingleChildScrollView(
+            return switch (state) {
+              ProductDetailInitial() || ProductDetailLoading() =>
+                const AppLoadingView(),
+              ProductDetailFailure(:final message) => AppErrorView(
+                  message: message,
+                  onRetry: () => context.read<ProductDetailBloc>().add(
+                        ProductDetailLoadRequested(widget.productId),
+                      ),
+                ),
+              ProductDetailLoaded(:final product) => _ProductDetailLoadedBody(
+                  product: product,
+                  l10n: l10n,
+                  onAddToCart: () => _handleAddToCart(context, product, l10n),
+                ),
+            };
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class _ProductDetailLoadedBody extends StatelessWidget {
+  const _ProductDetailLoadedBody({
+    required this.product,
+    required this.l10n,
+    required this.onAddToCart,
+  });
+
+  final ProductEntity product;
+  final AppLocalizations l10n;
+  final VoidCallback onAddToCart;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.appPalette;
+    return SingleChildScrollView(
                 padding: const EdgeInsets.only(bottom: 32),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -242,8 +266,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                           const SizedBox(height: 24),
                           FilledButton.icon(
                             key: TestKeys.addToCartButton,
-                            onPressed: () =>
-                                _handleAddToCart(context, product, l10n),
+                            onPressed: onAddToCart,
                             icon: const Icon(Icons.shopping_cart_outlined),
                             label: Text(l10n.addToCartLabel),
                           ),
@@ -253,11 +276,5 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   ],
                 ),
               );
-            }
-            return const SizedBox.shrink();
-          },
-        ),
-      ),
-    );
   }
 }

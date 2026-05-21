@@ -61,18 +61,18 @@ class _LoginPageState extends State<LoginPage> {
       appBar: AppBar(title: Text(l10n.loginTitle)),
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (BuildContext context, AuthState state) {
-          if (state is AuthCredentialFailure) {
+          if (state case AuthCredentialFailure(:final message)) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
-                  authCredentialFailureSnackBarMessage(l10n, state.message),
+                  authCredentialFailureSnackBarMessage(l10n, message),
                 ),
               ),
             );
           }
         },
         builder: (BuildContext context, AuthState state) {
-          final loading = state is AuthLoading;
+          final bool loading = state is AuthLoading;
 
           return AbsorbPointer(
             absorbing: loading,

@@ -31,15 +31,17 @@ class _SplashPageState extends State<SplashPage> {
     if (!mounted) {
       return;
     }
-    if (state is AuthAuthenticated) {
-      context.go(AppRoutes.home);
-      return;
-    }
-    if (state is AuthUnauthenticated) {
-      final prefs = getIt<SharedPreferences>();
-      final onboarded =
-          prefs.getBool(StorageKeys.onboardingComplete) ?? false;
-      context.go(onboarded ? AppRoutes.login : AppRoutes.onboarding);
+    switch (state) {
+      case AuthAuthenticated():
+        context.go(AppRoutes.home);
+      case AuthUnauthenticated():
+        final prefs = getIt<SharedPreferences>();
+        final onboarded =
+            prefs.getBool(StorageKeys.onboardingComplete) ?? false;
+        context.go(onboarded ? AppRoutes.login : AppRoutes.onboarding);
+      case AuthInitial() || AuthLoading() || AuthCredentialFailure() ||
+          AuthRegistrationSucceeded():
+        break;
     }
   }
 
@@ -53,7 +55,7 @@ class _SplashPageState extends State<SplashPage> {
       _sessionRequested = true;
       final AuthBloc bloc = context.read<AuthBloc>();
       final AuthState current = bloc.state;
-      if (current is AuthAuthenticated || current is AuthUnauthenticated) {
+      if (current case AuthAuthenticated() || AuthUnauthenticated()) {
         unawaited(_routeForAuth(current, context));
         return;
       }
@@ -86,7 +88,7 @@ class _SplashPageState extends State<SplashPage> {
             );
 
     return BlocListener<AuthBloc, AuthState>(
-      listenWhen: (AuthState previous, AuthState current) =>
+      listenWhen: (_, AuthState current) =>
           current is AuthAuthenticated || current is AuthUnauthenticated,
       listener: (BuildContext context, AuthState state) {
         unawaited(_routeForAuth(state, context));

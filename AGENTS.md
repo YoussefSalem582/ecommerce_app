@@ -194,7 +194,7 @@ Feature-specific widgets stay under `lib/features/<name>/presentation/widgets/`.
 | Category | Command |
 |----------|---------|
 | Dart/Flutter | `flutter pub get`, `flutter gen-l10n`, `flutter analyze`, `flutter test`, `dart format <path>`, `dart run build_runner build --delete-conflicting-outputs` |
-| Doc tooling | `.\scripts\sync_ai_ignores.ps1`, `.\scripts\sync_ai_ignores.ps1 -Check`, `.\scripts\check_docs_freshness.ps1`, `.\scripts\check_skills_drift.ps1` |
+| Doc tooling | `.\scripts\sync_ai_ignores.ps1`, `.\scripts\sync_ai_ignores.ps1 -Check`, `.\scripts\check_docs_freshness.ps1`, `.\scripts\check_skills_drift.ps1`, `.\scripts\collect_coverage.ps1` |
 | Skills sync | `npx skills update`, `npx skills check` |
 | Lint | `npx markdownlint-cli2 "**/*.md"` |
 

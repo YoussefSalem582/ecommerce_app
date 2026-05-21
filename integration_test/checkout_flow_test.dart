@@ -32,7 +32,10 @@ void main() {
     }
 
     expect(find.byKey(TestKeys.firstProductCard), findsOneWidget);
-    await tester.tap(find.byKey(TestKeys.firstProductCard), warnIfMissed: false);
+    await tester.tap(
+      find.byKey(TestKeys.firstProductCard),
+      warnIfMissed: false,
+    );
     await tester.pumpAndSettle(const Duration(seconds: 5));
 
     expect(find.byKey(TestKeys.addToCartButton), findsOneWidget);
@@ -42,10 +45,11 @@ void main() {
     await tester.tap(find.byKey(TestKeys.pdpCartButton));
     await tester.pumpAndSettle(const Duration(seconds: 5));
 
-    await tester.pumpAndSettle(const Duration(seconds: 3));
     expect(find.byKey(TestKeys.cartCheckoutButton), findsOneWidget);
     await tester.tap(find.byKey(TestKeys.cartCheckoutButton));
     await tester.pumpAndSettle(const Duration(seconds: 5));
+
+    expect(find.byKey(TestKeys.checkoutPayButton), findsOneWidget);
 
     await tester.enterText(
       find.byKey(TestKeys.checkoutFullName),
@@ -61,14 +65,13 @@ void main() {
 
     await tester.tap(find.byKey(TestKeys.checkoutPayButton));
 
-    Finder successTitle = find.text('Thank you!');
-    for (int i = 0; i < 40; i++) {
+    for (var i = 0; i < 40; i++) {
       await tester.pump(const Duration(milliseconds: 500));
-      if (successTitle.evaluate().isNotEmpty) {
+      if (find.byKey(TestKeys.orderSuccessTitle).evaluate().isNotEmpty) {
         break;
       }
     }
 
-    expect(successTitle, findsOneWidget);
+    expect(find.byKey(TestKeys.orderSuccessTitle), findsOneWidget);
   });
 }

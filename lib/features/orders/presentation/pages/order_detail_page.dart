@@ -49,109 +49,128 @@ class _OrderDetailBody extends StatelessWidget {
       appBar: AppBar(title: Text(l10n.orderDetailTitle)),
       body: BlocBuilder<OrderDetailBloc, OrderDetailState>(
         builder: (BuildContext context, OrderDetailState state) {
-          if (state is OrderDetailLoading ||
-              state is OrderDetailInitial) {
-            return const AppLoadingView();
-          }
-          if (state is OrderDetailFailure) {
-            return AppErrorView(
-              message: state.message,
-              onRetry: () => context.read<OrderDetailBloc>().add(
-                    OrderDetailLoadRequested(orderId),
-                  ),
-            );
-          }
-          if (state is OrderDetailLoaded) {
-            final OrderEntity o = state.order;
-            final DateFormat fmt = DateFormat.yMMMd(
-              Localizations.localeOf(context).toString(),
-            ).add_jm();
-            final String dateStr = fmt.format(o.createdAt);
-            final ShippingAddressEntity s = o.shipping;
-            return SingleChildScrollView(
+          return switch (state) {
+            OrderDetailInitial() || OrderDetailLoading() =>
+              const AppLoadingView(),
+            OrderDetailFailure(:final message) => AppErrorView(
+                message: message,
+                onRetry: () => context.read<OrderDetailBloc>().add(
+                      OrderDetailLoadRequested(orderId),
+                    ),
+              ),
+            OrderDetailLoaded(:final order) => _OrderDetailContent(
+                order: order,
+                orderId: orderId,
+                l10n: l10n,
+                palette: palette,
+              ),
+          };
+        },
+      ),
+    );
+  }
+}
+
+class _OrderDetailContent extends StatelessWidget {
+  const _OrderDetailContent({
+    required this.order,
+    required this.orderId,
+    required this.l10n,
+    required this.palette,
+  });
+
+  final OrderEntity order;
+  final String orderId;
+  final AppLocalizations l10n;
+  final AppPalette palette;
+
+  @override
+  Widget build(BuildContext context) {
+    final OrderEntity o = order;
+    final DateFormat fmt = DateFormat.yMMMd(
+      Localizations.localeOf(context).toString(),
+    ).add_jm();
+    final String dateStr = fmt.format(o.createdAt);
+    final ShippingAddressEntity s = o.shipping;
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          Text(
+            '${l10n.ordersOrderIdLabel}: ${o.id}',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          Text(
+            dateStr,
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            l10n.orderTimelineTitle,
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
+          const SizedBox(height: 8),
+          _Timeline(status: o.status, l10n: l10n, palette: palette),
+          const SizedBox(height: 24),
+          Text(
+            l10n.checkoutShippingSection,
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
+          const SizedBox(height: 8),
+          Card(
+            child: Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text(
-                    '${l10n.ordersOrderIdLabel}: ${o.id}',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  Text(
-                    dateStr,
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    l10n.orderTimelineTitle,
-                    style: Theme.of(context).textTheme.titleSmall,
-                  ),
-                  const SizedBox(height: 8),
-                  _Timeline(status: o.status, l10n: l10n, palette: palette),
-                  const SizedBox(height: 24),
-                  Text(
-                    l10n.checkoutShippingSection,
-                    style: Theme.of(context).textTheme.titleSmall,
-                  ),
-                  const SizedBox(height: 8),
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(s.fullName),
-                          Text(s.street),
-                          Text('${s.city}, ${s.postalCode}'),
-                          Text(s.country),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  Text(
-                    l10n.checkoutOrderSummarySection,
-                    style: Theme.of(context).textTheme.titleSmall,
-                  ),
-                  Card(
-                    child: Column(
-                      children: o.lines
-                          .map(
-                            (OrderLineEntity l) => ListTile(
-                              title: Text(l.title),
-                              subtitle: Text(
-                                '${l.quantity} × ${PriceFormatter.formatUsd(context, l.unitPrice)}',
-                              ),
-                              trailing: Text(
-                                PriceFormatter.formatUsd(context, l.lineTotal),
-                              ),
-                            ),
-                          )
-                          .toList(),
-                    ),
-                  ),
-                  const Divider(),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: Text(
-                      '${l10n.cartSubtotalLabel}: ${PriceFormatter.formatUsd(context, o.total)}',
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleMedium
-                          ?.copyWith(color: palette.primary),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  OutlinedButton(
-                    onPressed: () => context.go(AppRoutes.orders),
-                    child: Text(l10n.ordersTitle),
-                  ),
+                  Text(s.fullName),
+                  Text(s.street),
+                  Text('${s.city}, ${s.postalCode}'),
+                  Text(s.country),
                 ],
               ),
-            );
-          }
-          return const SizedBox.shrink();
-        },
+            ),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            l10n.checkoutOrderSummarySection,
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
+          Card(
+            child: Column(
+              children: o.lines
+                  .map(
+                    (OrderLineEntity l) => ListTile(
+                      title: Text(l.title),
+                      subtitle: Text(
+                        '${l.quantity} × ${PriceFormatter.formatUsd(context, l.unitPrice)}',
+                      ),
+                      trailing: Text(
+                        PriceFormatter.formatUsd(context, l.lineTotal),
+                      ),
+                    ),
+                  )
+                  .toList(),
+            ),
+          ),
+          const Divider(),
+          Align(
+            alignment: Alignment.centerRight,
+            child: Text(
+              '${l10n.cartSubtotalLabel}: ${PriceFormatter.formatUsd(context, o.total)}',
+              style: Theme.of(context)
+                  .textTheme
+                  .titleMedium
+                  ?.copyWith(color: palette.primary),
+            ),
+          ),
+          const SizedBox(height: 24),
+          OutlinedButton(
+            onPressed: () => context.go(AppRoutes.orders),
+            child: Text(l10n.ordersTitle),
+          ),
+        ],
       ),
     );
   }

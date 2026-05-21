@@ -27,4 +27,7 @@ abstract final class TestKeys {
   static const checkoutPostal = ValueKey<String>('checkout_postal');
   static const checkoutCountry = ValueKey<String>('checkout_country');
   static const checkoutPayButton = ValueKey<String>('checkout_pay_button');
+
+  /// Order success headline (integration / widget tests).
+  static const orderSuccessTitle = ValueKey<String>('order_success_title');
 }
