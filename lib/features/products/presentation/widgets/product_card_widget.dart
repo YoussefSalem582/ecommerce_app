@@ -17,6 +17,7 @@ class ProductCard extends StatelessWidget {
   const ProductCard({
     required this.product,
     required this.onTap,
+    this.enableHero = true,
     super.key,
   });
 
@@ -25,6 +26,9 @@ class ProductCard extends StatelessWidget {
 
   /// Invoked when user selects the tile.
   final VoidCallback onTap;
+
+  /// When false, image is not wrapped in [Hero] (use for duplicate tiles on one screen).
+  final bool enableHero;
 
   @override
   Widget build(BuildContext context) {
@@ -48,8 +52,16 @@ class ProductCard extends StatelessWidget {
                   clipBehavior: Clip.none,
                   children: <Widget>[
                     gridTile
-                        ? _GridProductBody(product: product, palette: palette)
-                        : _ListProductBody(product: product, palette: palette),
+                        ? _GridProductBody(
+                            product: product,
+                            palette: palette,
+                            enableHero: enableHero,
+                          )
+                        : _ListProductBody(
+                            product: product,
+                            palette: palette,
+                            enableHero: enableHero,
+                          ),
                     Positioned(
                       top: -4,
                       right: -4,
@@ -79,10 +91,12 @@ class _GridProductBody extends StatelessWidget {
   const _GridProductBody({
     required this.product,
     required this.palette,
+    required this.enableHero,
   });
 
   final ProductEntity product;
   final AppPalette palette;
+  final bool enableHero;
 
   @override
   Widget build(BuildContext context) {
@@ -92,7 +106,11 @@ class _GridProductBody extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Expanded(
-          child: _ProductImage(product: product, palette: palette),
+          child: _ProductImage(
+            product: product,
+            palette: palette,
+            enableHero: enableHero,
+          ),
         ),
         const SizedBox(height: 10),
         Text(
@@ -148,10 +166,12 @@ class _ListProductBody extends StatelessWidget {
   const _ListProductBody({
     required this.product,
     required this.palette,
+    required this.enableHero,
   });
 
   final ProductEntity product;
   final AppPalette palette;
+  final bool enableHero;
 
   @override
   Widget build(BuildContext context) {
@@ -163,7 +183,11 @@ class _ListProductBody extends StatelessWidget {
         SizedBox(
           width: 88,
           height: 88,
-          child: _ProductImage(product: product, palette: palette),
+          child: _ProductImage(
+            product: product,
+            palette: palette,
+            enableHero: enableHero,
+          ),
         ),
         const SizedBox(width: 12),
         Expanded(
@@ -203,40 +227,48 @@ class _ProductImage extends StatelessWidget {
   const _ProductImage({
     required this.product,
     required this.palette,
+    required this.enableHero,
   });
 
   final ProductEntity product;
   final AppPalette palette;
+  final bool enableHero;
 
   @override
   Widget build(BuildContext context) {
-    return Hero(
-      tag: 'product-hero-${product.id}',
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(8),
-        child: CachedNetworkImage(
-          imageUrl: product.imageUrl,
-          fit: BoxFit.cover,
-          width: double.infinity,
-          height: double.infinity,
-          placeholder: (_, __) => Container(
-            color: palette.surface,
-            alignment: Alignment.center,
-            child: CircularProgressIndicator(
-              color: palette.primary,
-              strokeWidth: 2,
-            ),
+    final Widget image = ClipRRect(
+      borderRadius: BorderRadius.circular(8),
+      child: CachedNetworkImage(
+        imageUrl: product.imageUrl,
+        fit: BoxFit.cover,
+        width: double.infinity,
+        height: double.infinity,
+        placeholder: (_, __) => Container(
+          color: palette.surface,
+          alignment: Alignment.center,
+          child: CircularProgressIndicator(
+            color: palette.primary,
+            strokeWidth: 2,
           ),
-          errorWidget: (_, __, ___) => Container(
-            color: palette.surface,
-            alignment: Alignment.center,
-            child: Icon(
-              Icons.image_not_supported_outlined,
-              color: palette.error,
-            ),
+        ),
+        errorWidget: (_, __, ___) => Container(
+          color: palette.surface,
+          alignment: Alignment.center,
+          child: Icon(
+            Icons.image_not_supported_outlined,
+            color: palette.error,
           ),
         ),
       ),
+    );
+
+    if (!enableHero) {
+      return image;
+    }
+
+    return Hero(
+      tag: 'product-hero-${product.id}',
+      child: image,
     );
   }
 }
