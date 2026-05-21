@@ -1,5 +1,7 @@
 # ShopFlow
 
+**Version:** `1.0.0+1`
+
 Production-grade Flutter e-commerce **freelance showcase** — Clean Architecture, BLoC, Hive offline-first, Stripe, Talker logging, AR/EN localization, and responsive navigation across mobile, tablet, and desktop.
 
 ![Demo GIF](./docs/demo.gif)

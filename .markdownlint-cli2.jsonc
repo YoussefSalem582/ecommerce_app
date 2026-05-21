@@ -1,0 +1,103 @@
+{
+  // markdownlint-cli2 config for the ShopFlow e-commerce app.
+  // Style is tuned to MATCH the existing docs, not the other way around.
+  // CI uses this config in .github/workflows/docs.yml.
+
+  "config": {
+    // Default rule set
+    "default": true,
+
+    // ---------------------------------------------------------------
+    // Rules disabled because the existing docs deliberately violate them
+    // ---------------------------------------------------------------
+
+    // MD013 - line length. Our prose docs and wide tables exceed 80 cols.
+    "MD013": false,
+
+    // MD024 - duplicate headings. Keep-a-Changelog format REQUIRES the
+    // same "### Added" / "### Changed" / "### Fixed" headings under each
+    // "## [version]" block, so we disable this rule outright.
+    "MD024": false,
+
+    // MD033 - inline HTML. We use <details>, <summary>, and the
+    // canonical-banner comment marker in AGENTS.md.
+    "MD033": false,
+
+    // MD034 - bare URLs. We sometimes paste raw URLs in changelog notes.
+    "MD034": false,
+
+    // MD036 - emphasis used as heading. Some intro paragraphs use bold
+    // emphasis for the first line; cosmetic.
+    "MD036": false,
+
+    // MD040 - fenced code language. Many of our changelog and tree
+    // snippets are deliberately language-less (raw text).
+    "MD040": false,
+
+    // MD041 - first line must be heading. New files (ONBOARDING etc.)
+    // sometimes lead with a breadcrumb line.
+    "MD041": false,
+
+    // MD045 - no alt text on images. We are a code-heavy project and
+    // very rarely embed images; when we do, alt text is added by hand.
+    "MD045": false,
+
+    // MD060 - table column style. Compact-style tables are fine in agent docs.
+    "MD060": false,
+
+    // -------------------------------------------------------------
+    // Structural "blanks-around-X" rules. The existing docs do not
+    // uniformly insert blank lines around every list/fence/heading and
+    // we are not retro-fixing 100+ historical entries in
+    // DOCUMENTATION_UPDATE_SUMMARY.md. New docs SHOULD include the
+    // blank lines (we follow the spirit of the rule), but CI does not
+    // enforce them to avoid noise.
+    // -------------------------------------------------------------
+    "MD022": false,
+    "MD031": false,
+    "MD032": false,
+
+    // MD009 - trailing spaces. A few historical entries trail spaces;
+    // not worth a full sweep.
+    "MD009": false,
+
+    // MD026 - trailing punctuation in headings. We deliberately use
+    // "After EVERY feature, fix, refactor, or meaningful change, you MUST update:".
+    "MD026": false,
+
+    // MD029 - ordered list prefix. Mixed 1./2. and 1./1./1. styles exist
+    // historically; cosmetic.
+    "MD029": false,
+
+    // MD049 - emphasis style (asterisk vs underscore). Markdown renders
+    // both identically; only a tiny minority of underscored emphasis exists.
+    "MD049": false,
+
+    // MD051 - link fragments. Some intra-doc anchor links use shorthand;
+    // they resolve fine in GitHub's renderer.
+    "MD051": false
+  },
+
+  // Glob patterns for what to lint.
+  "globs": [
+    "**/*.md"
+  ],
+
+  "ignores": [
+    // Generated / vendored content
+    "build/**",
+    ".dart_tool/**",
+    "ios/Pods/**",
+    "ios/**",
+    "android/.gradle/**",
+    "android/**",
+    "node_modules/**",
+    ".git/**",
+
+    // Official skills installed via `npx skills add` - upstream-managed,
+    // re-synced from flutter/skills + dart-lang/skills. Their style is
+    // not ours to enforce.
+    ".agents/skills/dart-*/**",
+    ".agents/skills/flutter-*/**"
+  ]
+}

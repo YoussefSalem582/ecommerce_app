@@ -1,0 +1,66 @@
+# ============================================================
+# .cursorindexingignore - Exclude from Cursor IDE (indexing-only) context
+# AUTO-GENERATED from scripts/ai_ignore_template.txt by scripts/sync_ai_ignores.ps1
+# DO NOT EDIT BY HAND. To change exclusions, edit the template and re-run the sync.
+# Paths are relative to this file's location (ecommerce_app/).
+# ============================================================
+
+# Flutter build artifacts
+build/
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+android/.gradle/
+android/app/build/
+ios/Pods/
+ios/.symlinks/
+windows/flutter/ephemeral/
+
+# Generated files (auto-generated, not useful context)
+lib/core/l10n/gen/
+**/*.g.dart
+**/*.freezed.dart
+**/*.mocks.dart
+**/*.config.dart
+
+# Design-system reference (large markdown, low signal for code tasks)
+design-system/
+
+# Assets (binary — not useful for code context)
+**/*.png
+**/*.jpg
+**/*.jpeg
+**/*.gif
+**/*.svg
+**/*.ttf
+**/*.otf
+**/*.woff
+**/*.woff2
+**/*.ico
+**/*.mp4
+**/*.mp3
+**/*.pdf
+
+# IDE & OS
+.idea/
+.vscode/
+.windsurf/
+*.iml
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Logs
+**/*.log
+**/*.log.*
+
+# Lock files (large, low signal)
+**/pnpm-lock.yaml
+**/package-lock.json
+**/composer.lock
+pubspec.lock

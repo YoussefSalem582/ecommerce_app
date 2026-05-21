@@ -1,0 +1,68 @@
+﻿---
+description: "Clean Architecture patterns for feature modules â€” domain, data, presentation layers"
+globs: "ecommerce_app/lib/features/**/*.dart"
+alwaysApply: false
+---
+
+# Feature Architecture (Clean Architecture + BLoC)
+
+Each feature in `lib/features/` follows three layers: `data/ â†’ domain/ â† presentation/`
+
+## Folder Structure
+
+```
+features/<feature_name>/
+â”œâ”€â”€ data/
+â”‚   â”œâ”€â”€ datasources/     # Remote/local data sources
+â”‚   â”œâ”€â”€ models/          # Extend entities, add fromJson/toJson
+â”‚   â””â”€â”€ repositories/    # Implement domain contracts
+â”œâ”€â”€ domain/
+â”‚   â”œâ”€â”€ entities/        # Pure Dart, Equatable, no serialization
+â”‚   â”œâ”€â”€ repositories/    # Abstract contracts, return Either<Failure, T>
+â”‚   â””â”€â”€ usecases/        # One per operation, extend UseCase<T, Params>
+â””â”€â”€ presentation/
+    â”œâ”€â”€ bloc/            # Events, States, BLoC (separate files)
+    â”œâ”€â”€ pages/           # Full-screen widgets
+    â””â”€â”€ widgets/         # Feature-specific UI pieces
+```
+
+## Dependency Rule
+
+Dependencies only point inward: `Presentation â†’ Domain â† Data`
+
+- **Domain**: Zero Flutter imports. Only `dart:core`, `equatable`, `dartz`.
+- **Data**: Implements domain contracts. Uses `DioClient`, maps exceptions â†’ failures.
+- **Presentation**: Talks to Domain through Use Cases only.
+
+## Domain Layer Rules
+
+- Entities extend `Equatable` â€” no `fromJson`/`toJson`
+- Repository contracts are abstract classes returning `Either<Failure, T>`
+- Use cases extend `UseCase<ReturnType, Params>` â€” one file per operation
+- Use `NoParams` when no input is needed
+
+## Data Layer Rules
+
+- Models extend their entity and add `fromJson(Map<String, dynamic>)` / `toJson()`
+- `fromJson` maps backend snake_case JSON keys to camelCase Dart fields
+- Remote data sources use `DioClient` (get, post, put, patch, delete, uploadFile)
+- Repository impls wrap calls in try/catch and map exceptions to failures:
+  - `AuthException` â†’ `AuthFailure`
+  - `NetworkException` â†’ `NetworkFailure`
+  - `ServerException` â†’ `ServerFailure`
+  - catch-all â†’ `UnexpectedFailure`
+
+## Presentation Layer Rules
+
+- BLoC receives events, calls use cases, emits states
+- Events and states in separate files, extend `Equatable`
+- Use `result.fold()` to map Either to success/error states
+- Log transitions via `AppLogger.logBlocTransition()`
+
+## DI Registration
+
+In `injection_container.dart`:
+- Data sources, repos, use cases â†’ `registerLazySingleton`
+- BLoCs â†’ `registerFactory` (new instance per provider)
+- Add `BlocProvider` in `app.dart`
+
