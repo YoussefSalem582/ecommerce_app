@@ -8,16 +8,22 @@ class AppPalette extends ThemeExtension<AppPalette> {
   /// Creates an [AppPalette] bundle.
   const AppPalette({
     required this.primary,
+    required this.secondary,
     required this.accent,
     required this.surface,
     required this.onSurface,
+    required this.muted,
     required this.error,
+    required this.onPrimary,
   });
 
   /// Primary interactive color.
   final Color primary;
 
-  /// Secondary accent (buttons, highlights).
+  /// Secondary highlight color.
+  final Color secondary;
+
+  /// CTA / urgency accent color.
   final Color accent;
 
   /// Scaffold / card background.
@@ -26,23 +32,35 @@ class AppPalette extends ThemeExtension<AppPalette> {
   /// Primary text/icon color on [surface].
   final Color onSurface;
 
+  /// Secondary / caption text color.
+  final Color muted;
+
   /// Semantic error color.
   final Color error;
+
+  /// Text/icons on [primary] backgrounds.
+  final Color onPrimary;
 
   @override
   AppPalette copyWith({
     Color? primary,
+    Color? secondary,
     Color? accent,
     Color? surface,
     Color? onSurface,
+    Color? muted,
     Color? error,
+    Color? onPrimary,
   }) {
     return AppPalette(
       primary: primary ?? this.primary,
+      secondary: secondary ?? this.secondary,
       accent: accent ?? this.accent,
       surface: surface ?? this.surface,
       onSurface: onSurface ?? this.onSurface,
+      muted: muted ?? this.muted,
       error: error ?? this.error,
+      onPrimary: onPrimary ?? this.onPrimary,
     );
   }
 
@@ -53,10 +71,13 @@ class AppPalette extends ThemeExtension<AppPalette> {
     }
     return AppPalette(
       primary: Color.lerp(primary, other.primary, t)!,
+      secondary: Color.lerp(secondary, other.secondary, t)!,
       accent: Color.lerp(accent, other.accent, t)!,
       surface: Color.lerp(surface, other.surface, t)!,
       onSurface: Color.lerp(onSurface, other.onSurface, t)!,
+      muted: Color.lerp(muted, other.muted, t)!,
       error: Color.lerp(error, other.error, t)!,
+      onPrimary: Color.lerp(onPrimary, other.onPrimary, t)!,
     );
   }
 }
@@ -64,19 +85,25 @@ class AppPalette extends ThemeExtension<AppPalette> {
 /// Light palette aligned with [AppColors].
 const AppPalette appPaletteLight = AppPalette(
   primary: AppColors.primary,
+  secondary: AppColors.secondary,
   accent: AppColors.accent,
   surface: AppColors.surfaceLight,
-  onSurface: Color(0xFF1C1C1E),
+  onSurface: AppColors.onSurfaceLight,
+  muted: AppColors.mutedLight,
   error: Color(0xFFB00020),
+  onPrimary: Colors.white,
 );
 
 /// Dark palette aligned with [AppColors].
 const AppPalette appPaletteDark = AppPalette(
   primary: AppColors.primaryDark,
+  secondary: AppColors.secondaryDark,
   accent: AppColors.accentDark,
   surface: AppColors.surfaceDark,
-  onSurface: Color(0xFFE8E8E8),
+  onSurface: AppColors.onSurfaceDark,
+  muted: AppColors.mutedDark,
   error: Color(0xFFCF6679),
+  onPrimary: AppColors.onSurfaceLight,
 );
 
 /// Theme helpers for `context.appPalette`.
