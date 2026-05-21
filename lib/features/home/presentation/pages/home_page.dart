@@ -19,6 +19,10 @@ import 'package:shop_flow/features/products/presentation/bloc/product_list_bloc.
 import 'package:shop_flow/features/products/presentation/bloc/product_list_event.dart';
 import 'package:shop_flow/features/products/presentation/bloc/product_list_state.dart';
 import 'package:shop_flow/features/products/presentation/bloc/product_list_view_mode.dart';
+import 'package:shop_flow/features/products/presentation/bloc/product_sort_option.dart';
+import 'package:shop_flow/features/products/presentation/cubit/recently_viewed_cubit.dart';
+import 'package:shop_flow/features/products/presentation/cubit/recently_viewed_state.dart';
+import 'package:shop_flow/features/products/presentation/widgets/catalog_filter_sheet.dart';
 import 'package:shop_flow/features/products/presentation/widgets/product_card_widget.dart';
 import 'package:shop_flow/features/wishlist/presentation/cubit/wishlist_cubit.dart';
 import 'package:shop_flow/features/wishlist/presentation/cubit/wishlist_state.dart';
@@ -60,6 +64,66 @@ class _HomePageState extends State<HomePage> {
         );
   }
 
+  void _showFilterSheet(ProductListLoaded loaded) {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      builder: (BuildContext ctx) => CatalogFilterSheet(loaded: loaded),
+    );
+  }
+
+  String _sortLabel(AppLocalizations l10n, ProductSortOption option) {
+    return switch (option) {
+      ProductSortOption.priceAsc => l10n.catalogSortPriceAsc,
+      ProductSortOption.priceDesc => l10n.catalogSortPriceDesc,
+      ProductSortOption.ratingDesc => l10n.catalogSortRatingDesc,
+      ProductSortOption.titleAsc => l10n.catalogSortTitleAsc,
+    };
+  }
+
+  Widget _recentlyViewedSection(AppLocalizations l10n) {
+    return BlocBuilder<RecentlyViewedCubit, RecentlyViewedState>(
+      builder: (BuildContext context, RecentlyViewedState rvState) {
+        if (rvState is! RecentlyViewedReady || rvState.products.isEmpty) {
+          return const SizedBox.shrink();
+        }
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+              child: Text(
+                l10n.recentlyViewedTitle,
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
+            ),
+            SizedBox(
+              height: 200,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                itemCount: rvState.products.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 12),
+                itemBuilder: (BuildContext context, int index) {
+                  final ProductEntity product = rvState.products[index];
+                  return SizedBox(
+                    width: 150,
+                    child: ProductCard(
+                      product: product,
+                      enableHero: false,
+                      onTap: () => context.push(AppRoutes.product(product.id)),
+                    ),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 8),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -86,6 +150,12 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
                 actions: <Widget>[
+                  IconButton(
+                    key: TestKeys.categoriesBrowseButton,
+                    tooltip: l10n.categoriesTitle,
+                    onPressed: () => context.push(AppRoutes.categories),
+                    icon: const Icon(Icons.category_outlined),
+                  ),
                   BlocBuilder<WishlistCubit, WishlistState>(
                     builder: (BuildContext context, WishlistState wishlistState) {
                       final int count = wishlistState is WishlistReady
@@ -102,7 +172,38 @@ class _HomePageState extends State<HomePage> {
                       );
                     },
                   ),
-                  if (listState is ProductListLoaded)
+                  if (listState is ProductListLoaded) ...<Widget>[
+                    PopupMenuButton<ProductSortOption>(
+                      key: TestKeys.catalogSortButton,
+                      tooltip: l10n.catalogSortLabel,
+                      initialValue: listState.sortOption,
+                      onSelected: (ProductSortOption option) {
+                        context.read<ProductListBloc>().add(
+                              ProductListSortChanged(option),
+                            );
+                      },
+                      itemBuilder: (BuildContext context) {
+                        return ProductSortOption.values
+                            .map(
+                              (ProductSortOption option) =>
+                                  PopupMenuItem<ProductSortOption>(
+                                value: option,
+                                child: Text(_sortLabel(l10n, option)),
+                              ),
+                            )
+                            .toList();
+                      },
+                      icon: const Icon(Icons.sort_rounded),
+                    ),
+                    IconButton(
+                      key: TestKeys.catalogFilterButton,
+                      tooltip: l10n.catalogFilterTitle,
+                      onPressed: () => _showFilterSheet(listState),
+                      icon: Badge(
+                        isLabelVisible: listState.hasActiveFilters,
+                        child: const Icon(Icons.tune_rounded),
+                      ),
+                    ),
                     IconButton(
                       tooltip: listState.viewMode == ProductListViewMode.grid
                           ? l10n.catalogListView
@@ -116,6 +217,7 @@ class _HomePageState extends State<HomePage> {
                             : Icons.grid_view_rounded,
                       ),
                     ),
+                  ],
                 ],
               ),
               floatingActionButton: kDebugMode
@@ -161,6 +263,23 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                       const SizedBox(height: 8),
+                      _recentlyViewedSection(l10n),
+                      if (listState is ProductListLoaded &&
+                          listState.hasActiveFilters)
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: ActionChip(
+                              key: TestKeys.catalogClearFiltersChip,
+                              avatar: const Icon(Icons.clear, size: 18),
+                              label: Text(l10n.catalogClearFilters),
+                              onPressed: () => context
+                                  .read<ProductListBloc>()
+                                  .add(const ProductListFiltersCleared()),
+                            ),
+                          ),
+                        ),
                       if (listState is ProductListLoaded &&
                           listState.categories.isNotEmpty)
                         SizedBox(
