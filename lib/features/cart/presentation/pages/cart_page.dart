@@ -8,6 +8,7 @@ import 'package:shop_flow/core/l10n/gen/app_localizations.dart';
 import 'package:shop_flow/core/router/app_routes.dart';
 import 'package:shop_flow/core/theme/theme_extensions.dart';
 import 'package:shop_flow/core/utils/price_formatter.dart';
+import 'package:shop_flow/core/utils/app_breakpoints.dart';
 import 'package:shop_flow/core/widgets/app_empty_view.dart';
 import 'package:shop_flow/core/widgets/app_error_view.dart';
 import 'package:shop_flow/core/widgets/app_loading_view.dart';
@@ -127,137 +128,171 @@ class _CartLoadedBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        Expanded(
-          child: RefreshIndicator(
-            color: palette.primary,
-            onRefresh: () async {
-              context.read<CartBloc>().add(const CartRefreshRequested());
-              await context.read<CartBloc>().stream.firstWhere(
-                    (CartState s) => s is CartLoaded || s is CartFailure,
-                  );
-            },
-            child: Semantics(
-              label: l10n.swipeToDeleteA11y,
-              child: ListView.builder(
-                padding: const EdgeInsets.only(bottom: 120),
-                itemCount: lines.length,
-                itemBuilder: (BuildContext context, int index) {
-                  final CartLineEntity line = lines[index];
-                  return Dismissible(
-                    key: ValueKey<int>(line.productId),
-                    direction: DismissDirection.endToStart,
-                    background: Container(
-                      alignment: Alignment.centerRight,
-                      padding: const EdgeInsets.only(right: 20),
-                      color: palette.error.withValues(alpha: 0.15),
-                      child: Icon(Icons.delete_outline, color: palette.error),
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        final bool wide = constraints.maxWidth >= AppBreakpoints.tablet;
+
+        if (!wide) {
+          return Column(
+            children: <Widget>[
+              Expanded(child: _buildLineList(context)),
+              _buildSummaryBar(context),
+            ],
+          );
+        }
+
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Expanded(flex: 3, child: _buildLineList(context)),
+            SizedBox(
+              width: 360,
+              child: _buildSummaryBar(context),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildLineList(BuildContext context) {
+    return RefreshIndicator(
+      color: palette.primary,
+      onRefresh: () async {
+        context.read<CartBloc>().add(const CartRefreshRequested());
+        await context.read<CartBloc>().stream.firstWhere(
+              (CartState s) => s is CartLoaded || s is CartFailure,
+            );
+      },
+      child: Semantics(
+        label: l10n.swipeToDeleteA11y,
+        child: ListView.builder(
+          padding: const EdgeInsets.only(bottom: 16),
+          itemCount: lines.length,
+          itemBuilder: (BuildContext context, int index) {
+            final CartLineEntity line = lines[index];
+            return Dismissible(
+              key: ValueKey<int>(line.productId),
+              direction: DismissDirection.endToStart,
+              background: Container(
+                alignment: Alignment.centerRight,
+                padding: const EdgeInsets.only(right: 20),
+                color: palette.error.withValues(alpha: 0.15),
+                child: Icon(Icons.delete_outline, color: palette.error),
+              ),
+              onDismissed: (_) => onRemove(line),
+              child: ListTile(
+                leading: ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: CachedNetworkImage(
+                    imageUrl: line.imageUrl,
+                    width: 56,
+                    height: 56,
+                    fit: BoxFit.cover,
+                    errorWidget: (_, __, ___) => Container(
+                      width: 56,
+                      height: 56,
+                      color: palette.surface,
+                      child: Icon(
+                        Icons.image_not_supported_outlined,
+                        color: palette.muted,
+                      ),
                     ),
-                    onDismissed: (_) => onRemove(line),
-                    child: ListTile(
-                      leading: ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: CachedNetworkImage(
-                          imageUrl: line.imageUrl,
-                          width: 56,
-                          height: 56,
-                          fit: BoxFit.cover,
-                          errorWidget: (_, __, ___) => Container(
-                            width: 56,
-                            height: 56,
-                            color: palette.surface,
-                            child: Icon(
-                              Icons.image_not_supported_outlined,
-                              color: palette.muted,
-                            ),
-                          ),
-                        ),
-                      ),
-                      title: Text(
-                        line.title,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      subtitle: Text(
-                        PriceFormatter.formatUsd(context, line.unitPrice),
-                      ),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
+                  ),
+                ),
+                title: Text(
+                  line.title,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                subtitle: Text(
+                  PriceFormatter.formatUsd(context, line.unitPrice),
+                ),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
                           IconButton(
                             tooltip: l10n.decreaseQuantityA11y,
+                            constraints: const BoxConstraints(
+                              minWidth: 48,
+                              minHeight: 48,
+                            ),
                             onPressed: line.quantity <= 1
-                                ? null
-                                : () => context.read<CartBloc>().add(
-                                      CartQuantityChanged(
-                                        line.productId,
-                                        line.quantity - 1,
-                                      ),
-                                    ),
-                            icon: const Icon(Icons.remove_circle_outline),
-                          ),
-                          Text(
-                            '${line.quantity}',
-                            semanticsLabel: l10n.cartQuantityA11y(line.quantity),
-                            style: Theme.of(context).textTheme.titleMedium,
-                          ),
+                          ? null
+                          : () => context.read<CartBloc>().add(
+                                CartQuantityChanged(
+                                  line.productId,
+                                  line.quantity - 1,
+                                ),
+                              ),
+                      icon: const Icon(Icons.remove_circle_outline),
+                    ),
+                    Text(
+                      '${line.quantity}',
+                      semanticsLabel: l10n.cartQuantityA11y(line.quantity),
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
                           IconButton(
                             tooltip: l10n.increaseQuantityA11y,
+                            constraints: const BoxConstraints(
+                              minWidth: 48,
+                              minHeight: 48,
+                            ),
                             onPressed: () => context.read<CartBloc>().add(
-                                  CartQuantityChanged(
-                                    line.productId,
-                                    line.quantity + 1,
-                                  ),
-                                ),
-                            icon: const Icon(Icons.add_circle_outline),
+                            CartQuantityChanged(
+                              line.productId,
+                              line.quantity + 1,
+                            ),
                           ),
-                        ],
-                      ),
+                      icon: const Icon(Icons.add_circle_outline),
                     ),
-                  );
-                },
+                  ],
+                ),
               ),
-            ),
-          ),
+            );
+          },
         ),
-        Material(
-          elevation: 8,
-          child: SafeArea(
-            top: false,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+      ),
+    );
+  }
+
+  Widget _buildSummaryBar(BuildContext context) {
+    return Material(
+      elevation: 8,
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Text(
-                        l10n.cartSubtotalLabel,
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                      Text(
-                        PriceFormatter.formatUsd(context, subtotal),
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleMedium
-                            ?.copyWith(color: palette.primary),
-                      ),
-                    ],
+                  Text(
+                    l10n.cartSubtotalLabel,
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
-                  const SizedBox(height: 12),
-                  FilledButton(
-                    key: TestKeys.cartCheckoutButton,
-                    onPressed: () => context.push(AppRoutes.checkout),
-                    child: Text(l10n.cartCheckoutLabel),
+                  Text(
+                    PriceFormatter.formatUsd(context, subtotal),
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleMedium
+                        ?.copyWith(color: palette.primary),
                   ),
                 ],
               ),
-            ),
+              const SizedBox(height: 12),
+              FilledButton(
+                key: TestKeys.cartCheckoutButton,
+                onPressed: () => context.push(AppRoutes.checkout),
+                child: Text(l10n.cartCheckoutLabel),
+              ),
+            ],
           ),
         ),
-      ],
+      ),
     );
   }
 }
