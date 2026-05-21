@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shop_flow/core/constants/test_keys.dart';
 import 'package:shop_flow/core/l10n/gen/app_localizations.dart';
+import 'package:shop_flow/core/widgets/offline_banner.dart';
 import 'package:shop_flow/core/utils/app_breakpoints.dart';
 import 'package:shop_flow/features/cart/presentation/bloc/cart_bloc.dart';
 import 'package:shop_flow/features/cart/presentation/bloc/cart_state.dart';
@@ -102,7 +103,7 @@ class _MobileShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: child,
+      body: OfflineBanner(child: child),
       bottomNavigationBar: NavigationBar(
         selectedIndex: currentIndex,
         onDestinationSelected: onTap,
@@ -174,7 +175,7 @@ class _TabletShell extends StatelessWidget {
             }).toList(),
           ),
           const VerticalDivider(width: 1),
-          Expanded(child: child),
+          Expanded(child: OfflineBanner(child: child)),
         ],
       ),
     );
@@ -230,7 +231,7 @@ class _DesktopShell extends StatelessWidget {
               }),
             ],
           ),
-          Expanded(child: child),
+          Expanded(child: OfflineBanner(child: child)),
         ],
       ),
     );

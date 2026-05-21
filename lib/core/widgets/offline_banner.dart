@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:shop_flow/core/l10n/gen/app_localizations.dart';
 import 'package:shop_flow/core/network/connectivity_cubit.dart';
+import 'package:shop_flow/core/theme/theme_extensions.dart';
 
 /// Amber banner shown when [ConnectivityCubit] reports offline.
 class OfflineBanner extends StatelessWidget {
@@ -17,6 +18,8 @@ class OfflineBanner extends StatelessWidget {
     final disableAnimations =
         MediaQuery.of(context).disableAnimations;
 
+    final palette = context.appPalette;
+
     return BlocBuilder<ConnectivityCubit, ConnectivityStatus>(
       builder: (BuildContext context, ConnectivityStatus status) {
         final show = status == ConnectivityStatus.offline;
@@ -25,7 +28,7 @@ class OfflineBanner extends StatelessWidget {
         }
 
         final banner = Material(
-          color: Colors.amber.shade700,
+          color: palette.accent,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             child: Row(
