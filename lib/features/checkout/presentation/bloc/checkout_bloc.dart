@@ -10,8 +10,11 @@ import 'package:shop_flow/features/checkout/domain/checkout_payment_gateway.dart
 import 'package:shop_flow/features/checkout/presentation/bloc/checkout_event.dart';
 import 'package:shop_flow/features/checkout/presentation/bloc/checkout_state.dart';
 import 'package:shop_flow/features/orders/domain/entities/order_entity.dart';
+import 'package:shop_flow/features/orders/domain/entities/shipping_address_entity.dart';
 import 'package:shop_flow/features/orders/domain/usecases/create_order_entity_usecase.dart';
 import 'package:shop_flow/features/orders/domain/usecases/save_order_usecase.dart';
+import 'package:shop_flow/features/profile/domain/entities/saved_address_entity.dart';
+import 'package:shop_flow/features/profile/domain/usecases/save_address_usecase.dart';
 
 /// Stripe-aware checkout coordinator with Hive fallback demo path.
 @lazySingleton
@@ -23,11 +26,15 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
     this._saveOrder,
     this._clearCart,
     this._paymentGateway,
+    this._saveAddress,
     this._config,
     this._talker,
   ) : super(const CheckoutInitial()) {
     on<CheckoutStarted>(_onStarted);
     on<CheckoutPaySubmitted>(_onPaySubmitted);
+    on<CheckoutPromoApplied>(_onPromoApplied);
+    on<CheckoutPromoRejected>(_onPromoRejected);
+    on<CheckoutPromoCleared>(_onPromoCleared);
   }
 
   final GetCartLinesUseCase _getCartLines;
@@ -35,6 +42,7 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
   final SaveOrderUseCase _saveOrder;
   final ClearCartUseCase _clearCart;
   final CheckoutPaymentGateway _paymentGateway;
+  final SaveAddressUseCase _saveAddress;
   final AppConfig _config;
   final Talker _talker;
 
@@ -70,17 +78,85 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
     );
   }
 
+  void _onPromoApplied(
+    CheckoutPromoApplied event,
+    Emitter<CheckoutState> emit,
+  ) {
+    final CheckoutState current = state;
+    if (current is! CheckoutReady) {
+      return;
+    }
+    emit(
+      current.copyWith(
+        promoCode: event.code,
+        discountAmount: event.discountAmount,
+        promoMessage: event.message,
+      ),
+    );
+  }
+
+  void _onPromoRejected(
+    CheckoutPromoRejected event,
+    Emitter<CheckoutState> emit,
+  ) {
+    final CheckoutState current = state;
+    if (current is! CheckoutReady) {
+      return;
+    }
+    emit(
+      current.copyWith(
+        clearPromoCode: true,
+        discountAmount: 0,
+        promoMessage: event.message,
+      ),
+    );
+  }
+
+  void _onPromoCleared(
+    CheckoutPromoCleared event,
+    Emitter<CheckoutState> emit,
+  ) {
+    final CheckoutState current = state;
+    if (current is! CheckoutReady) {
+      return;
+    }
+    emit(
+      current.copyWith(
+        clearPromoCode: true,
+        discountAmount: 0,
+        clearPromoMessage: true,
+      ),
+    );
+  }
+
   Future<void> _onPaySubmitted(
     CheckoutPaySubmitted event,
     Emitter<CheckoutState> emit,
   ) async {
     final CheckoutState current = state;
     switch (current) {
-      case CheckoutReady(:final lines, :final stripeEnabled):
+      case CheckoutReady(
+          :final lines,
+          :final stripeEnabled,
+          :final totalAfterDiscount,
+        ):
         emit(current.copyWith(submitting: true, clearError: true));
+        if (event.saveAddress) {
+          await _saveAddress(
+            SavedAddressEntity(
+              id: '',
+              fullName: event.address.fullName,
+              street: event.address.street,
+              city: event.address.city,
+              postalCode: event.address.postalCode,
+              country: event.address.country,
+            ),
+          );
+        }
         final OrderEntity order = _createOrder(
           cartLines: lines,
           shipping: event.address,
+          totalOverride: totalAfterDiscount,
         );
 
         if (stripeEnabled) {

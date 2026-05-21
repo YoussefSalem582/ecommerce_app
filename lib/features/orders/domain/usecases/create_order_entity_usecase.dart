@@ -13,6 +13,7 @@ class CreateOrderEntityUseCase {
   OrderEntity call({
     required List<CartLineEntity> cartLines,
     required ShippingAddressEntity shipping,
+    double? totalOverride,
   }) {
     final List<OrderLineEntity> lines = cartLines
         .map(
@@ -24,8 +25,9 @@ class CreateOrderEntityUseCase {
           ),
         )
         .toList();
-    final double total =
+    final double subtotal =
         lines.fold<double>(0, (double a, OrderLineEntity l) => a + l.lineTotal);
+    final double total = totalOverride ?? subtotal;
     return OrderEntity(
       id: 'ord_${DateTime.now().millisecondsSinceEpoch}',
       createdAt: DateTime.now(),

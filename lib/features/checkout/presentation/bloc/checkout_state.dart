@@ -32,6 +32,9 @@ final class CheckoutReady extends CheckoutState {
     required this.stripeEnabled,
     this.submitting = false,
     this.lastError,
+    this.promoCode,
+    this.discountAmount = 0,
+    this.promoMessage,
   });
 
   /// Rows mirrored from [CartLineEntity] cache.
@@ -49,6 +52,19 @@ final class CheckoutReady extends CheckoutState {
   /// Surface sheet / persistence failures without losing cart snapshot.
   final String? lastError;
 
+  /// Applied showcase promo code (uppercase) or null.
+  final String? promoCode;
+
+  /// Discount subtracted from [subtotal].
+  final double discountAmount;
+
+  /// Success or validation message for promo field.
+  final String? promoMessage;
+
+  /// Total after discount.
+  double get totalAfterDiscount =>
+      (subtotal - discountAmount).clamp(0, double.infinity);
+
   /// Returns a modified copy for reducer transitions.
   CheckoutReady copyWith({
     List<CartLineEntity>? lines,
@@ -57,6 +73,11 @@ final class CheckoutReady extends CheckoutState {
     bool? submitting,
     String? lastError,
     bool clearError = false,
+    String? promoCode,
+    bool clearPromoCode = false,
+    double? discountAmount,
+    String? promoMessage,
+    bool clearPromoMessage = false,
   }) {
     return CheckoutReady(
       lines: lines ?? this.lines,
@@ -64,12 +85,24 @@ final class CheckoutReady extends CheckoutState {
       stripeEnabled: stripeEnabled ?? this.stripeEnabled,
       submitting: submitting ?? this.submitting,
       lastError: clearError ? null : (lastError ?? this.lastError),
+      promoCode: clearPromoCode ? null : (promoCode ?? this.promoCode),
+      discountAmount: discountAmount ?? this.discountAmount,
+      promoMessage:
+          clearPromoMessage ? null : (promoMessage ?? this.promoMessage),
     );
   }
 
   @override
-  List<Object?> get props =>
-      <Object?>[lines, subtotal, stripeEnabled, submitting, lastError];
+  List<Object?> get props => <Object?>[
+        lines,
+        subtotal,
+        stripeEnabled,
+        submitting,
+        lastError,
+        promoCode,
+        discountAmount,
+        promoMessage,
+      ];
 }
 
 /// Order persisted + cart cleared — navigate to success route.
