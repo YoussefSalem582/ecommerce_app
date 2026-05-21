@@ -62,6 +62,8 @@ dependencies:
   # Env
   flutter_dotenv: ^5.2.1
 
+  share_plus: ^11.1.0
+
   # Profile / device
   image_picker: ^1.1.2
   sensors_plus: ^6.1.1

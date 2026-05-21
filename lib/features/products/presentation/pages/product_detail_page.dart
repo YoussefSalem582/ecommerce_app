@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:shop_flow/core/constants/test_keys.dart';
 import 'package:shop_flow/core/l10n/gen/app_localizations.dart';
 import 'package:shop_flow/core/router/app_routes.dart';
@@ -18,6 +19,9 @@ import 'package:shop_flow/features/products/domain/entities/product_entity.dart'
 import 'package:shop_flow/features/products/presentation/bloc/product_detail_bloc.dart';
 import 'package:shop_flow/features/products/presentation/bloc/product_detail_event.dart';
 import 'package:shop_flow/features/products/presentation/bloc/product_detail_state.dart';
+import 'package:shop_flow/features/products/presentation/cubit/recently_viewed_cubit.dart';
+import 'package:shop_flow/features/products/presentation/widgets/product_card_widget.dart';
+import 'package:shop_flow/features/products/presentation/widgets/product_reviews_section.dart';
 import 'package:shop_flow/features/wishlist/presentation/cubit/wishlist_cubit.dart';
 import 'package:shop_flow/features/wishlist/presentation/cubit/wishlist_state.dart';
 
@@ -45,6 +49,27 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             ProductDetailLoadRequested(widget.productId),
           );
     });
+  }
+
+  Future<void> _shareProduct(ProductEntity product, AppLocalizations l10n) async {
+    final String message = l10n.productShareMessage(
+      product.title,
+      'shopflow://product/${product.id}',
+    );
+    try {
+      await Share.share(message);
+    } on Exception {
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.productShareFailed)),
+      );
+    }
+  }
+
+  void _onProductLoaded(ProductEntity product) {
+    context.read<RecentlyViewedCubit>().recordView(product.id);
   }
 
   void _handleAddToCart(
@@ -95,6 +120,19 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           },
         ),
         actions: <Widget>[
+          BlocBuilder<ProductDetailBloc, ProductDetailState>(
+            builder: (BuildContext context, ProductDetailState detailState) {
+              if (detailState case ProductDetailLoaded(:final product)) {
+                return IconButton(
+                  key: TestKeys.productShareButton,
+                  tooltip: l10n.productShareTooltip,
+                  icon: const Icon(Icons.share_outlined),
+                  onPressed: () => _shareProduct(product, l10n),
+                );
+              }
+              return const SizedBox.shrink();
+            },
+          ),
           BlocBuilder<ProductDetailBloc, ProductDetailState>(
             builder: (BuildContext context, ProductDetailState detailState) {
               if (detailState case ProductDetailLoaded(:final product)) {
@@ -161,7 +199,14 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         ],
       ),
       body: OfflineBanner(
-        child: BlocBuilder<ProductDetailBloc, ProductDetailState>(
+        child: BlocConsumer<ProductDetailBloc, ProductDetailState>(
+          listenWhen: (ProductDetailState prev, ProductDetailState curr) =>
+              curr is ProductDetailLoaded && prev is! ProductDetailLoaded,
+          listener: (BuildContext context, ProductDetailState state) {
+            if (state case ProductDetailLoaded(:final product)) {
+              _onProductLoaded(product);
+            }
+          },
           builder: (BuildContext context, ProductDetailState state) {
             return switch (state) {
               ProductDetailInitial() || ProductDetailLoading() =>
@@ -172,8 +217,13 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                         ProductDetailLoadRequested(widget.productId),
                       ),
                 ),
-              ProductDetailLoaded(:final product) => _ProductDetailLoadedBody(
+              ProductDetailLoaded(
+                :final product,
+                :final relatedProducts,
+              ) =>
+                _ProductDetailLoadedBody(
                   product: product,
+                  relatedProducts: relatedProducts,
                   l10n: l10n,
                   onAddToCart: () => _handleAddToCart(context, product, l10n),
                 ),
@@ -188,11 +238,13 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 class _ProductDetailLoadedBody extends StatelessWidget {
   const _ProductDetailLoadedBody({
     required this.product,
+    required this.relatedProducts,
     required this.l10n,
     required this.onAddToCart,
   });
 
   final ProductEntity product;
+  final List<ProductEntity> relatedProducts;
   final AppLocalizations l10n;
   final VoidCallback onAddToCart;
 
@@ -264,6 +316,39 @@ class _ProductDetailLoadedBody extends StatelessWidget {
                             product.description,
                             style: Theme.of(context).textTheme.bodyLarge,
                           ),
+                          const SizedBox(height: 24),
+                          ProductReviewsSection(product: product),
+                          if (relatedProducts.isNotEmpty) ...<Widget>[
+                            const SizedBox(height: 24),
+                            Text(
+                              l10n.relatedProductsTitle,
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                            const SizedBox(height: 12),
+                            SizedBox(
+                              height: 220,
+                              child: ListView.separated(
+                                scrollDirection: Axis.horizontal,
+                                itemCount: relatedProducts.length,
+                                separatorBuilder: (_, __) =>
+                                    const SizedBox(width: 12),
+                                itemBuilder: (BuildContext context, int index) {
+                                  final ProductEntity related =
+                                      relatedProducts[index];
+                                  return SizedBox(
+                                    width: 160,
+                                    child: ProductCard(
+                                      product: related,
+                                      enableHero: false,
+                                      onTap: () => context.push(
+                                        AppRoutes.product(related.id),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
                           const SizedBox(height: 24),
                           FilledButton.icon(
                             key: TestKeys.addToCartButton,

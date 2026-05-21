@@ -26,13 +26,19 @@ final class ProductDetailLoading extends ProductDetailState {
 /// PDP presentation model ready.
 final class ProductDetailLoaded extends ProductDetailState {
   /// Successful PDP emission.
-  const ProductDetailLoaded(this.product);
+  const ProductDetailLoaded({
+    required this.product,
+    this.relatedProducts = const <ProductEntity>[],
+  });
 
   /// Hydrated catalog entity.
   final ProductEntity product;
 
+  /// Same-category suggestions sorted by rating.
+  final List<ProductEntity> relatedProducts;
+
   @override
-  List<Object?> get props => <Object?>[product];
+  List<Object?> get props => <Object?>[product, relatedProducts];
 }
 
 /// Recoverable PDP failure (network + empty cache).
