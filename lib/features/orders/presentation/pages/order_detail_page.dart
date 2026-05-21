@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -7,6 +8,8 @@ import 'package:shop_flow/core/l10n/gen/app_localizations.dart';
 import 'package:shop_flow/core/router/app_routes.dart';
 import 'package:shop_flow/core/theme/theme_extensions.dart';
 import 'package:shop_flow/core/utils/price_formatter.dart';
+import 'package:shop_flow/core/widgets/app_error_view.dart';
+import 'package:shop_flow/core/widgets/app_loading_view.dart';
 import 'package:shop_flow/features/orders/domain/entities/order_entity.dart';
 import 'package:shop_flow/features/orders/domain/entities/order_line_entity.dart';
 import 'package:shop_flow/features/orders/domain/entities/shipping_address_entity.dart';
@@ -27,13 +30,15 @@ class OrderDetailPage extends StatelessWidget {
     return BlocProvider<OrderDetailBloc>(
       create: (_) => getIt<OrderDetailBloc>()
         ..add(OrderDetailLoadRequested(orderId)),
-      child: const _OrderDetailBody(),
+      child: _OrderDetailBody(orderId: orderId),
     );
   }
 }
 
 class _OrderDetailBody extends StatelessWidget {
-  const _OrderDetailBody();
+  const _OrderDetailBody({required this.orderId});
+
+  final String orderId;
 
   @override
   Widget build(BuildContext context) {
@@ -46,24 +51,14 @@ class _OrderDetailBody extends StatelessWidget {
         builder: (BuildContext context, OrderDetailState state) {
           if (state is OrderDetailLoading ||
               state is OrderDetailInitial) {
-            return const Center(child: CircularProgressIndicator());
+            return const AppLoadingView();
           }
           if (state is OrderDetailFailure) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Text(state.message, textAlign: TextAlign.center),
-                    const SizedBox(height: 16),
-                    FilledButton(
-                      onPressed: () => context.pop(),
-                      child: Text(l10n.retry),
-                    ),
-                  ],
-                ),
-              ),
+            return AppErrorView(
+              message: state.message,
+              onRetry: () => context.read<OrderDetailBloc>().add(
+                    OrderDetailLoadRequested(orderId),
+                  ),
             );
           }
           if (state is OrderDetailLoaded) {
@@ -99,25 +94,40 @@ class _OrderDetailBody extends StatelessWidget {
                     style: Theme.of(context).textTheme.titleSmall,
                   ),
                   const SizedBox(height: 8),
-                  Text(s.fullName),
-                  Text(s.street),
-                  Text('${s.city}, ${s.postalCode}'),
-                  Text(s.country),
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(s.fullName),
+                          Text(s.street),
+                          Text('${s.city}, ${s.postalCode}'),
+                          Text(s.country),
+                        ],
+                      ),
+                    ),
+                  ),
                   const SizedBox(height: 24),
                   Text(
                     l10n.checkoutOrderSummarySection,
                     style: Theme.of(context).textTheme.titleSmall,
                   ),
-                  ...o.lines.map(
-                    (OrderLineEntity l) => ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      title: Text(l.title),
-                      subtitle: Text(
-                        '${l.quantity} × ${PriceFormatter.formatUsd(context, l.unitPrice)}',
-                      ),
-                      trailing: Text(
-                        PriceFormatter.formatUsd(context, l.lineTotal),
-                      ),
+                  Card(
+                    child: Column(
+                      children: o.lines
+                          .map(
+                            (OrderLineEntity l) => ListTile(
+                              title: Text(l.title),
+                              subtitle: Text(
+                                '${l.quantity} × ${PriceFormatter.formatUsd(context, l.unitPrice)}',
+                              ),
+                              trailing: Text(
+                                PriceFormatter.formatUsd(context, l.lineTotal),
+                              ),
+                            ),
+                          )
+                          .toList(),
                     ),
                   ),
                   const Divider(),

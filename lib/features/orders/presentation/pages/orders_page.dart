@@ -6,6 +6,10 @@ import 'package:shop_flow/core/l10n/gen/app_localizations.dart';
 import 'package:shop_flow/core/router/app_routes.dart';
 import 'package:shop_flow/core/theme/theme_extensions.dart';
 import 'package:shop_flow/core/utils/price_formatter.dart';
+import 'package:shop_flow/core/widgets/app_empty_view.dart';
+import 'package:shop_flow/core/widgets/app_error_view.dart';
+import 'package:shop_flow/core/widgets/app_loading_view.dart';
+import 'package:shop_flow/core/widgets/continue_shopping_button.dart';
 import 'package:shop_flow/features/orders/domain/entities/order_entity.dart';
 import 'package:shop_flow/features/orders/presentation/bloc/orders_bloc.dart';
 import 'package:shop_flow/features/orders/presentation/bloc/orders_event.dart';
@@ -39,44 +43,24 @@ class _OrdersPageState extends State<OrdersPage> {
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.ordersTitle)),
-      body: BlocConsumer<OrdersBloc, OrdersState>(
-        listener: (BuildContext context, OrdersState state) {
-          if (state is OrdersFailure) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
-            );
-          }
-        },
+      body: BlocBuilder<OrdersBloc, OrdersState>(
         builder: (BuildContext context, OrdersState state) {
           if (state is OrdersLoading || state is OrdersInitial) {
-            return const Center(child: CircularProgressIndicator());
+            return const AppLoadingView();
+          }
+          if (state is OrdersFailure) {
+            return AppErrorView(
+              message: state.message,
+              onRetry: () =>
+                  context.read<OrdersBloc>().add(const OrdersRefreshRequested()),
+            );
           }
           if (state is OrdersLoaded && state.orders.isEmpty) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Icon(
-                      Icons.receipt_long_outlined,
-                      size: 72,
-                      color: palette.primary.withValues(alpha: 0.35),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      l10n.ordersEmptyTitle,
-                      style: Theme.of(context).textTheme.titleLarge,
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      l10n.ordersEmptyBody,
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              ),
+            return AppEmptyView(
+              icon: Icons.receipt_long_outlined,
+              title: l10n.ordersEmptyTitle,
+              body: l10n.ordersEmptyBody,
+              action: const ContinueShoppingButton(),
             );
           }
           if (state is OrdersLoaded) {

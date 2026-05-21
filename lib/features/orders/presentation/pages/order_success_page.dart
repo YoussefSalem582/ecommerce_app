@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
@@ -14,6 +15,13 @@ class OrderSuccessPage extends StatelessWidget {
 
   /// Saved Hive primary key string.
   final String orderId;
+
+  void _copyOrderId(BuildContext context, AppLocalizations l10n) {
+    Clipboard.setData(ClipboardData(text: orderId));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(l10n.orderIdCopied)),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +73,13 @@ class OrderSuccessPage extends StatelessWidget {
                 style: Theme.of(context).textTheme.bodyLarge,
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 8),
+              TextButton.icon(
+                onPressed: () => _copyOrderId(context, l10n),
+                icon: const Icon(Icons.copy_rounded),
+                label: Text(l10n.copyOrderId),
+              ),
+              const SizedBox(height: 24),
               FilledButton(
                 onPressed: () => context.go(AppRoutes.home),
                 child: Text(l10n.orderContinueShopping),
