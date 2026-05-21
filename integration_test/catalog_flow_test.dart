@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:integration_test/integration_test.dart';
@@ -20,19 +21,23 @@ void main() {
     await tearDownShopFlowTests();
   });
 
-  testWidgets('demo checkout flow from sign-in to order success', (
+  testWidgets('search catalog, open PDP, toggle wishlist', (
     WidgetTester tester,
   ) async {
     await launchShopFlowApp(tester);
     await signInDemoUser(tester);
 
-    await addFirstProductToCart(tester);
-    await openCart(tester);
+    expect(find.byKey(TestKeys.catalogSearchField), findsOneWidget);
+    await tester.enterText(find.byKey(TestKeys.catalogSearchField), 'jacket');
+    await tester.tap(find.byIcon(Icons.search_rounded).last);
+    await pumpUntilFound(tester, find.byKey(TestKeys.firstProductCard));
 
-    expect(find.byKey(TestKeys.cartCheckoutButton), findsOneWidget);
-    await tester.tap(find.byKey(TestKeys.cartCheckoutButton));
-    await pumpUntilFound(tester, find.byKey(TestKeys.checkoutPayButton));
+    await tester.tap(find.byKey(TestKeys.firstProductCard), warnIfMissed: false);
+    await pumpUntilFound(tester, find.byKey(TestKeys.wishlistToggleButton));
 
-    await completeCheckout(tester);
+    await tester.tap(find.byKey(TestKeys.wishlistToggleButton));
+    await tester.pump(const Duration(milliseconds: 300));
+
+    expect(find.byKey(TestKeys.wishlistToggleButton), findsOneWidget);
   });
 }

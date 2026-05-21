@@ -20,7 +20,7 @@ void main() {
     await tearDownShopFlowTests();
   });
 
-  testWidgets('demo checkout flow from sign-in to order success', (
+  testWidgets('checkout creates order visible in orders list', (
     WidgetTester tester,
   ) async {
     await launchShopFlowApp(tester);
@@ -29,10 +29,15 @@ void main() {
     await addFirstProductToCart(tester);
     await openCart(tester);
 
-    expect(find.byKey(TestKeys.cartCheckoutButton), findsOneWidget);
     await tester.tap(find.byKey(TestKeys.cartCheckoutButton));
     await pumpUntilFound(tester, find.byKey(TestKeys.checkoutPayButton));
-
     await completeCheckout(tester);
+
+    await tapNavTab(tester, TestKeys.ordersNavTab);
+    await pumpUntilFound(tester, find.byKey(TestKeys.firstOrderTile));
+
+    expect(find.byKey(TestKeys.firstOrderTile), findsOneWidget);
+    await tester.tap(find.byKey(TestKeys.firstOrderTile));
+    await tester.pump(const Duration(milliseconds: 500));
   });
 }

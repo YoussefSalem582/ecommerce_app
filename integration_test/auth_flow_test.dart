@@ -20,19 +20,19 @@ void main() {
     await tearDownShopFlowTests();
   });
 
-  testWidgets('demo checkout flow from sign-in to order success', (
-    WidgetTester tester,
-  ) async {
+  testWidgets('email login reaches home catalog', (WidgetTester tester) async {
     await launchShopFlowApp(tester);
-    await signInDemoUser(tester);
 
-    await addFirstProductToCart(tester);
-    await openCart(tester);
+    if (find.byKey(TestKeys.googleSignInButton).evaluate().isNotEmpty) {
+      await tester.tap(find.byKey(TestKeys.googleSignInButton));
+      await pumpUntilFound(tester, find.byKey(TestKeys.firstProductCard));
+    } else {
+      expect(find.byKey(TestKeys.loginSubmitButton), findsOneWidget);
+      await tester.tap(find.byKey(TestKeys.loginSubmitButton));
+      await pumpUntilFound(tester, find.byKey(TestKeys.firstProductCard));
+    }
 
-    expect(find.byKey(TestKeys.cartCheckoutButton), findsOneWidget);
-    await tester.tap(find.byKey(TestKeys.cartCheckoutButton));
-    await pumpUntilFound(tester, find.byKey(TestKeys.checkoutPayButton));
-
-    await completeCheckout(tester);
+    expect(find.byKey(TestKeys.firstProductCard), findsOneWidget);
+    expect(find.byKey(TestKeys.homeNavTab), findsOneWidget);
   });
 }
