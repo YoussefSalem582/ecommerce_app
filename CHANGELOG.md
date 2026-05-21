@@ -11,6 +11,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Wishlist screen** — `/wishlist` route, `WishlistPageBloc`, home app-bar entry + profile link, EN/AR strings.
+- **`.env.example`** — Documented env template; `.env` added to `.gitignore`.
+- **ADRs 004–006** — Google Sign-In stub, JWT refresh stub, Stripe PaymentIntent workflow.
+- **Widget & integration tests** — Wishlist page/bloc tests, `integration_test/catalog_cart_flow_test.dart`.
+- **Demo GIF guide** — `docs/RECORD_DEMO.md`.
+
+### Changed
+
+- **README** — Accurate `APP_ENV=demo`, showcase limitations table, Stripe CLI steps, 15-screen inventory.
+- **OfflineBanner** — Design tokens (`AppPalette.onPrimary`) instead of raw `Colors.white`.
+- **Animation guards** — `kIsWeb` / `disableAnimations` on cart badge, fly-to-cart, shimmer.
+- **AGENTS.md** — Profile cache documented as SharedPreferences (not Hive).
+
+### Removed
+
+- Stale l10n keys `addToCartComingSoon`, `cartCheckoutComingSoon`.
+
+### Added (agent tooling batch)
 - **AI agent tooling scaffold** — Canonical [`AGENTS.md`](AGENTS.md), per-tool shims, project skills, `shopflow_readme_files/`, CI docs workflow.
 - **Official agent skills** — `npx skills add flutter/skills` + `dart-lang/skills` (19 universal skills, `skills-lock.json` updated).
 - **Checkout integration test** — uses `TestKeys.orderSuccessTitle`; demo flow in `integration_test/checkout_flow_test.dart`.

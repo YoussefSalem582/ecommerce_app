@@ -44,7 +44,7 @@ Flutter e-commerce **freelance showcase** (Android, iOS, Web, desktop). Current 
 - **Routing**: GoRouter — use `AppRoutes` constants, never hardcode paths
 - **DI**: GetIt + injectable — `lib/core/di/injection.dart` (+ generated `injection.config.dart`)
 - **Networking**: Dio via `DioClient` with auth/retry/logging interceptors
-- **Local cache**: Hive (`hive_flutter`) for products, cart, orders, profile
+- **Local cache**: Hive (`hive_flutter`) for products, cart, orders, wishlist; profile uses SharedPreferences
 - **Secrets**: `assets/env/default.env` + optional gitignored `.env` via `flutter_dotenv` — access via `AppConfig`, never hardcode
 - **Auth**: Email/password + Google Sign-In showcase + JWT in `TokenStorage` (`flutter_secure_storage`)
 - **Payments**: `flutter_stripe` Payment Sheet when publishable key is configured
@@ -127,7 +127,7 @@ result.fold(
 ## Offline & Local Storage
 
 - `ConnectivityCubit` is provided at app root — use for banners and disabling network-only actions
-- **Hive** boxes back product catalog, cart, orders, and profile cache in data layers
+- **Hive** boxes back product catalog, cart, orders, and wishlist; profile cache uses SharedPreferences
 - **Cart / wishlist** are local-first; sync to API when online where implemented
 - **Tokens**: `TokenStorage` + `FlutterSecureStorage` only — never `SharedPreferences` for JWT
 - Storage key strings: `lib/core/constants/storage_keys.dart`

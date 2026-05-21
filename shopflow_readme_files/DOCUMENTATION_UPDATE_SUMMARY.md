@@ -4,6 +4,15 @@ Reverse-chronological log of doc/agent-tooling changes (not app release notes �
 
 ---
 
+## 2026-05-21 — Spec audit gap closure
+
+- Added wishlist screen, route, l10n, tests
+- Added `.env.example`, `.env` in `.gitignore`, security doc alignment
+- Added ADRs 004–006 (Google stub, JWT refresh, Stripe workflow)
+- Updated README (showcase limitations, Stripe CLI, 15 screens, `APP_ENV=demo`)
+- Fixed OfflineBanner design tokens; animation accessibility guards
+- Added `docs/RECORD_DEMO.md`
+
 ## 2026-05-21 — AI agent scaffolding (initial)
 
 - Added canonical [`AGENTS.md`](../AGENTS.md), [`CLAUDE.md`](../CLAUDE.md), `.agents/`, `.codex/`, `.github/copilot-instructions.md`, `.cursor/rules/`, `.claude/commands/`
