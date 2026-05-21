@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shop_flow/core/config/app_config.dart';
+import 'package:shop_flow/core/di/injection.dart';
 import 'package:shop_flow/core/constants/test_keys.dart';
 import 'package:shop_flow/core/l10n/gen/app_localizations.dart';
 import 'package:shop_flow/core/router/app_routes.dart';
@@ -169,6 +171,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
                             rowFields: rowFields,
                             onSubmit: () => _submit(l10n),
                             submitting: submitting,
+                            showDemoBanner: getIt<AppConfig>().isDemoEnv &&
+                                !stripeEnabled,
                           );
 
                           if (!wide) {
@@ -314,6 +318,7 @@ class _ShippingFormSection extends StatelessWidget {
     required this.rowFields,
     required this.onSubmit,
     required this.submitting,
+    required this.showDemoBanner,
   });
 
   final GlobalKey<FormState> formKey;
@@ -326,6 +331,7 @@ class _ShippingFormSection extends StatelessWidget {
   final bool rowFields;
   final VoidCallback onSubmit;
   final bool submitting;
+  final bool showDemoBanner;
 
   @override
   Widget build(BuildContext context) {
@@ -349,6 +355,20 @@ class _ShippingFormSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
+          if (showDemoBanner) ...<Widget>[
+            MaterialBanner(
+              content: Text(l10n.demoModeBannerBody),
+              leading: const Icon(Icons.info_outline),
+              backgroundColor: Theme.of(context)
+                  .colorScheme
+                  .primaryContainer
+                  .withValues(alpha: 0.35),
+              actions: <Widget>[
+                Text(l10n.demoModeBannerTitle),
+              ],
+            ),
+            const SizedBox(height: 16),
+          ],
           const SizedBox(height: 24),
           Text(
             l10n.checkoutShippingSection,
