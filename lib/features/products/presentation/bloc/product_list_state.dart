@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 
 import 'package:shop_flow/features/products/domain/entities/product_entity.dart';
 import 'package:shop_flow/features/products/presentation/bloc/product_list_view_mode.dart';
+import 'package:shop_flow/features/products/presentation/bloc/product_sort_option.dart';
 
 /// Listing states emitted by [ProductListBloc].
 sealed class ProductListState extends Equatable {
@@ -39,6 +40,12 @@ final class ProductListLoaded extends ProductListState {
     required this.selectedCategory,
     required this.searchQuery,
     this.viewMode = ProductListViewMode.grid,
+    this.sortOption = ProductSortOption.ratingDesc,
+    this.minPrice,
+    this.maxPrice,
+    this.minRating = 0,
+    required this.catalogMinPrice,
+    required this.catalogMaxPrice,
   });
 
   /// Visible SKU rows after filters.
@@ -56,9 +63,44 @@ final class ProductListLoaded extends ProductListState {
   /// Grid or list presentation mode.
   final ProductListViewMode viewMode;
 
+  /// Active client-side sort option.
+  final ProductSortOption sortOption;
+
+  /// Active minimum price filter (`null` → catalog min).
+  final double? minPrice;
+
+  /// Active maximum price filter (`null` → catalog max).
+  final double? maxPrice;
+
+  /// Minimum rating filter (0 = disabled).
+  final double minRating;
+
+  /// Unfiltered catalog minimum price for slider bounds.
+  final double catalogMinPrice;
+
+  /// Unfiltered catalog maximum price for slider bounds.
+  final double catalogMaxPrice;
+
+  /// Whether any client-side filter is active.
+  bool get hasActiveFilters =>
+      minRating > 0 ||
+      (minPrice != null && minPrice! > catalogMinPrice) ||
+      (maxPrice != null && maxPrice! < catalogMaxPrice);
+
   @override
-  List<Object?> get props =>
-      <Object?>[products, categories, selectedCategory, searchQuery, viewMode];
+  List<Object?> get props => <Object?>[
+        products,
+        categories,
+        selectedCategory,
+        searchQuery,
+        viewMode,
+        sortOption,
+        minPrice,
+        maxPrice,
+        minRating,
+        catalogMinPrice,
+        catalogMaxPrice,
+      ];
 }
 
 /// Recoverable failure surface with messaging for snackbars.
