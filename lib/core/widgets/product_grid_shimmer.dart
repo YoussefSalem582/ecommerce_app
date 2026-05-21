@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -28,7 +29,8 @@ class ProductGridShimmer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final palette = context.appPalette;
-    final disable = MediaQuery.of(context).disableAnimations;
+    final disable =
+        kIsWeb || MediaQuery.of(context).disableAnimations;
     final borderColor = palette.muted.withValues(alpha: 0.2);
 
     Widget tile() {

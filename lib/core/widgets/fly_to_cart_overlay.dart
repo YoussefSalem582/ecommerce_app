@@ -1,6 +1,7 @@
 import 'dart:ui' show lerpDouble;
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 /// Overlay flight animating a thumbnail toward the cart badge anchor.
@@ -14,7 +15,7 @@ abstract final class FlyToCartOverlay {
     required Rect endRect,
     required String imageUrl,
   }) {
-    if (MediaQuery.of(context).disableAnimations) {
+    if (MediaQuery.of(context).disableAnimations || kIsWeb) {
       return;
     }
     final OverlayState? overlay = Overlay.maybeOf(context);

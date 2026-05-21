@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -261,18 +262,24 @@ class _CartBadgeIcon extends StatelessWidget {
         _ => 0,
       },
       builder: (BuildContext context, int count) {
+        final bool disableAnimations =
+            kIsWeb || MediaQuery.of(context).disableAnimations;
+        final Widget label = Text(
+          '$count',
+          key: ValueKey<int>(count),
+        );
+
         return Badge(
           isLabelVisible: count > 0,
-          label: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 220),
-            transitionBuilder: (Widget child, Animation<double> animation) {
-              return ScaleTransition(scale: animation, child: child);
-            },
-            child: Text(
-              '$count',
-              key: ValueKey<int>(count),
-            ),
-          ),
+          label: disableAnimations
+              ? label
+              : AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 220),
+                  transitionBuilder: (Widget child, Animation<double> animation) {
+                    return ScaleTransition(scale: animation, child: child);
+                  },
+                  child: label,
+                ),
           child: icon,
         );
       },

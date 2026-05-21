@@ -33,7 +33,7 @@ class OfflineBanner extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             child: Row(
               children: <Widget>[
-                Icon(Icons.wifi_off, color: Colors.white),
+                Icon(Icons.wifi_off, color: palette.onPrimary),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Column(
@@ -45,14 +45,16 @@ class OfflineBanner extends StatelessWidget {
                         style: Theme.of(context)
                             .textTheme
                             .labelLarge
-                            ?.copyWith(color: Colors.white),
+                            ?.copyWith(color: palette.onPrimary),
                       ),
                       Text(
                         AppLocalizations.of(context).offlineBannerBody,
                         style: Theme.of(context)
                             .textTheme
                             .bodySmall
-                            ?.copyWith(color: Colors.white70),
+                            ?.copyWith(
+                              color: palette.onPrimary.withValues(alpha: 0.85),
+                            ),
                       ),
                     ],
                   ),
