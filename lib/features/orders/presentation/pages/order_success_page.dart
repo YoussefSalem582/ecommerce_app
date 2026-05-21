@@ -1,24 +1,51 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shop_flow/core/constants/test_keys.dart';
 import 'package:shop_flow/core/l10n/gen/app_localizations.dart';
+import 'package:shop_flow/core/preferences/notification_prefs_cubit.dart';
 import 'package:shop_flow/core/router/app_routes.dart';
 import 'package:shop_flow/core/theme/theme_extensions.dart';
 
 /// Post-checkout celebration route with optional Lottie asset.
-class OrderSuccessPage extends StatelessWidget {
+class OrderSuccessPage extends StatefulWidget {
   /// Displays confirmation for [orderId] ledger row.
   const OrderSuccessPage({required this.orderId, super.key});
 
   /// Saved Hive primary key string.
   final String orderId;
 
+  @override
+  State<OrderSuccessPage> createState() => _OrderSuccessPageState();
+}
+
+class _OrderSuccessPageState extends State<OrderSuccessPage> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _maybeShowNotificationDemo());
+  }
+
+  void _maybeShowNotificationDemo() {
+    if (!mounted) {
+      return;
+    }
+    final bool enabled = context.read<NotificationPrefsCubit>().state;
+    if (!enabled) {
+      return;
+    }
+    final l10n = AppLocalizations.of(context);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(l10n.orderUpdateNotificationDemo)),
+    );
+  }
+
   void _copyOrderId(BuildContext context, AppLocalizations l10n) {
-    Clipboard.setData(ClipboardData(text: orderId));
+    Clipboard.setData(ClipboardData(text: widget.orderId));
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(l10n.orderIdCopied)),
     );
@@ -71,7 +98,7 @@ class OrderSuccessPage extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               Text(
-                l10n.orderSuccessSubtitle(orderId),
+                l10n.orderSuccessSubtitle(widget.orderId),
                 style: Theme.of(context).textTheme.bodyLarge,
                 textAlign: TextAlign.center,
               ),
