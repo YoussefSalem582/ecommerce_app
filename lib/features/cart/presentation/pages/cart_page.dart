@@ -8,10 +8,15 @@ import 'package:shop_flow/core/l10n/gen/app_localizations.dart';
 import 'package:shop_flow/core/router/app_routes.dart';
 import 'package:shop_flow/core/theme/theme_extensions.dart';
 import 'package:shop_flow/core/utils/price_formatter.dart';
+import 'package:shop_flow/core/widgets/app_empty_view.dart';
+import 'package:shop_flow/core/widgets/app_error_view.dart';
+import 'package:shop_flow/core/widgets/app_loading_view.dart';
+import 'package:shop_flow/core/widgets/continue_shopping_button.dart';
 import 'package:shop_flow/features/cart/domain/entities/cart_line_entity.dart';
 import 'package:shop_flow/features/cart/presentation/bloc/cart_bloc.dart';
 import 'package:shop_flow/features/cart/presentation/bloc/cart_event.dart';
 import 'package:shop_flow/features/cart/presentation/bloc/cart_state.dart';
+import 'package:shop_flow/features/products/domain/entities/product_entity.dart';
 
 /// Full cart review surface with swipe delete + quantity steppers.
 class CartPage extends StatefulWidget {
@@ -34,6 +39,41 @@ class _CartPageState extends State<CartPage> {
     });
   }
 
+  ProductEntity _productFromLine(CartLineEntity line) {
+    return ProductEntity(
+      id: line.productId,
+      title: line.title,
+      price: line.unitPrice,
+      description: '',
+      category: '',
+      imageUrl: line.imageUrl,
+      ratingRate: 0,
+      ratingCount: 0,
+    );
+  }
+
+  void _removeWithUndo(CartLineEntity line) {
+    final l10n = AppLocalizations.of(context);
+    context.read<CartBloc>().add(CartLineRemoved(line.productId));
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(l10n.cartItemRemovedSnackbar),
+        action: SnackBarAction(
+          label: l10n.cartUndoRemove,
+          onPressed: () {
+            context.read<CartBloc>().add(
+                  CartProductAdded(
+                    _productFromLine(line),
+                    quantityDelta: line.quantity,
+                  ),
+                );
+          },
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final AppLocalizations l10n = AppLocalizations.of(context);
@@ -41,56 +81,27 @@ class _CartPageState extends State<CartPage> {
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.cartTitle)),
-      body: BlocConsumer<CartBloc, CartState>(
-        listener: (BuildContext context, CartState state) {
-          if (state case CartFailure(:final message)) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(message)),
-            );
-          }
-        },
+      body: BlocBuilder<CartBloc, CartState>(
         builder: (BuildContext context, CartState state) {
           return switch (state) {
-            CartInitial() || CartLoading() =>
-              const Center(child: CircularProgressIndicator()),
-            CartLoaded(:final lines) when lines.isEmpty => Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Icon(
-                        Icons.shopping_cart_outlined,
-                        size: 72,
-                        color: palette.primary.withValues(alpha: 0.35),
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        l10n.cartEmptyTitle,
-                        style: Theme.of(context).textTheme.titleLarge,
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        l10n.cartEmptyBody,
-                        style: Theme.of(context).textTheme.bodyMedium,
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                ),
+            CartInitial() || CartLoading() => const AppLoadingView(),
+            CartLoaded(:final lines) when lines.isEmpty => AppEmptyView(
+                icon: Icons.shopping_cart_outlined,
+                title: l10n.cartEmptyTitle,
+                body: l10n.cartEmptyBody,
+                action: const ContinueShoppingButton(),
               ),
             CartLoaded(:final lines, :final subtotal) => _CartLoadedBody(
                 lines: lines,
                 subtotal: subtotal,
                 l10n: l10n,
                 palette: palette,
+                onRemove: _removeWithUndo,
               ),
-            CartFailure(:final message) => Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Text(message, textAlign: TextAlign.center),
-                ),
+            CartFailure(:final message) => AppErrorView(
+                message: message,
+                onRetry: () =>
+                    context.read<CartBloc>().add(const CartRefreshRequested()),
               ),
           };
         },
@@ -105,12 +116,14 @@ class _CartLoadedBody extends StatelessWidget {
     required this.subtotal,
     required this.l10n,
     required this.palette,
+    required this.onRemove,
   });
 
   final List<CartLineEntity> lines;
   final double subtotal;
   final AppLocalizations l10n;
   final AppPalette palette;
+  final ValueChanged<CartLineEntity> onRemove;
 
   @override
   Widget build(BuildContext context) {
@@ -125,74 +138,86 @@ class _CartLoadedBody extends StatelessWidget {
                     (CartState s) => s is CartLoaded || s is CartFailure,
                   );
             },
-            child: ListView.builder(
-              padding: const EdgeInsets.only(bottom: 120),
-              itemCount: lines.length,
-              itemBuilder: (BuildContext context, int index) {
-                final CartLineEntity line = lines[index];
-                return Dismissible(
-                  key: ValueKey<int>(line.productId),
-                  direction: DismissDirection.endToStart,
-                  background: Container(
-                    alignment: Alignment.centerRight,
-                    padding: const EdgeInsets.only(right: 20),
-                    color: palette.error.withValues(alpha: 0.15),
-                    child: Icon(Icons.delete_outline, color: palette.error),
-                  ),
-                  onDismissed: (_) => context.read<CartBloc>().add(
-                        CartLineRemoved(line.productId),
+            child: Semantics(
+              label: l10n.swipeToDeleteA11y,
+              child: ListView.builder(
+                padding: const EdgeInsets.only(bottom: 120),
+                itemCount: lines.length,
+                itemBuilder: (BuildContext context, int index) {
+                  final CartLineEntity line = lines[index];
+                  return Dismissible(
+                    key: ValueKey<int>(line.productId),
+                    direction: DismissDirection.endToStart,
+                    background: Container(
+                      alignment: Alignment.centerRight,
+                      padding: const EdgeInsets.only(right: 20),
+                      color: palette.error.withValues(alpha: 0.15),
+                      child: Icon(Icons.delete_outline, color: palette.error),
+                    ),
+                    onDismissed: (_) => onRemove(line),
+                    child: ListTile(
+                      leading: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: CachedNetworkImage(
+                          imageUrl: line.imageUrl,
+                          width: 56,
+                          height: 56,
+                          fit: BoxFit.cover,
+                          errorWidget: (_, __, ___) => Container(
+                            width: 56,
+                            height: 56,
+                            color: palette.surface,
+                            child: Icon(
+                              Icons.image_not_supported_outlined,
+                              color: palette.muted,
+                            ),
+                          ),
+                        ),
                       ),
-                  child: ListTile(
-                    leading: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: CachedNetworkImage(
-                        imageUrl: line.imageUrl,
-                        width: 56,
-                        height: 56,
-                        fit: BoxFit.cover,
+                      title: Text(
+                        line.title,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                    ),
-                    title: Text(
-                      line.title,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    subtitle: Text(
-                      PriceFormatter.formatUsd(context, line.unitPrice),
-                    ),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        IconButton(
-                          onPressed: line.quantity <= 1
-                              ? null
-                              : () => context.read<CartBloc>().add(
-                                    CartQuantityChanged(
-                                      line.productId,
-                                      line.quantity - 1,
+                      subtitle: Text(
+                        PriceFormatter.formatUsd(context, line.unitPrice),
+                      ),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          IconButton(
+                            tooltip: l10n.decreaseQuantityA11y,
+                            onPressed: line.quantity <= 1
+                                ? null
+                                : () => context.read<CartBloc>().add(
+                                      CartQuantityChanged(
+                                        line.productId,
+                                        line.quantity - 1,
+                                      ),
                                     ),
+                            icon: const Icon(Icons.remove_circle_outline),
+                          ),
+                          Text(
+                            '${line.quantity}',
+                            semanticsLabel: l10n.cartQuantityA11y(line.quantity),
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          IconButton(
+                            tooltip: l10n.increaseQuantityA11y,
+                            onPressed: () => context.read<CartBloc>().add(
+                                  CartQuantityChanged(
+                                    line.productId,
+                                    line.quantity + 1,
                                   ),
-                          icon: const Icon(Icons.remove_circle_outline),
-                        ),
-                        Text(
-                          '${line.quantity}',
-                          semanticsLabel: l10n.cartQuantityA11y(line.quantity),
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                        IconButton(
-                          onPressed: () => context.read<CartBloc>().add(
-                                CartQuantityChanged(
-                                  line.productId,
-                                  line.quantity + 1,
                                 ),
-                              ),
-                          icon: const Icon(Icons.add_circle_outline),
-                        ),
-                      ],
+                            icon: const Icon(Icons.add_circle_outline),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
           ),
         ),
