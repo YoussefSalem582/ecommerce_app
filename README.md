@@ -34,7 +34,7 @@ Presentation (BLoC/Cubit) → Domain (Use Cases) → Data (Repositories + Hive/D
 | Secure token storage (`flutter_secure_storage`) | ✅ |
 | Product catalog — search, filter, grid/list toggle | ✅ |
 | Offline-first Hive cache + offline banner | ✅ |
-| Cart + wishlist (local-first) | ✅ |
+| Cart + wishlist (local-first, dedicated wishlist screen) | ✅ |
 | Stripe Payment Sheet checkout | ✅ |
 | Order history + status timeline | ✅ |
 | Profile + edit profile + local avatar | ✅ |
@@ -77,23 +77,36 @@ flutter pub get
 
 ### 2. Environment
 
-Default config loads from [`assets/env/default.env`](assets/env/default.env):
+Default config loads from [`assets/env/default.env`](assets/env/default.env). Copy [`.env.example`](.env.example) to a root `.env` for local overrides — **never commit real Stripe keys** (`.env` is gitignored).
 
 ```env
 BASE_URL=https://fakestoreapi.com
 STRIPE_PUBLISHABLE_KEY=
-APP_ENV=development
+APP_ENV=demo
 ```
-
-For local overrides, copy to a root `.env` and load it from `main.dart` — **never commit real Stripe keys**.
 
 | Variable | Purpose |
 |----------|---------|
 | `BASE_URL` | Fake Store API (swap for your backend) |
 | `STRIPE_PUBLISHABLE_KEY` | Stripe publishable key (`pk_test_…`) |
-| `APP_ENV=demo` | Offline auth + catalog stubs (default) |
+| `APP_ENV=demo` | In-memory auth + catalog stubs (default, no HTTP) |
 | `APP_ENV=live` | Real Fake Store HTTP |
-| `STRIPE_PAYMENT_INTENT_CLIENT_SECRET` | Optional — enables live Payment Sheet |
+| `STRIPE_PAYMENT_INTENT_CLIENT_SECRET` | Enables live Payment Sheet (see below) |
+
+### Stripe Payment Sheet (optional)
+
+Live Stripe checkout requires **both** `STRIPE_PUBLISHABLE_KEY` and a server-created PaymentIntent client secret.
+
+**Stripe CLI (local testing):**
+
+```bash
+stripe listen --forward-to localhost:4242/webhook
+stripe payment_intents create --amount=2000 --currency=usd
+```
+
+Copy the `client_secret` from the response into `.env` as `STRIPE_PAYMENT_INTENT_CLIENT_SECRET`. Without it, checkout uses the demo path (local order ledger, no card UI).
+
+See ADR [006](shopflow_readme_files/decisions/006-stripe-payment-intent-workflow.md) for production backend options.
 
 ### 3. Regenerate DI (after adding `@injectable` classes)
 
@@ -124,6 +137,17 @@ Use any future expiry, any CVC, any billing ZIP.
 
 ## Design Decisions
 
+### Showcase limitations
+
+These are **intentional stubs** for portfolio review — production swap paths are documented in ADRs:
+
+| Area | Showcase behavior | Production path |
+|------|-------------------|-----------------|
+| Google Sign-In | In-memory demo user, no `google_sign_in` package | ADR [004](shopflow_readme_files/decisions/004-showcase-google-sign-in-stub.md) |
+| JWT refresh | Token rotation in demo; Fake Store live throws | ADR [005](shopflow_readme_files/decisions/005-jwt-refresh-showcase-stub.md) |
+| Stripe checkout | Demo path without env keys; Payment Sheet when configured | ADR [006](shopflow_readme_files/decisions/006-stripe-payment-intent-workflow.md) |
+| Profile cache | SharedPreferences JSON (not Hive) | Sufficient for showcase; migrate if backend sync needed |
+
 ### Why BLoC?
 Explicit event/state transitions make complex flows (checkout, catalog filters) testable and observable. `TalkerBlocObserver` logs every transition for portfolio reviewers.
 
@@ -134,7 +158,7 @@ Repositories return cached data on network failure (stale-while-error). Cart and
 Use cases return `Either<Failure, T>` so presentation never catches raw exceptions. Swapping Fake Store for a real backend requires **data layer changes only**.
 
 ### Showcase auth stubs
-Google Sign-In and JWT refresh demonstrate production patterns without a real OAuth server. Swap `GoogleAuthDatasource` and `AuthRemoteDatasource.refreshAccessToken` for production implementations.
+Google Sign-In and JWT refresh demonstrate production patterns without a real OAuth server. See ADRs 004–005 for swap instructions.
 
 ---
 
@@ -145,7 +169,8 @@ lib/
 ├── core/           # DI, router, theme, network, l10n, widgets
 ├── features/
 │   ├── auth/
-│   ├── products/
+│   ├── home/       # Catalog shell (grid, search, filters)
+│   ├── products/   # Domain + PDP
 │   ├── cart/
 │   ├── checkout/
 │   ├── orders/
@@ -158,22 +183,25 @@ lib/
 
 ---
 
-## Screens (14)
+## Screens (15)
 
 1. Splash (animated logo)
 2. Onboarding (3 slides)
 3. Login / Register
 4. Home — product grid/list
 5. Product detail (Hero gallery)
-6. Cart
-7. Checkout
-8. Order success (Lottie)
-9. Orders list
-10. Order detail (timeline)
-11. Profile
-12. Edit profile
-13. Settings
-14. Debug logs (debug builds)
+6. Wishlist — saved favorites grid
+7. Cart
+8. Checkout
+9. Order success (Lottie)
+10. Orders list
+11. Order detail (timeline)
+12. Profile
+13. Edit profile
+14. Settings
+15. Debug logs (debug builds)
+
+> **Demo GIF:** See [docs/RECORD_DEMO.md](docs/RECORD_DEMO.md) to capture `docs/demo.gif`.
 
 ---
 
@@ -183,8 +211,14 @@ lib/
 # Unit and widget tests
 flutter test
 
+# Wishlist, catalog, cart widget tests
+flutter test test/features/
+
 # Checkout integration flow (demo mode, no Stripe)
-flutter test integration_test/checkout_flow_test.dart
+flutter test integration_test/
+
+# Catalog → cart integration (demo mode)
+flutter test integration_test/catalog_cart_flow_test.dart
 
 # LCOV coverage report → coverage/lcov.info
 flutter test --coverage
@@ -215,8 +249,10 @@ After changes, update `CHANGELOG.md` and `shopflow_readme_files/CURRENT_STATUS.m
 
 **Youssef Salem Hassan** — Flutter developer
 
-- [Mostaql](https://mostaql.com/u/your-profile) — freelance profile
-- [LinkedIn](https://linkedin.com/in/your-profile) — professional network
+- [Mostaql](https://mostaql.com) — search profile: Youssef Salem Hassan
+- [LinkedIn](https://www.linkedin.com) — update with your profile URL before publishing
+
+Replace the LinkedIn URL above with your public profile link when sharing the repo.
 
 ---
 
