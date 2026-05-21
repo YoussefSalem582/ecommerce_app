@@ -178,8 +178,19 @@ lib/
 ## Tests
 
 ```bash
+# Unit and widget tests
 flutter test
+
+# Checkout integration flow (demo mode, no Stripe)
+flutter test integration_test/checkout_flow_test.dart
+
+# LCOV coverage report → coverage/lcov.info
+flutter test --coverage
 ```
+
+### Localization
+
+ARB files live in `assets/l10n/` (`intl_en.arb`, `intl_ar.arb`). Codegen is configured via `l10n.yaml` and `flutter: generate: true` in `pubspec.yaml`. Generated accessors: `lib/core/l10n/gen/app_localizations.dart`.
 
 ---
 
