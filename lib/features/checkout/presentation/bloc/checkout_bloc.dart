@@ -75,70 +75,72 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
     Emitter<CheckoutState> emit,
   ) async {
     final CheckoutState current = state;
-    if (current is! CheckoutReady) {
-      return;
-    }
-    emit(current.copyWith(submitting: true, clearError: true));
-    final OrderEntity order = _createOrder(
-      cartLines: current.lines,
-      shipping: event.address,
-    );
+    switch (current) {
+      case CheckoutReady(:final lines, :final stripeEnabled):
+        emit(current.copyWith(submitting: true, clearError: true));
+        final OrderEntity order = _createOrder(
+          cartLines: lines,
+          shipping: event.address,
+        );
 
-    final bool stripe = current.stripeEnabled;
-    if (stripe) {
-      final secret = _config.stripePaymentIntentClientSecret!;
-      final payResult = await _paymentGateway.presentPaymentSheet(
-        clientSecret: secret,
-        merchantDisplayName: 'ShopFlow',
-      );
-      final failed = payResult.fold<bool>(
-        (failure) {
-          emit(
-            current.copyWith(
-              submitting: false,
-              lastError: failure.message,
-            ),
+        if (stripeEnabled) {
+          final secret = _config.stripePaymentIntentClientSecret!;
+          final payResult = await _paymentGateway.presentPaymentSheet(
+            clientSecret: secret,
+            merchantDisplayName: 'ShopFlow',
           );
-          return true;
-        },
-        (_) => false,
-      );
-      if (failed) {
+          final failed = payResult.fold<bool>(
+            (failure) {
+              emit(
+                current.copyWith(
+                  submitting: false,
+                  lastError: failure.message,
+                ),
+              );
+              return true;
+            },
+            (_) => false,
+          );
+          if (failed) {
+            return;
+          }
+        } else {
+          _talker.info(
+            '[ShopFlow][checkout] demo checkout — configure Stripe secrets '
+            'for Payment Sheet',
+          );
+        }
+
+        final saveResult = await _saveOrder(order);
+        final saveFailed = saveResult.fold<bool>(
+          (failure) {
+            emit(
+              current.copyWith(
+                submitting: false,
+                lastError: failure.message,
+              ),
+            );
+            return true;
+          },
+          (_) => false,
+        );
+        if (saveFailed) {
+          return;
+        }
+
+        final clearResult = await _clearCart();
+        clearResult.fold(
+          (failure) {
+            _talker.warning(
+              '[ShopFlow][checkout] order saved but cart clear failed: '
+              '${failure.message}',
+            );
+            emit(CheckoutSuccess(order.id));
+          },
+          (_) => emit(CheckoutSuccess(order.id)),
+        );
+      default:
         return;
-      }
-    } else {
-      _talker.info(
-        '[ShopFlow][checkout] demo checkout — configure Stripe secrets for Payment Sheet',
-      );
     }
-
-    final saveResult = await _saveOrder(order);
-    final saveFailed = saveResult.fold<bool>(
-      (failure) {
-        emit(
-          current.copyWith(
-            submitting: false,
-            lastError: failure.message,
-          ),
-        );
-        return true;
-      },
-      (_) => false,
-    );
-    if (saveFailed) {
-      return;
-    }
-
-    final clearResult = await _clearCart();
-    clearResult.fold(
-      (failure) {
-        _talker.warning(
-          '[ShopFlow][checkout] order saved but cart clear failed: '
-          '${failure.message}',
-        );
-        emit(CheckoutSuccess(order.id));
-      },
-      (_) => emit(CheckoutSuccess(order.id)),
-    );
   }
 }

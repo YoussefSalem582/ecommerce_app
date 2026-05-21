@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shop_flow/core/constants/test_keys.dart';
 import 'package:shop_flow/core/l10n/gen/app_localizations.dart';
 import 'package:shop_flow/core/router/app_routes.dart';
 import 'package:shop_flow/core/theme/theme_extensions.dart';
+import 'package:shop_flow/core/utils/app_breakpoints.dart';
 import 'package:shop_flow/core/utils/price_formatter.dart';
 import 'package:shop_flow/features/cart/domain/entities/cart_line_entity.dart';
 import 'package:shop_flow/features/cart/presentation/bloc/cart_bloc.dart';
@@ -75,28 +77,30 @@ class _CheckoutPageState extends State<CheckoutPage> {
       listeners: <BlocListener<dynamic, dynamic>>[
         BlocListener<CheckoutBloc, CheckoutState>(
           listenWhen: (CheckoutState previous, CheckoutState current) {
-            if (current is! CheckoutReady || current.lastError == null) {
-              return false;
-            }
-            if (previous is! CheckoutReady) {
-              return true;
-            }
-            return previous.lastError != current.lastError;
+            return switch (current) {
+              CheckoutReady(:final lastError) when lastError != null =>
+                previous is! CheckoutReady ||
+                    previous.lastError != current.lastError,
+              _ => false,
+            };
           },
           listener: (BuildContext context, CheckoutState state) {
-            final CheckoutReady s = state as CheckoutReady;
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(s.lastError!)),
-            );
+            if (state case CheckoutReady(:final lastError)
+                when lastError != null) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(lastError)),
+              );
+            }
           },
         ),
         BlocListener<CheckoutBloc, CheckoutState>(
           listenWhen: (_, CheckoutState current) =>
               current is CheckoutSuccess,
           listener: (BuildContext context, CheckoutState state) {
-            final CheckoutSuccess s = state as CheckoutSuccess;
-            context.read<CartBloc>().add(const CartRefreshRequested());
-            context.go(AppRoutes.orderSuccess(s.orderId));
+            if (state case CheckoutSuccess(:final orderId)) {
+              context.read<CartBloc>().add(const CartRefreshRequested());
+              context.go(AppRoutes.orderSuccess(orderId));
+            }
           },
         ),
         BlocListener<CheckoutBloc, CheckoutState>(
@@ -114,183 +118,291 @@ class _CheckoutPageState extends State<CheckoutPage> {
         appBar: AppBar(title: Text(l10n.checkoutTitle)),
         body: BlocBuilder<CheckoutBloc, CheckoutState>(
           builder: (BuildContext context, CheckoutState state) {
-            if (state is CheckoutInitial || state is CheckoutLoading) {
-              return const Center(child: CircularProgressIndicator());
-            }
-            if (state is CheckoutFailure) {
-              return Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text(state.message, textAlign: TextAlign.center),
-                      const SizedBox(height: 16),
-                      FilledButton(
-                        onPressed: () => context
-                            .read<CheckoutBloc>()
-                            .add(const CheckoutStarted()),
-                        child: Text(l10n.retry),
-                      ),
-                    ],
+            return switch (state) {
+              CheckoutInitial() || CheckoutLoading() =>
+                const Center(child: CircularProgressIndicator()),
+              CheckoutFailure(:final message) => Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text(message, textAlign: TextAlign.center),
+                        const SizedBox(height: 16),
+                        FilledButton(
+                          onPressed: () => context
+                              .read<CheckoutBloc>()
+                              .add(const CheckoutStarted()),
+                          child: Text(l10n.retry),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              );
-            }
-            if (state is CheckoutReady) {
-              final bool submitting = state.submitting;
-              return AbsorbPointer(
-                absorbing: submitting,
-                child: Stack(
-                  children: <Widget>[
-                    SingleChildScrollView(
-                      padding: const EdgeInsets.all(16),
-                      child: Form(
-                        key: _formKey,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: <Widget>[
-                            Text(
-                              l10n.checkoutOrderSummarySection,
-                              style: Theme.of(context).textTheme.titleMedium,
-                            ),
-                            const SizedBox(height: 8),
-                            Card(
+              CheckoutReady(
+                :final lines,
+                :final subtotal,
+                :final stripeEnabled,
+                :final submitting,
+              ) =>
+                AbsorbPointer(
+                  absorbing: submitting,
+                  child: Stack(
+                    children: <Widget>[
+                      LayoutBuilder(
+                        builder: (
+                          BuildContext context,
+                          BoxConstraints constraints,
+                        ) {
+                          final bool wide =
+                              constraints.maxWidth >= AppBreakpoints.tablet;
+                          final bool rowFields =
+                              constraints.maxWidth >= AppBreakpoints.mobile;
+
+                          final Widget summary = _OrderSummarySection(
+                            l10n: l10n,
+                            palette: palette,
+                            lines: lines,
+                            subtotal: subtotal,
+                            stripeEnabled: stripeEnabled,
+                          );
+                          final Widget form = _ShippingFormSection(
+                            formKey: _formKey,
+                            l10n: l10n,
+                            nameCtrl: _nameCtrl,
+                            streetCtrl: _streetCtrl,
+                            cityCtrl: _cityCtrl,
+                            postalCtrl: _postalCtrl,
+                            countryCtrl: _countryCtrl,
+                            rowFields: rowFields,
+                            onSubmit: () => _submit(l10n),
+                            submitting: submitting,
+                          );
+
+                          if (!wide) {
+                            return SingleChildScrollView(
+                              padding: const EdgeInsets.all(16),
                               child: Column(
-                                children: state.lines
-                                    .map(
-                                      (CartLineEntity l) => ListTile(
-                                        title: Text(
-                                          l.title,
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                        subtitle: Text(
-                                          '${l.quantity} × ${PriceFormatter.formatUsd(context, l.unitPrice)}',
-                                        ),
-                                        trailing: Text(
-                                          PriceFormatter.formatUsd(
-                                            context,
-                                            l.lineTotal,
-                                          ),
-                                        ),
-                                      ),
-                                    )
-                                    .toList(),
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: <Widget>[summary, form],
                               ),
-                            ),
-                            const SizedBox(height: 8),
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: Text(
-                                '${l10n.cartSubtotalLabel}: ${PriceFormatter.formatUsd(context, state.subtotal)}',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleMedium
-                                    ?.copyWith(color: palette.primary),
-                              ),
-                            ),
-                            if (state.stripeEnabled)
-                              Padding(
-                                padding: const EdgeInsets.only(top: 8),
-                                child: Text(
-                                  l10n.checkoutStripeSheetHint,
-                                  style:
-                                      Theme.of(context).textTheme.bodySmall,
+                            );
+                          }
+
+                          return Center(
+                            child: ConstrainedBox(
+                              constraints: const BoxConstraints(maxWidth: 1200),
+                              child: SingleChildScrollView(
+                                padding: const EdgeInsets.all(24),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Expanded(flex: 2, child: summary),
+                                    const SizedBox(width: 32),
+                                    Expanded(flex: 3, child: form),
+                                  ],
                                 ),
                               ),
-                            const SizedBox(height: 24),
-                            Text(
-                              l10n.checkoutShippingSection,
-                              style: Theme.of(context).textTheme.titleMedium,
                             ),
-                            const SizedBox(height: 8),
-                            TextFormField(
-                              controller: _nameCtrl,
-                              decoration: InputDecoration(
-                                labelText: l10n.checkoutFullNameLabel,
-                              ),
-                              validator: (String? v) =>
-                                  (v == null || v.trim().isEmpty)
-                                      ? l10n.fieldRequired
-                                      : null,
-                            ),
-                            TextFormField(
-                              controller: _streetCtrl,
-                              decoration: InputDecoration(
-                                labelText: l10n.checkoutStreetLabel,
-                              ),
-                              validator: (String? v) =>
-                                  (v == null || v.trim().isEmpty)
-                                      ? l10n.fieldRequired
-                                      : null,
-                            ),
-                            TextFormField(
-                              controller: _cityCtrl,
-                              decoration: InputDecoration(
-                                labelText: l10n.checkoutCityLabel,
-                              ),
-                              validator: (String? v) =>
-                                  (v == null || v.trim().isEmpty)
-                                      ? l10n.fieldRequired
-                                      : null,
-                            ),
-                            TextFormField(
-                              controller: _postalCtrl,
-                              decoration: InputDecoration(
-                                labelText: l10n.checkoutPostalLabel,
-                              ),
-                              validator: (String? v) =>
-                                  (v == null || v.trim().isEmpty)
-                                      ? l10n.fieldRequired
-                                      : null,
-                            ),
-                            TextFormField(
-                              controller: _countryCtrl,
-                              decoration: InputDecoration(
-                                labelText: l10n.checkoutCountryLabel,
-                              ),
-                              validator: (String? v) =>
-                                  (v == null || v.trim().isEmpty)
-                                      ? l10n.fieldRequired
-                                      : null,
-                            ),
-                            const SizedBox(height: 24),
-                            FilledButton(
-                              onPressed:
-                                  submitting ? null : () => _submit(l10n),
-                              child: Text(l10n.checkoutPayButton),
-                            ),
-                          ],
-                        ),
+                          );
+                        },
                       ),
-                    ),
-                    if (submitting)
-                      ColoredBox(
-                        color: Colors.black26,
-                        child: Center(
-                          child: Card(
-                            child: Padding(
-                              padding: const EdgeInsets.all(24),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: <Widget>[
-                                  const CircularProgressIndicator(),
-                                  const SizedBox(height: 16),
-                                  Text(l10n.checkoutProcessingHint),
-                                ],
+                      if (submitting)
+                        ColoredBox(
+                          color: Colors.black26,
+                          child: Center(
+                            child: Card(
+                              child: Padding(
+                                padding: const EdgeInsets.all(24),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: <Widget>[
+                                    const CircularProgressIndicator(),
+                                    const SizedBox(height: 16),
+                                    Text(l10n.checkoutProcessingHint),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                  ],
+                    ],
+                  ),
                 ),
-              );
-            }
-            return const SizedBox.shrink();
+              CheckoutSuccess() || CheckoutCartEmpty() =>
+                const SizedBox.shrink(),
+            };
           },
         ),
+      ),
+    );
+  }
+}
+
+class _OrderSummarySection extends StatelessWidget {
+  const _OrderSummarySection({
+    required this.l10n,
+    required this.palette,
+    required this.lines,
+    required this.subtotal,
+    required this.stripeEnabled,
+  });
+
+  final AppLocalizations l10n;
+  final AppPalette palette;
+  final List<CartLineEntity> lines;
+  final double subtotal;
+  final bool stripeEnabled;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: <Widget>[
+        Text(
+          l10n.checkoutOrderSummarySection,
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        const SizedBox(height: 8),
+        Card(
+          child: Column(
+            children: lines
+                .map(
+                  (CartLineEntity l) => ListTile(
+                    title: Text(
+                      l.title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    subtitle: Text(
+                      '${l.quantity} × ${PriceFormatter.formatUsd(context, l.unitPrice)}',
+                    ),
+                    trailing: Text(
+                      PriceFormatter.formatUsd(context, l.lineTotal),
+                    ),
+                  ),
+                )
+                .toList(),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Align(
+          alignment: Alignment.centerRight,
+          child: Text(
+            '${l10n.cartSubtotalLabel}: ${PriceFormatter.formatUsd(context, subtotal)}',
+            style: Theme.of(context)
+                .textTheme
+                .titleMedium
+                ?.copyWith(color: palette.primary),
+          ),
+        ),
+        if (stripeEnabled)
+          Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: Text(
+              l10n.checkoutStripeSheetHint,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _ShippingFormSection extends StatelessWidget {
+  const _ShippingFormSection({
+    required this.formKey,
+    required this.l10n,
+    required this.nameCtrl,
+    required this.streetCtrl,
+    required this.cityCtrl,
+    required this.postalCtrl,
+    required this.countryCtrl,
+    required this.rowFields,
+    required this.onSubmit,
+    required this.submitting,
+  });
+
+  final GlobalKey<FormState> formKey;
+  final AppLocalizations l10n;
+  final TextEditingController nameCtrl;
+  final TextEditingController streetCtrl;
+  final TextEditingController cityCtrl;
+  final TextEditingController postalCtrl;
+  final TextEditingController countryCtrl;
+  final bool rowFields;
+  final VoidCallback onSubmit;
+  final bool submitting;
+
+  @override
+  Widget build(BuildContext context) {
+    final Widget cityField = TextFormField(
+      key: TestKeys.checkoutCity,
+      controller: cityCtrl,
+      decoration: InputDecoration(labelText: l10n.checkoutCityLabel),
+      validator: (String? v) =>
+          (v == null || v.trim().isEmpty) ? l10n.fieldRequired : null,
+    );
+    final Widget postalField = TextFormField(
+      key: TestKeys.checkoutPostal,
+      controller: postalCtrl,
+      decoration: InputDecoration(labelText: l10n.checkoutPostalLabel),
+      validator: (String? v) =>
+          (v == null || v.trim().isEmpty) ? l10n.fieldRequired : null,
+    );
+
+    return Form(
+      key: formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          const SizedBox(height: 24),
+          Text(
+            l10n.checkoutShippingSection,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const SizedBox(height: 8),
+          TextFormField(
+            key: TestKeys.checkoutFullName,
+            controller: nameCtrl,
+            decoration: InputDecoration(labelText: l10n.checkoutFullNameLabel),
+            validator: (String? v) =>
+                (v == null || v.trim().isEmpty) ? l10n.fieldRequired : null,
+          ),
+          TextFormField(
+            key: TestKeys.checkoutStreet,
+            controller: streetCtrl,
+            decoration: InputDecoration(labelText: l10n.checkoutStreetLabel),
+            validator: (String? v) =>
+                (v == null || v.trim().isEmpty) ? l10n.fieldRequired : null,
+          ),
+          if (rowFields)
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Expanded(child: cityField),
+                const SizedBox(width: 16),
+                Expanded(child: postalField),
+              ],
+            )
+          else ...<Widget>[
+            cityField,
+            postalField,
+          ],
+          TextFormField(
+            key: TestKeys.checkoutCountry,
+            controller: countryCtrl,
+            decoration: InputDecoration(labelText: l10n.checkoutCountryLabel),
+            validator: (String? v) =>
+                (v == null || v.trim().isEmpty) ? l10n.fieldRequired : null,
+          ),
+          const SizedBox(height: 24),
+          FilledButton(
+            key: TestKeys.checkoutPayButton,
+            onPressed: submitting ? null : onSubmit,
+            child: Text(l10n.checkoutPayButton),
+          ),
+        ],
       ),
     );
   }
