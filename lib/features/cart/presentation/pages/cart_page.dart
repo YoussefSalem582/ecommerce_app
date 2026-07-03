@@ -6,6 +6,8 @@ import 'package:go_router/go_router.dart';
 import 'package:shop_flow/core/constants/test_keys.dart';
 import 'package:shop_flow/core/l10n/gen/app_localizations.dart';
 import 'package:shop_flow/core/router/app_routes.dart';
+import 'package:shop_flow/core/theme/app_radius.dart';
+import 'package:shop_flow/core/theme/app_spacing.dart';
 import 'package:shop_flow/core/theme/theme_extensions.dart';
 import 'package:shop_flow/core/utils/price_formatter.dart';
 import 'package:shop_flow/core/utils/app_breakpoints.dart';
@@ -13,6 +15,7 @@ import 'package:shop_flow/core/widgets/app_empty_view.dart';
 import 'package:shop_flow/core/widgets/app_error_view.dart';
 import 'package:shop_flow/core/widgets/app_loading_view.dart';
 import 'package:shop_flow/core/widgets/continue_shopping_button.dart';
+import 'package:shop_flow/core/widgets/gradient_button.dart';
 import 'package:shop_flow/features/cart/domain/entities/cart_line_entity.dart';
 import 'package:shop_flow/features/cart/presentation/bloc/cart_bloc.dart';
 import 'package:shop_flow/features/cart/presentation/bloc/cart_event.dart';
@@ -167,87 +170,31 @@ class _CartLoadedBody extends StatelessWidget {
       child: Semantics(
         label: l10n.swipeToDeleteA11y,
         child: ListView.builder(
-          padding: const EdgeInsets.only(bottom: 16),
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.md,
+            AppSpacing.md,
+            AppSpacing.md,
+            AppSpacing.xs,
+          ),
           itemCount: lines.length,
           itemBuilder: (BuildContext context, int index) {
             final CartLineEntity line = lines[index];
-            return Dismissible(
-              key: ValueKey<int>(line.productId),
-              direction: DismissDirection.endToStart,
-              background: Container(
-                alignment: Alignment.centerRight,
-                padding: const EdgeInsets.only(right: 20),
-                color: palette.error.withValues(alpha: 0.15),
-                child: Icon(Icons.delete_outline, color: palette.error),
-              ),
-              onDismissed: (_) => onRemove(line),
-              child: ListTile(
-                leading: ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: CachedNetworkImage(
-                    imageUrl: line.imageUrl,
-                    width: 56,
-                    height: 56,
-                    fit: BoxFit.cover,
-                    errorWidget: (_, __, ___) => Container(
-                      width: 56,
-                      height: 56,
-                      color: palette.surface,
-                      child: Icon(
-                        Icons.image_not_supported_outlined,
-                        color: palette.muted,
-                      ),
-                    ),
+            return Padding(
+              padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+              child: Dismissible(
+                key: ValueKey<int>(line.productId),
+                direction: DismissDirection.endToStart,
+                background: Container(
+                  alignment: Alignment.centerRight,
+                  padding: const EdgeInsets.only(right: AppSpacing.lg),
+                  decoration: BoxDecoration(
+                    color: palette.error.withValues(alpha: 0.15),
+                    borderRadius: AppRadius.brLg,
                   ),
+                  child: Icon(Icons.delete_outline_rounded, color: palette.error),
                 ),
-                title: Text(
-                  line.title,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                subtitle: Text(
-                  PriceFormatter.formatUsd(context, line.unitPrice),
-                ),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                          IconButton(
-                            tooltip: l10n.decreaseQuantityA11y,
-                            constraints: const BoxConstraints(
-                              minWidth: 48,
-                              minHeight: 48,
-                            ),
-                            onPressed: line.quantity <= 1
-                          ? null
-                          : () => context.read<CartBloc>().add(
-                                CartQuantityChanged(
-                                  line.productId,
-                                  line.quantity - 1,
-                                ),
-                              ),
-                      icon: const Icon(Icons.remove_circle_outline),
-                    ),
-                    Text(
-                      '${line.quantity}',
-                      semanticsLabel: l10n.cartQuantityA11y(line.quantity),
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                          IconButton(
-                            tooltip: l10n.increaseQuantityA11y,
-                            constraints: const BoxConstraints(
-                              minWidth: 48,
-                              minHeight: 48,
-                            ),
-                            onPressed: () => context.read<CartBloc>().add(
-                            CartQuantityChanged(
-                              line.productId,
-                              line.quantity + 1,
-                            ),
-                          ),
-                      icon: const Icon(Icons.add_circle_outline),
-                    ),
-                  ],
-                ),
+                onDismissed: (_) => onRemove(line),
+                child: _CartLineCard(line: line, l10n: l10n, palette: palette),
               ),
             );
           },
@@ -258,11 +205,21 @@ class _CartLoadedBody extends StatelessWidget {
 
   Widget _buildSummaryBar(BuildContext context) {
     return Material(
+      color: palette.surfaceElevated,
       elevation: 8,
+      shadowColor: palette.primary.withValues(alpha: 0.15),
+      borderRadius: const BorderRadius.vertical(
+        top: Radius.circular(AppRadius.xl),
+      ),
       child: SafeArea(
         top: false,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.md,
+            AppSpacing.md,
+            AppSpacing.md,
+            AppSpacing.md,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisSize: MainAxisSize.min,
@@ -276,22 +233,150 @@ class _CartLoadedBody extends StatelessWidget {
                   ),
                   Text(
                     PriceFormatter.formatUsd(context, subtotal),
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleMedium
-                        ?.copyWith(color: palette.primary),
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          color: palette.primary,
+                          fontWeight: FontWeight.w800,
+                        ),
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
-              FilledButton(
+              const SizedBox(height: AppSpacing.sm),
+              AppGradientButton(
                 key: TestKeys.cartCheckoutButton,
+                label: l10n.cartCheckoutLabel,
+                icon: Icons.lock_rounded,
                 onPressed: () => context.push(AppRoutes.checkout),
-                child: Text(l10n.cartCheckoutLabel),
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// A single chunky cart line: thumbnail, title/price, and a pill stepper.
+class _CartLineCard extends StatelessWidget {
+  const _CartLineCard({
+    required this.line,
+    required this.l10n,
+    required this.palette,
+  });
+
+  final CartLineEntity line;
+  final AppLocalizations l10n;
+  final AppPalette palette;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.sm),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            ClipRRect(
+              borderRadius: AppRadius.brMd,
+              child: CachedNetworkImage(
+                imageUrl: line.imageUrl,
+                width: 64,
+                height: 64,
+                fit: BoxFit.cover,
+                errorWidget: (_, __, ___) => Container(
+                  width: 64,
+                  height: 64,
+                  color: palette.muted.withValues(alpha: 0.12),
+                  child: Icon(
+                    Icons.image_not_supported_outlined,
+                    color: palette.muted,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: AppSpacing.sm),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    line.title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
+                  const SizedBox(height: AppSpacing.xxs),
+                  Text(
+                    PriceFormatter.formatUsd(context, line.unitPrice),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: palette.primary,
+                          fontWeight: FontWeight.w800,
+                        ),
+                  ),
+                  const SizedBox(height: AppSpacing.xs),
+                  _QuantityStepper(line: line, l10n: l10n, palette: palette),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Rounded segmented − / qty / + control.
+class _QuantityStepper extends StatelessWidget {
+  const _QuantityStepper({
+    required this.line,
+    required this.l10n,
+    required this.palette,
+  });
+
+  final CartLineEntity line;
+  final AppLocalizations l10n;
+  final AppPalette palette;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: palette.primary.withValues(alpha: 0.08),
+        borderRadius: AppRadius.brPill,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          IconButton(
+            tooltip: l10n.decreaseQuantityA11y,
+            visualDensity: VisualDensity.compact,
+            constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+            color: palette.primary,
+            onPressed: line.quantity <= 1
+                ? null
+                : () => context.read<CartBloc>().add(
+                      CartQuantityChanged(line.productId, line.quantity - 1),
+                    ),
+            icon: const Icon(Icons.remove_rounded),
+          ),
+          Text(
+            '${line.quantity}',
+            semanticsLabel: l10n.cartQuantityA11y(line.quantity),
+            style: Theme.of(context)
+                .textTheme
+                .titleMedium
+                ?.copyWith(fontWeight: FontWeight.w800),
+          ),
+          IconButton(
+            tooltip: l10n.increaseQuantityA11y,
+            visualDensity: VisualDensity.compact,
+            constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+            color: palette.primary,
+            onPressed: () => context.read<CartBloc>().add(
+                  CartQuantityChanged(line.productId, line.quantity + 1),
+                ),
+            icon: const Icon(Icons.add_rounded),
+          ),
+        ],
       ),
     );
   }
