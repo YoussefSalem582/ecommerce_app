@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 import 'package:shop_flow/core/l10n/gen/app_localizations.dart';
+import 'package:shop_flow/core/theme/app_radius.dart';
+import 'package:shop_flow/core/theme/app_spacing.dart';
 import 'package:shop_flow/core/theme/theme_extensions.dart';
 import 'package:shop_flow/core/utils/price_formatter.dart';
 import 'package:shop_flow/features/products/domain/entities/product_entity.dart';
@@ -39,12 +41,13 @@ class ProductCard extends StatelessWidget {
     Widget card = Semantics(
       label: product.title,
       button: true,
-      child: Card(
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: onTap,
+      child: _PressableCard(
+        onTap: onTap,
+        enableScale: !disableAnimations,
+        child: Card(
+          clipBehavior: Clip.antiAlias,
           child: Padding(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(AppSpacing.sm),
             child: LayoutBuilder(
               builder: (BuildContext context, BoxConstraints constraints) {
                 final bool gridTile = constraints.maxHeight.isFinite;
@@ -87,6 +90,81 @@ class ProductCard extends StatelessWidget {
   }
 }
 
+/// Wraps a tappable card with a springy press-down scale.
+class _PressableCard extends StatefulWidget {
+  const _PressableCard({
+    required this.child,
+    required this.onTap,
+    required this.enableScale,
+  });
+
+  final Widget child;
+  final VoidCallback onTap;
+  final bool enableScale;
+
+  @override
+  State<_PressableCard> createState() => _PressableCardState();
+}
+
+class _PressableCardState extends State<_PressableCard> {
+  bool _pressed = false;
+
+  void _setPressed(bool value) {
+    if (!widget.enableScale || _pressed == value) {
+      return;
+    }
+    setState(() => _pressed = value);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: (_) => _setPressed(true),
+      onTapUp: (_) => _setPressed(false),
+      onTapCancel: () => _setPressed(false),
+      onTap: widget.onTap,
+      child: AnimatedScale(
+        scale: _pressed ? 0.97 : 1,
+        duration: const Duration(milliseconds: 140),
+        curve: Curves.easeOut,
+        child: widget.child,
+      ),
+    );
+  }
+}
+
+class _RatingPill extends StatelessWidget {
+  const _RatingPill({required this.rating, required this.palette});
+
+  final double rating;
+  final AppPalette palette;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs, vertical: 3),
+      decoration: BoxDecoration(
+        color: palette.accent,
+        borderRadius: AppRadius.brPill,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Icon(Icons.star_rounded, size: 13, color: palette.onAccent),
+          const SizedBox(width: 2),
+          Text(
+            rating.toStringAsFixed(1),
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: palette.onAccent,
+                  fontWeight: FontWeight.w800,
+                ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _GridProductBody extends StatelessWidget {
   const _GridProductBody({
     required this.product,
@@ -112,14 +190,14 @@ class _GridProductBody extends StatelessWidget {
             enableHero: enableHero,
           ),
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: AppSpacing.xs),
         Text(
           product.title,
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
           style: Theme.of(context).textTheme.titleSmall,
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: AppSpacing.xs),
         Row(
           children: <Widget>[
             Expanded(
@@ -127,24 +205,11 @@ class _GridProductBody extends StatelessWidget {
                 PriceFormatter.formatUsd(context, product.price),
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       color: palette.primary,
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w800,
                     ),
               ),
             ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-              decoration: BoxDecoration(
-                color: palette.accent.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: Text(
-                product.ratingRate.toStringAsFixed(1),
-                style: Theme.of(context)
-                    .textTheme
-                    .labelSmall
-                    ?.copyWith(color: palette.accent),
-              ),
-            ),
+            _RatingPill(rating: product.ratingRate, palette: palette),
           ],
         ),
         const SizedBox(height: 2),
@@ -181,15 +246,15 @@ class _ListProductBody extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         SizedBox(
-          width: 88,
-          height: 88,
+          width: 92,
+          height: 92,
           child: _ProductImage(
             product: product,
             palette: palette,
             enableHero: enableHero,
           ),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: AppSpacing.sm),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -200,14 +265,21 @@ class _ListProductBody extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: Theme.of(context).textTheme.titleSmall,
               ),
-              const SizedBox(height: 6),
-              Text(
-                PriceFormatter.formatUsd(context, product.price),
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: palette.primary,
-                      fontWeight: FontWeight.w700,
-                    ),
+              const SizedBox(height: AppSpacing.xs),
+              Row(
+                children: <Widget>[
+                  Text(
+                    PriceFormatter.formatUsd(context, product.price),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: palette.primary,
+                          fontWeight: FontWeight.w800,
+                        ),
+                  ),
+                  const SizedBox(width: AppSpacing.xs),
+                  _RatingPill(rating: product.ratingRate, palette: palette),
+                ],
               ),
+              const SizedBox(height: 2),
               Text(
                 l10n.productRatingLabel(
                   product.ratingRate.toStringAsFixed(1),
@@ -237,14 +309,14 @@ class _ProductImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Widget image = ClipRRect(
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: AppRadius.brMd,
       child: CachedNetworkImage(
         imageUrl: product.imageUrl,
         fit: BoxFit.cover,
         width: double.infinity,
         height: double.infinity,
         placeholder: (_, __) => Container(
-          color: palette.surface,
+          color: palette.muted.withValues(alpha: 0.12),
           alignment: Alignment.center,
           child: CircularProgressIndicator(
             color: palette.primary,
@@ -252,7 +324,7 @@ class _ProductImage extends StatelessWidget {
           ),
         ),
         errorWidget: (_, __, ___) => Container(
-          color: palette.surface,
+          color: palette.muted.withValues(alpha: 0.12),
           alignment: Alignment.center,
           child: Icon(
             Icons.image_not_supported_outlined,
@@ -281,6 +353,7 @@ class _WishlistButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final palette = context.appPalette;
 
     return Material(
       color: Colors.transparent,
@@ -296,6 +369,10 @@ class _WishlistButton extends StatelessWidget {
               tooltip: isFav
                   ? l10n.removeFromWishlistA11y
                   : l10n.addToWishlistA11y,
+              style: IconButton.styleFrom(
+                backgroundColor: palette.surfaceElevated.withValues(alpha: 0.92),
+                foregroundColor: isFav ? palette.secondary : palette.onSurface,
+              ),
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints.tightFor(width: 36, height: 36),
               iconSize: 20,
