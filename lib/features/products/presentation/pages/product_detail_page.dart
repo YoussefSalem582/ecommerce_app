@@ -6,12 +6,16 @@ import 'package:share_plus/share_plus.dart';
 import 'package:shop_flow/core/constants/test_keys.dart';
 import 'package:shop_flow/core/l10n/gen/app_localizations.dart';
 import 'package:shop_flow/core/router/app_routes.dart';
+import 'package:shop_flow/core/theme/app_radius.dart';
+import 'package:shop_flow/core/theme/app_spacing.dart';
 import 'package:shop_flow/core/theme/theme_extensions.dart';
 import 'package:shop_flow/core/utils/price_formatter.dart';
 import 'package:shop_flow/core/widgets/app_error_view.dart';
 import 'package:shop_flow/core/widgets/app_loading_view.dart';
 import 'package:shop_flow/core/widgets/fly_to_cart_overlay.dart';
+import 'package:shop_flow/core/widgets/gradient_button.dart';
 import 'package:shop_flow/core/widgets/offline_banner.dart';
+import 'package:shop_flow/core/widgets/rating_badge.dart';
 import 'package:shop_flow/features/cart/presentation/bloc/cart_bloc.dart';
 import 'package:shop_flow/features/cart/presentation/bloc/cart_event.dart';
 import 'package:shop_flow/features/cart/presentation/bloc/cart_state.dart';
@@ -225,11 +229,22 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   product: product,
                   relatedProducts: relatedProducts,
                   l10n: l10n,
-                  onAddToCart: () => _handleAddToCart(context, product, l10n),
                 ),
             };
           },
         ),
+      ),
+      bottomNavigationBar: BlocBuilder<ProductDetailBloc, ProductDetailState>(
+        builder: (BuildContext context, ProductDetailState state) {
+          if (state case ProductDetailLoaded(:final product)) {
+            return _AddToCartBar(
+              product: product,
+              l10n: l10n,
+              onAddToCart: () => _handleAddToCart(context, product, l10n),
+            );
+          }
+          return const SizedBox.shrink();
+        },
       ),
     );
   }
@@ -240,127 +255,175 @@ class _ProductDetailLoadedBody extends StatelessWidget {
     required this.product,
     required this.relatedProducts,
     required this.l10n,
-    required this.onAddToCart,
   });
 
   final ProductEntity product;
   final List<ProductEntity> relatedProducts;
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.appPalette;
+    return SingleChildScrollView(
+      padding: const EdgeInsets.only(bottom: AppSpacing.xxl),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          Container(
+            height: 320,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: <Color>[
+                  palette.primary.withValues(alpha: 0.10),
+                  palette.secondary.withValues(alpha: 0.10),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: const BorderRadius.vertical(
+                bottom: Radius.circular(AppRadius.xl),
+              ),
+            ),
+            padding: const EdgeInsets.all(AppSpacing.xl),
+            child: Hero(
+              tag: 'product-hero-${product.id}',
+              child: CachedNetworkImage(
+                imageUrl: product.imageUrl,
+                fit: BoxFit.contain,
+                placeholder: (_, __) => Center(
+                  child: CircularProgressIndicator(color: palette.primary),
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(AppSpacing.md),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  product.title,
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                Row(
+                  children: <Widget>[
+                    Text(
+                      PriceFormatter.formatUsd(context, product.price),
+                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                            color: palette.primary,
+                            fontWeight: FontWeight.w800,
+                          ),
+                    ),
+                    const SizedBox(width: AppSpacing.sm),
+                    RatingBadge(rating: product.ratingRate, dense: false),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.xs),
+                Text(
+                  l10n.productRatingLabel(
+                    product.ratingRate.toStringAsFixed(1),
+                    product.ratingCount,
+                  ),
+                  style: Theme.of(context).textTheme.labelMedium,
+                ),
+                const SizedBox(height: AppSpacing.md),
+                Text(
+                  product.description,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                const SizedBox(height: AppSpacing.xl),
+                ProductReviewsSection(product: product),
+                if (relatedProducts.isNotEmpty) ...<Widget>[
+                  const SizedBox(height: AppSpacing.xl),
+                  Text(
+                    l10n.relatedProductsTitle,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
+                  SizedBox(
+                    height: 220,
+                    child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: relatedProducts.length,
+                      separatorBuilder: (_, __) =>
+                          const SizedBox(width: AppSpacing.sm),
+                      itemBuilder: (BuildContext context, int index) {
+                        final ProductEntity related = relatedProducts[index];
+                        return SizedBox(
+                          width: 160,
+                          child: ProductCard(
+                            product: related,
+                            enableHero: false,
+                            onTap: () => context.push(
+                              AppRoutes.product(related.id),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Sticky bottom bar showing price and the gradient add-to-cart CTA.
+class _AddToCartBar extends StatelessWidget {
+  const _AddToCartBar({
+    required this.product,
+    required this.l10n,
+    required this.onAddToCart,
+  });
+
+  final ProductEntity product;
   final AppLocalizations l10n;
   final VoidCallback onAddToCart;
 
   @override
   Widget build(BuildContext context) {
     final palette = context.appPalette;
-    return SingleChildScrollView(
-                padding: const EdgeInsets.only(bottom: 32),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: <Widget>[
-                    SizedBox(
-                      height: 300,
-                      child: Hero(
-                        tag: 'product-hero-${product.id}',
-                        child: CachedNetworkImage(
-                          imageUrl: product.imageUrl,
-                          fit: BoxFit.contain,
-                          placeholder: (_, __) => Container(
-                            color: palette.surface,
-                            alignment: Alignment.center,
-                            child: CircularProgressIndicator(
-                              color: palette.primary,
-                            ),
-                          ),
-                        ),
-                      ),
+
+    return Material(
+      color: palette.surfaceElevated,
+      elevation: 8,
+      shadowColor: palette.primary.withValues(alpha: 0.15),
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.md,
+            AppSpacing.sm,
+            AppSpacing.md,
+            AppSpacing.sm,
+          ),
+          child: Row(
+            children: <Widget>[
+              Text(
+                PriceFormatter.formatUsd(context, product.price),
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      color: palette.primary,
+                      fontWeight: FontWeight.w800,
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            product.title,
-                            style: Theme.of(context).textTheme.headlineSmall,
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            PriceFormatter.formatUsd(context, product.price),
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleLarge
-                                ?.copyWith(color: palette.primary),
-                          ),
-                          const SizedBox(height: 8),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: palette.accent.withValues(alpha: 0.15),
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            child: Text(
-                              l10n.productRatingLabel(
-                                product.ratingRate.toStringAsFixed(1),
-                                product.ratingCount,
-                              ),
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .labelLarge
-                                  ?.copyWith(color: palette.accent),
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            product.description,
-                            style: Theme.of(context).textTheme.bodyLarge,
-                          ),
-                          const SizedBox(height: 24),
-                          ProductReviewsSection(product: product),
-                          if (relatedProducts.isNotEmpty) ...<Widget>[
-                            const SizedBox(height: 24),
-                            Text(
-                              l10n.relatedProductsTitle,
-                              style: Theme.of(context).textTheme.titleMedium,
-                            ),
-                            const SizedBox(height: 12),
-                            SizedBox(
-                              height: 220,
-                              child: ListView.separated(
-                                scrollDirection: Axis.horizontal,
-                                itemCount: relatedProducts.length,
-                                separatorBuilder: (_, __) =>
-                                    const SizedBox(width: 12),
-                                itemBuilder: (BuildContext context, int index) {
-                                  final ProductEntity related =
-                                      relatedProducts[index];
-                                  return SizedBox(
-                                    width: 160,
-                                    child: ProductCard(
-                                      product: related,
-                                      enableHero: false,
-                                      onTap: () => context.push(
-                                        AppRoutes.product(related.id),
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                          ],
-                          const SizedBox(height: 24),
-                          FilledButton.icon(
-                            key: TestKeys.addToCartButton,
-                            onPressed: onAddToCart,
-                            icon: const Icon(Icons.shopping_cart_outlined),
-                            label: Text(l10n.addToCartLabel),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+              ),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: AppGradientButton(
+                  key: TestKeys.addToCartButton,
+                  label: l10n.addToCartLabel,
+                  icon: Icons.shopping_cart_rounded,
+                  onPressed: onAddToCart,
                 ),
-              );
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
