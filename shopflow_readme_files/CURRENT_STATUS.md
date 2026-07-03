@@ -1,7 +1,9 @@
 # ShopFlow — Current Status
 
 **Version:** `1.0.0+1` (from `pubspec.yaml`)  
-**Last updated:** 2026-05-21
+**Last updated:** 2026-07-03
+
+> **UI:** "Bold & Vibrant" redesign in progress — Phase 1 (design-system foundation + home) landed on `feat/bold-vibrant-redesign`. New violet→pink gradient brand, lime accent, Space Grotesk / Plus Jakarta type, chunky rounded components, gradient promo carousel, redesigned product card. Golden snapshots need regenerating (`flutter test --update-goldens`). Phases 2–3 (PDP/cart/checkout, then auth/profile/orders) pending.
 
 ## Feature matrix
 

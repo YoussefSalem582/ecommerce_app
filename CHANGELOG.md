@@ -11,6 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **"Bold & Vibrant" redesign — Phase 1 (foundation + home)** — New brand identity built on an electric violet→pink gradient with a lime pop accent, replacing the emerald theme.
+  - Token layer: reworked `AppColors` (light/dark brand + elevated-surface + semantic success/warning/error), `AppPalette` gains `brandGradient`, `onAccent`, `surfaceElevated`, `success`, `warning`; new `AppSpacing` and `AppRadius` scales.
+  - Typography: Space Grotesk headings over Plus Jakarta Sans body with heavier display weights.
+  - Components (`AppTheme`): 20px cards on an elevated surface token (drops hardcoded `Colors.white`), 16px pill-ish buttons (52px min height), pill chips, pill nav indicator, rounded sheets/dialogs/snackbars.
+  - Shared widgets: new `AppGradientButton` CTA; restyled empty/error states and product shimmer.
+  - Home: gradient promo carousel (`HomePromoBanner`, 3 slides + animated dots) and a redesigned product card (lime rating pill, springy press). New EN+AR banner strings.
+
+> **Note:** the theme change intentionally invalidates the golden snapshots — run `flutter test --update-goldens` to refresh `test/goldens/goldens/` before merging.
+
 - **Showcase feature expansion** — Catalog sort/filter + categories browse page; recently viewed strip; PDP reviews (mock), related products, share (`share_plus`); checkout promo codes (`SAVE10`, `WELCOME5`) and saved addresses; settings currency (USD/EUR/SAR) and notification toggle; change-password showcase form.
 - **Showcase enhancement pass** — Integration flows (`auth`, `catalog`, `orders`, `settings`, `stripe`), shared `flow_helpers.dart`, extended `TestKeys`, `TestBootstrapOptions`.
 - **Golden tests** — Login, home grid, checkout form at mobile/tablet (`test/goldens/`).
