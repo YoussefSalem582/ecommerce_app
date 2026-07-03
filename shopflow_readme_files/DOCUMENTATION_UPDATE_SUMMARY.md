@@ -4,6 +4,14 @@ Reverse-chronological log of doc/agent-tooling changes (not app release notes �
 
 ---
 
+## 2026-07-03 — "Bold & Vibrant" redesign (Phase 2)
+
+- Purchase flow redesigned: Product Detail, Cart, Checkout
+- Shared `RatingBadge` (`core/widgets/rating_badge.dart`) extracted from the catalog card; review stars → amber `warning`
+- PDP: gradient hero panel + sticky add-to-cart bar; Cart: chunky line cards + pill stepper + gradient checkout bar; Checkout: gradient summary card + sticky pay bar + amber demo banner
+- All TestKeys / responsive `rowFields` / `wide` rules and the submitting overlay preserved
+- **Follow-up:** regenerate goldens (`flutter test --update-goldens`). Phase 3 (auth/onboarding/splash/profile/orders) still pending.
+
 ## 2026-07-03 — "Bold & Vibrant" redesign (Phase 1)
 
 - New brand: violet→pink gradient + lime accent; `AppColors`/`AppPalette` reworked with `brandGradient`, `onAccent`, `surfaceElevated`, `success`, `warning`

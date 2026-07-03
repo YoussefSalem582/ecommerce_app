@@ -18,6 +18,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Shared widgets: new `AppGradientButton` CTA; restyled empty/error states and product shimmer.
   - Home: gradient promo carousel (`HomePromoBanner`, 3 slides + animated dots) and a redesigned product card (lime rating pill, springy press). New EN+AR banner strings.
 
+- **"Bold & Vibrant" redesign — Phase 2 (purchase flow)** — Carried the new language into Product Detail, Cart, and Checkout.
+  - Shared `RatingBadge` widget extracted from the catalog card and reused on the PDP; standalone review stars now use the amber `warning` token.
+  - **Product Detail:** rounded gradient-tinted hero panel, bolder title/price, sticky bottom add-to-cart bar with a gradient CTA.
+  - **Cart:** chunky line-item cards with a rounded pill quantity stepper, rounded swipe-to-delete, and a gradient checkout bar.
+  - **Checkout:** gradient-tinted order-summary card with aligned subtotal/discount/total rows, a rounded amber demo banner, and a sticky gradient pay bar (inline spinner while submitting).
+  - All `TestKeys`, responsive rules, and the submitting overlay preserved.
+
 > **Note:** the theme change intentionally invalidates the golden snapshots — run `flutter test --update-goldens` to refresh `test/goldens/goldens/` before merging.
 
 - **Showcase feature expansion** — Catalog sort/filter + categories browse page; recently viewed strip; PDP reviews (mock), related products, share (`share_plus`); checkout promo codes (`SAVE10`, `WELCOME5`) and saved addresses; settings currency (USD/EUR/SAR) and notification toggle; change-password showcase form.
