@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:shop_flow/core/l10n/gen/app_localizations.dart';
+import 'package:shop_flow/core/theme/app_spacing.dart';
 import 'package:shop_flow/core/theme/theme_extensions.dart';
 
 /// Centered error state with optional retry action.
@@ -25,27 +26,37 @@ class AppErrorView extends StatelessWidget {
 
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(AppSpacing.xl),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            Icon(
-              Icons.error_outline_rounded,
-              size: 56,
-              color: palette.error.withValues(alpha: 0.85),
+            Container(
+              height: 96,
+              width: 96,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: palette.error.withValues(alpha: 0.12),
+              ),
+              alignment: Alignment.center,
+              child: Icon(
+                Icons.error_outline_rounded,
+                size: 48,
+                color: palette.error,
+              ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.md),
             Text(
               message,
               style: Theme.of(context).textTheme.bodyLarge,
               textAlign: TextAlign.center,
             ),
             if (onRetry != null) ...<Widget>[
-              const SizedBox(height: 20),
-              FilledButton(
+              const SizedBox(height: AppSpacing.lg),
+              FilledButton.icon(
                 onPressed: onRetry,
-                child: Text(l10n.retry),
+                icon: const Icon(Icons.refresh_rounded, size: 20),
+                label: Text(l10n.retry),
               ),
             ],
           ],
