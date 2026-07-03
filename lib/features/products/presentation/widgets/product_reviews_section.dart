@@ -31,7 +31,7 @@ class ProductReviewsSection extends StatelessWidget {
         const SizedBox(height: 8),
         Row(
           children: <Widget>[
-            Icon(Icons.star_rounded, color: palette.accent, size: 28),
+            Icon(Icons.star_rounded, color: palette.warning, size: 28),
             const SizedBox(width: 8),
             Text(
               product.ratingRate.toStringAsFixed(1),
@@ -60,7 +60,7 @@ class ProductReviewsSection extends StatelessWidget {
                             ? Icons.star_rounded
                             : Icons.star_outline_rounded,
                         size: 16,
-                        color: palette.accent,
+                        color: palette.warning,
                       );
                     }),
                   ),

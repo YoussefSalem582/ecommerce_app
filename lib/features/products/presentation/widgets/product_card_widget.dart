@@ -9,6 +9,7 @@ import 'package:shop_flow/core/theme/app_radius.dart';
 import 'package:shop_flow/core/theme/app_spacing.dart';
 import 'package:shop_flow/core/theme/theme_extensions.dart';
 import 'package:shop_flow/core/utils/price_formatter.dart';
+import 'package:shop_flow/core/widgets/rating_badge.dart';
 import 'package:shop_flow/features/products/domain/entities/product_entity.dart';
 import 'package:shop_flow/features/wishlist/presentation/cubit/wishlist_cubit.dart';
 import 'package:shop_flow/features/wishlist/presentation/cubit/wishlist_state.dart';
@@ -133,38 +134,6 @@ class _PressableCardState extends State<_PressableCard> {
   }
 }
 
-class _RatingPill extends StatelessWidget {
-  const _RatingPill({required this.rating, required this.palette});
-
-  final double rating;
-  final AppPalette palette;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs, vertical: 3),
-      decoration: BoxDecoration(
-        color: palette.accent,
-        borderRadius: AppRadius.brPill,
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Icon(Icons.star_rounded, size: 13, color: palette.onAccent),
-          const SizedBox(width: 2),
-          Text(
-            rating.toStringAsFixed(1),
-            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: palette.onAccent,
-                  fontWeight: FontWeight.w800,
-                ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class _GridProductBody extends StatelessWidget {
   const _GridProductBody({
     required this.product,
@@ -209,7 +178,7 @@ class _GridProductBody extends StatelessWidget {
                     ),
               ),
             ),
-            _RatingPill(rating: product.ratingRate, palette: palette),
+            RatingBadge(rating: product.ratingRate),
           ],
         ),
         const SizedBox(height: 2),
@@ -276,7 +245,7 @@ class _ListProductBody extends StatelessWidget {
                         ),
                   ),
                   const SizedBox(width: AppSpacing.xs),
-                  _RatingPill(rating: product.ratingRate, palette: palette),
+                  RatingBadge(rating: product.ratingRate),
                 ],
               ),
               const SizedBox(height: 2),
