@@ -5,6 +5,7 @@ import 'package:shop_flow/core/utils/app_breakpoints.dart';
 import 'package:shop_flow/features/home/presentation/widgets/catalog_filters_section.dart';
 import 'package:shop_flow/features/home/presentation/widgets/catalog_pinned_header.dart';
 import 'package:shop_flow/features/home/presentation/widgets/catalog_product_slivers.dart';
+import 'package:shop_flow/features/home/presentation/widgets/home_promo_banner.dart';
 import 'package:shop_flow/features/home/presentation/widgets/home_recently_viewed_section.dart';
 import 'package:shop_flow/features/home/presentation/widgets/home_spacing.dart';
 import 'package:shop_flow/features/products/presentation/bloc/product_list_bloc.dart';
@@ -72,6 +73,7 @@ class HomeScrollBody extends StatelessWidget {
             listState: listState,
             onShowFilterSheet: onShowFilterSheet,
           ),
+          const SliverToBoxAdapter(child: HomePromoBanner()),
           const SliverToBoxAdapter(child: HomeRecentlyViewedSection()),
           ...CatalogFiltersSection.buildSlivers(
             loaded: loaded,

@@ -593,4 +593,28 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get orderUpdateNotificationDemo =>
       'Order update notifications are enabled (showcase — no push sent)';
+
+  @override
+  String get homeBannerSaleTitle => 'Mega Season Sale';
+
+  @override
+  String get homeBannerSaleSubtitle => 'Up to 50% off top-rated picks';
+
+  @override
+  String get homeBannerShippingTitle => 'Free Express Shipping';
+
+  @override
+  String get homeBannerShippingSubtitle => 'On every order over \$50';
+
+  @override
+  String get homeBannerFreshTitle => 'Fresh Arrivals';
+
+  @override
+  String get homeBannerFreshSubtitle => 'New drops added every week';
+
+  @override
+  String get homeBannerCta => 'Shop now';
+
+  @override
+  String get homeBannerCarouselA11y => 'Promotional offers carousel';
 }

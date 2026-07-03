@@ -590,4 +590,28 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get orderUpdateNotificationDemo =>
       'إشعارات تحديث الطلب مفعّلة (عرض تجريبي — لا push)';
+
+  @override
+  String get homeBannerSaleTitle => 'تخفيضات الموسم الكبرى';
+
+  @override
+  String get homeBannerSaleSubtitle => 'خصم حتى 50% على أفضل المنتجات';
+
+  @override
+  String get homeBannerShippingTitle => 'شحن سريع مجاني';
+
+  @override
+  String get homeBannerShippingSubtitle => 'على كل طلب فوق 50\$';
+
+  @override
+  String get homeBannerFreshTitle => 'وصل حديثًا';
+
+  @override
+  String get homeBannerFreshSubtitle => 'منتجات جديدة كل أسبوع';
+
+  @override
+  String get homeBannerCta => 'تسوّق الآن';
+
+  @override
+  String get homeBannerCarouselA11y => 'عروض ترويجية متنقلة';
 }

@@ -218,5 +218,13 @@
   "changePasswordSuccess": "تم تحديث كلمة المرور (عرض تجريبي)",
   "changePasswordCurrentInvalid": "أدخل كلمة المرور الحالية",
   "changePasswordMismatch": "كلمتا المرور غير متطابقتين",
-  "orderUpdateNotificationDemo": "إشعارات تحديث الطلب مفعّلة (عرض تجريبي — لا push)"
+  "orderUpdateNotificationDemo": "إشعارات تحديث الطلب مفعّلة (عرض تجريبي — لا push)",
+  "homeBannerSaleTitle": "تخفيضات الموسم الكبرى",
+  "homeBannerSaleSubtitle": "خصم حتى 50% على أفضل المنتجات",
+  "homeBannerShippingTitle": "شحن سريع مجاني",
+  "homeBannerShippingSubtitle": "على كل طلب فوق 50$",
+  "homeBannerFreshTitle": "وصل حديثًا",
+  "homeBannerFreshSubtitle": "منتجات جديدة كل أسبوع",
+  "homeBannerCta": "تسوّق الآن",
+  "homeBannerCarouselA11y": "عروض ترويجية متنقلة"
 }

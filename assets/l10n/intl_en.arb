@@ -258,5 +258,13 @@
   "changePasswordSuccess": "Password updated (showcase)",
   "changePasswordCurrentInvalid": "Enter your current password",
   "changePasswordMismatch": "Passwords do not match",
-  "orderUpdateNotificationDemo": "Order update notifications are enabled (showcase — no push sent)"
+  "orderUpdateNotificationDemo": "Order update notifications are enabled (showcase — no push sent)",
+  "homeBannerSaleTitle": "Mega Season Sale",
+  "homeBannerSaleSubtitle": "Up to 50% off top-rated picks",
+  "homeBannerShippingTitle": "Free Express Shipping",
+  "homeBannerShippingSubtitle": "On every order over $50",
+  "homeBannerFreshTitle": "Fresh Arrivals",
+  "homeBannerFreshSubtitle": "New drops added every week",
+  "homeBannerCta": "Shop now",
+  "homeBannerCarouselA11y": "Promotional offers carousel"
 }

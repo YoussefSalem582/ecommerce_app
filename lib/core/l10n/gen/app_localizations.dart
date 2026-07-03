@@ -1183,6 +1183,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Order update notifications are enabled (showcase — no push sent)'**
   String get orderUpdateNotificationDemo;
+
+  /// No description provided for @homeBannerSaleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Mega Season Sale'**
+  String get homeBannerSaleTitle;
+
+  /// No description provided for @homeBannerSaleSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Up to 50% off top-rated picks'**
+  String get homeBannerSaleSubtitle;
+
+  /// No description provided for @homeBannerShippingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Free Express Shipping'**
+  String get homeBannerShippingTitle;
+
+  /// No description provided for @homeBannerShippingSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'On every order over \$50'**
+  String get homeBannerShippingSubtitle;
+
+  /// No description provided for @homeBannerFreshTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Fresh Arrivals'**
+  String get homeBannerFreshTitle;
+
+  /// No description provided for @homeBannerFreshSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New drops added every week'**
+  String get homeBannerFreshSubtitle;
+
+  /// No description provided for @homeBannerCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop now'**
+  String get homeBannerCta;
+
+  /// No description provided for @homeBannerCarouselA11y.
+  ///
+  /// In en, this message translates to:
+  /// **'Promotional offers carousel'**
+  String get homeBannerCarouselA11y;
 }
 
 class _AppLocalizationsDelegate
