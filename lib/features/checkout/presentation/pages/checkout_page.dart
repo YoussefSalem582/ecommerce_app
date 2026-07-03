@@ -6,9 +6,12 @@ import 'package:shop_flow/core/di/injection.dart';
 import 'package:shop_flow/core/constants/test_keys.dart';
 import 'package:shop_flow/core/l10n/gen/app_localizations.dart';
 import 'package:shop_flow/core/router/app_routes.dart';
+import 'package:shop_flow/core/theme/app_radius.dart';
+import 'package:shop_flow/core/theme/app_spacing.dart';
 import 'package:shop_flow/core/theme/theme_extensions.dart';
 import 'package:shop_flow/core/widgets/app_error_view.dart';
 import 'package:shop_flow/core/widgets/app_loading_view.dart';
+import 'package:shop_flow/core/widgets/gradient_button.dart';
 import 'package:shop_flow/core/widgets/offline_banner.dart';
 import 'package:shop_flow/core/utils/app_breakpoints.dart';
 import 'package:shop_flow/core/utils/price_formatter.dart';
@@ -170,6 +173,22 @@ class _CheckoutPageState extends State<CheckoutPage> {
       ],
       child: Scaffold(
         appBar: AppBar(title: Text(l10n.checkoutTitle)),
+        bottomNavigationBar: BlocBuilder<CheckoutBloc, CheckoutState>(
+          builder: (BuildContext context, CheckoutState state) {
+            if (state case CheckoutReady(
+              :final totalAfterDiscount,
+              :final submitting,
+            )) {
+              return _CheckoutPayBar(
+                l10n: l10n,
+                total: totalAfterDiscount,
+                submitting: submitting,
+                onSubmit: () => _submit(l10n),
+              );
+            }
+            return const SizedBox.shrink();
+          },
+        ),
         body: OfflineBanner(
           child: BlocBuilder<CheckoutBloc, CheckoutState>(
           builder: (BuildContext context, CheckoutState state) {
@@ -234,8 +253,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
                             postalCtrl: _postalCtrl,
                             countryCtrl: _countryCtrl,
                             rowFields: rowFields,
-                            onSubmit: () => _submit(l10n),
-                            submitting: submitting,
                             showDemoBanner: getIt<AppConfig>().isDemoEnv &&
                                 !stripeEnabled,
                             saveAddress: _saveAddress,
@@ -410,41 +427,88 @@ class _OrderSummarySection extends StatelessWidget {
                 .toList(),
           ),
         ),
-        const SizedBox(height: 8),
-        Align(
-          alignment: Alignment.centerRight,
+        const SizedBox(height: AppSpacing.sm),
+        Container(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: <Color>[
+                palette.primary.withValues(alpha: 0.10),
+                palette.secondary.withValues(alpha: 0.10),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: AppRadius.brLg,
+          ),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
             children: <Widget>[
-              Text(
-                '${l10n.cartSubtotalLabel}: ${PriceFormatter.formatUsd(context, subtotal)}',
-                style: Theme.of(context).textTheme.bodyLarge,
+              _SummaryRow(
+                label: l10n.cartSubtotalLabel,
+                value: PriceFormatter.formatUsd(context, subtotal),
               ),
-              if (discountAmount > 0)
-                Text(
-                  '${l10n.checkoutDiscountLabel}: -${PriceFormatter.formatUsd(context, discountAmount)}',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: palette.accent,
-                      ),
+              if (discountAmount > 0) ...<Widget>[
+                const SizedBox(height: AppSpacing.xs),
+                _SummaryRow(
+                  label: l10n.checkoutDiscountLabel,
+                  value:
+                      '-${PriceFormatter.formatUsd(context, discountAmount)}',
+                  valueColor: palette.success,
                 ),
-              Text(
-                '${l10n.checkoutTotalLabel}: ${PriceFormatter.formatUsd(context, totalAfterDiscount)}',
-                style: Theme.of(context)
-                    .textTheme
-                    .titleMedium
-                    ?.copyWith(color: palette.primary),
+              ],
+              const Divider(),
+              _SummaryRow(
+                label: l10n.checkoutTotalLabel,
+                value: PriceFormatter.formatUsd(context, totalAfterDiscount),
+                emphasise: true,
               ),
             ],
           ),
         ),
         if (stripeEnabled)
           Padding(
-            padding: const EdgeInsets.only(top: 8),
+            padding: const EdgeInsets.only(top: AppSpacing.xs),
             child: Text(
               l10n.checkoutStripeSheetHint,
               style: Theme.of(context).textTheme.bodySmall,
             ),
           ),
+      ],
+    );
+  }
+}
+
+class _SummaryRow extends StatelessWidget {
+  const _SummaryRow({
+    required this.label,
+    required this.value,
+    this.emphasise = false,
+    this.valueColor,
+  });
+
+  final String label;
+  final String value;
+  final bool emphasise;
+  final Color? valueColor;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.appPalette;
+    final TextTheme text = Theme.of(context).textTheme;
+    final TextStyle? labelStyle =
+        emphasise ? text.titleMedium : text.bodyMedium;
+    final TextStyle? valueStyle = emphasise
+        ? text.titleLarge?.copyWith(
+            color: palette.primary,
+            fontWeight: FontWeight.w800,
+          )
+        : text.bodyMedium?.copyWith(color: valueColor);
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        Text(label, style: labelStyle),
+        Text(value, style: valueStyle),
       ],
     );
   }
@@ -460,8 +524,6 @@ class _ShippingFormSection extends StatelessWidget {
     required this.postalCtrl,
     required this.countryCtrl,
     required this.rowFields,
-    required this.onSubmit,
-    required this.submitting,
     required this.showDemoBanner,
     required this.saveAddress,
     required this.onSaveAddressChanged,
@@ -477,8 +539,6 @@ class _ShippingFormSection extends StatelessWidget {
   final TextEditingController postalCtrl;
   final TextEditingController countryCtrl;
   final bool rowFields;
-  final VoidCallback onSubmit;
-  final bool submitting;
   final bool showDemoBanner;
   final bool saveAddress;
   final ValueChanged<bool> onSaveAddressChanged;
@@ -508,20 +568,40 @@ class _ShippingFormSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           if (showDemoBanner) ...<Widget>[
-            MaterialBanner(
-              content: Text(l10n.demoModeBannerBody),
-              leading: const Icon(Icons.info_outline),
-              backgroundColor: Theme.of(context)
-                  .colorScheme
-                  .primaryContainer
-                  .withValues(alpha: 0.35),
-              actions: <Widget>[
-                Text(l10n.demoModeBannerTitle),
-              ],
+            Container(
+              padding: const EdgeInsets.all(AppSpacing.sm),
+              decoration: BoxDecoration(
+                color: context.appPalette.warning.withValues(alpha: 0.14),
+                borderRadius: AppRadius.brMd,
+              ),
+              child: Row(
+                children: <Widget>[
+                  Icon(
+                    Icons.info_outline_rounded,
+                    color: context.appPalette.warning,
+                  ),
+                  const SizedBox(width: AppSpacing.sm),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          l10n.demoModeBannerTitle,
+                          style: Theme.of(context).textTheme.labelLarge,
+                        ),
+                        Text(
+                          l10n.demoModeBannerBody,
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.md),
           ],
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.sm),
           Text(
             l10n.checkoutShippingSection,
             style: Theme.of(context).textTheme.titleMedium,
@@ -614,13 +694,78 @@ class _ShippingFormSection extends StatelessWidget {
             controlAffinity: ListTileControlAffinity.leading,
             contentPadding: EdgeInsets.zero,
           ),
-          const SizedBox(height: 12),
-          FilledButton(
-            key: TestKeys.checkoutPayButton,
-            onPressed: submitting ? null : onSubmit,
-            child: Text(l10n.checkoutPayButton),
-          ),
         ],
+      ),
+    );
+  }
+}
+
+/// Sticky bottom pay bar: order total and the gradient pay CTA.
+class _CheckoutPayBar extends StatelessWidget {
+  const _CheckoutPayBar({
+    required this.l10n,
+    required this.total,
+    required this.submitting,
+    required this.onSubmit,
+  });
+
+  final AppLocalizations l10n;
+  final double total;
+  final bool submitting;
+  final VoidCallback onSubmit;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.appPalette;
+
+    return Material(
+      color: palette.surfaceElevated,
+      elevation: 8,
+      shadowColor: palette.primary.withValues(alpha: 0.15),
+      borderRadius: const BorderRadius.vertical(
+        top: Radius.circular(AppRadius.xl),
+      ),
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.md,
+            AppSpacing.sm,
+            AppSpacing.md,
+            AppSpacing.sm,
+          ),
+          child: Row(
+            children: <Widget>[
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    l10n.checkoutTotalLabel,
+                    style: Theme.of(context).textTheme.labelMedium,
+                  ),
+                  Text(
+                    PriceFormatter.formatUsd(context, total),
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          color: palette.primary,
+                          fontWeight: FontWeight.w800,
+                        ),
+                  ),
+                ],
+              ),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: AppGradientButton(
+                  key: TestKeys.checkoutPayButton,
+                  label: l10n.checkoutPayButton,
+                  icon: Icons.lock_rounded,
+                  loading: submitting,
+                  onPressed: submitting ? null : onSubmit,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
