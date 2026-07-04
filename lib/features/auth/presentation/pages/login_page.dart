@@ -5,8 +5,11 @@ import 'package:go_router/go_router.dart';
 import 'package:shop_flow/core/constants/test_keys.dart';
 import 'package:shop_flow/core/l10n/gen/app_localizations.dart';
 import 'package:shop_flow/core/router/app_routes.dart';
-import 'package:shop_flow/core/theme/theme_extensions.dart';
+import 'package:shop_flow/core/theme/app_spacing.dart';
+import 'package:shop_flow/core/utils/app_breakpoints.dart';
+import 'package:shop_flow/core/widgets/brand_badge.dart';
 import 'package:shop_flow/core/widgets/google_sign_in_button.dart';
+import 'package:shop_flow/core/widgets/gradient_button.dart';
 import 'package:shop_flow/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:shop_flow/features/auth/presentation/bloc/auth_event.dart';
 import 'package:shop_flow/features/auth/presentation/bloc/auth_state.dart';
@@ -55,7 +58,6 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final palette = context.appPalette;
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.loginTitle)),
@@ -83,9 +85,10 @@ class _LoginPageState extends State<LoginPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: <Widget>[
-                      Icon(Icons.lock_outline,
-                          size: 56, color: palette.primary),
-                      const SizedBox(height: 24),
+                      const Align(
+                        child: BrandBadge(icon: Icons.lock_rounded),
+                      ),
+                      const SizedBox(height: AppSpacing.xl),
                       TextFormField(
                         controller: _username,
                         textInputAction: TextInputAction.next,
@@ -116,20 +119,14 @@ class _LoginPageState extends State<LoginPage> {
                           return null;
                         },
                       ),
-                      const SizedBox(height: 24),
-                      FilledButton(
+                      const SizedBox(height: AppSpacing.xl),
+                      AppGradientButton(
                         key: TestKeys.loginSubmitButton,
+                        label: l10n.loginButton,
+                        loading: loading,
                         onPressed: loading ? null : () => _submit(context),
-                        child: loading
-                            ? const SizedBox(
-                                height: 20,
-                                width: 20,
-                                child:
-                                    CircularProgressIndicator(strokeWidth: 2),
-                              )
-                            : Text(l10n.loginButton),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: AppSpacing.xs),
                       TextButton(
                         onPressed: loading
                             ? null
@@ -154,7 +151,9 @@ class _LoginPageState extends State<LoginPage> {
                   child: Center(
                     child: ConstrainedBox(
                       constraints: BoxConstraints(
-                        maxWidth: constraints.maxWidth >= 600 ? 480 : double.infinity,
+                        maxWidth: constraints.maxWidth >= AppBreakpoints.mobile
+                            ? 480
+                            : double.infinity,
                       ),
                       child: form,
                     ),

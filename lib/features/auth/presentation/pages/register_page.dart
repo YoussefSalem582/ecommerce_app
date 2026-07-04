@@ -4,7 +4,10 @@ import 'package:go_router/go_router.dart';
 import 'package:shop_flow/core/constants/test_keys.dart';
 import 'package:shop_flow/core/l10n/gen/app_localizations.dart';
 import 'package:shop_flow/core/router/app_routes.dart';
-import 'package:shop_flow/core/theme/theme_extensions.dart';
+import 'package:shop_flow/core/theme/app_spacing.dart';
+import 'package:shop_flow/core/utils/app_breakpoints.dart';
+import 'package:shop_flow/core/widgets/brand_badge.dart';
+import 'package:shop_flow/core/widgets/gradient_button.dart';
 import 'package:shop_flow/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:shop_flow/features/auth/presentation/bloc/auth_event.dart';
 import 'package:shop_flow/features/auth/presentation/bloc/auth_state.dart';
@@ -61,7 +64,6 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final palette = context.appPalette;
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.registerTitle)),
@@ -95,9 +97,10 @@ class _RegisterPageState extends State<RegisterPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: <Widget>[
-                      Icon(Icons.person_add_alt_1,
-                          size: 56, color: palette.primary),
-                      const SizedBox(height: 24),
+                      const Align(
+                        child: BrandBadge(icon: Icons.person_add_alt_1_rounded),
+                      ),
+                      const SizedBox(height: AppSpacing.xl),
                       TextFormField(
                         controller: _email,
                         keyboardType: TextInputType.emailAddress,
@@ -167,18 +170,12 @@ class _RegisterPageState extends State<RegisterPage> {
                           return null;
                         },
                       ),
-                      const SizedBox(height: 24),
-                      FilledButton(
+                      const SizedBox(height: AppSpacing.xl),
+                      AppGradientButton(
                         key: TestKeys.registerSubmitButton,
+                        label: l10n.registerButton,
+                        loading: loading,
                         onPressed: loading ? null : () => _submit(context),
-                        child: loading
-                            ? const SizedBox(
-                                height: 20,
-                                width: 20,
-                                child:
-                                    CircularProgressIndicator(strokeWidth: 2),
-                              )
-                            : Text(l10n.registerButton),
                       ),
                       TextButton(
                         onPressed: loading
@@ -195,7 +192,9 @@ class _RegisterPageState extends State<RegisterPage> {
                   child: Center(
                     child: ConstrainedBox(
                       constraints: BoxConstraints(
-                        maxWidth: constraints.maxWidth >= 600 ? 480 : double.infinity,
+                        maxWidth: constraints.maxWidth >= AppBreakpoints.mobile
+                            ? 480
+                            : double.infinity,
                       ),
                       child: form,
                     ),

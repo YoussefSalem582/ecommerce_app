@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:shop_flow/core/di/injection.dart';
 import 'package:shop_flow/core/constants/test_keys.dart';
 import 'package:shop_flow/core/l10n/gen/app_localizations.dart';
+import 'package:shop_flow/core/theme/app_spacing.dart';
+import 'package:shop_flow/core/widgets/gradient_button.dart';
 import 'package:shop_flow/features/auth/domain/usecases/change_password_usecase.dart';
 
 /// Showcase change-password form with local validation only.
@@ -114,11 +116,12 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                 return null;
               },
             ),
-            const SizedBox(height: 24),
-            FilledButton(
+            const SizedBox(height: AppSpacing.xl),
+            AppGradientButton(
               key: TestKeys.changePasswordSubmit,
+              label: l10n.changePasswordSubmit,
+              loading: _submitting,
               onPressed: _submitting ? null : () => _submit(l10n),
-              child: Text(l10n.changePasswordSubmit),
             ),
           ],
         ),
