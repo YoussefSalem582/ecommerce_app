@@ -4,6 +4,14 @@ Reverse-chronological log of doc/agent-tooling changes (not app release notes �
 
 ---
 
+## 2026-07-03 — "Bold & Vibrant" redesign (Phase 3)
+
+- Auth (login/register/change-password), onboarding, splash, profile/settings, edit-profile, addresses, orders, order-detail/success redesigned
+- New shared `BrandBadge` (`core/widgets/brand_badge.dart`) gradient medallion; primary CTAs across these screens → `AppGradientButton`
+- Profile gradient header card; settings section cards; order status pills; order-detail green completed timeline
+- login/register breakpoint literal → `AppBreakpoints.mobile`; all TestKeys + reduced-motion preserved
+- **Redesign sweep complete (Phases 1–3).** Remaining: regenerate goldens (`flutter test --update-goldens`); unit-test pyramid still thin (deferred).
+
 ## 2026-07-03 — "Bold & Vibrant" redesign (Phase 2)
 
 - Purchase flow redesigned: Product Detail, Cart, Checkout

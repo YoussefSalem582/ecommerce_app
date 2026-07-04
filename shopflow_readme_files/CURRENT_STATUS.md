@@ -3,7 +3,7 @@
 **Version:** `1.0.0+1` (from `pubspec.yaml`)  
 **Last updated:** 2026-07-03
 
-> **UI:** "Bold & Vibrant" redesign in progress on `feat/bold-vibrant-redesign`. **Phase 1** (design-system foundation + home) and **Phase 2** (Product Detail, Cart, Checkout) landed — new violet→pink gradient brand, lime accent, Space Grotesk / Plus Jakarta type, chunky rounded components, gradient CTAs, sticky action bars, shared `RatingBadge`. Golden snapshots need regenerating (`flutter test --update-goldens`). **Phase 3** (auth/onboarding/splash/profile/orders + production-readiness sweep) pending.
+> **UI:** "Bold & Vibrant" redesign **complete (Phases 1–3)** on `feat/bold-vibrant-redesign` — new violet→pink gradient brand, lime accent, Space Grotesk / Plus Jakarta type, chunky rounded components, gradient CTAs (`AppGradientButton`), sticky action bars, shared `RatingBadge` + `BrandBadge`, gradient profile/PDP headers, settings section cards, order status pills. Every screen now carries the new language. **Follow-ups:** regenerate goldens (`flutter test --update-goldens`); BLoC/repository unit-test pyramid still thin (deferred).
 
 ## Feature matrix
 

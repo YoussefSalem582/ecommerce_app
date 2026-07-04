@@ -18,6 +18,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Shared widgets: new `AppGradientButton` CTA; restyled empty/error states and product shimmer.
   - Home: gradient promo carousel (`HomePromoBanner`, 3 slides + animated dots) and a redesigned product card (lime rating pill, springy press). New EN+AR banner strings.
 
+- **"Bold & Vibrant" redesign — Phase 3 (auth, onboarding, profile, orders)** — Completed the redesign sweep across the remaining screens.
+  - New shared `BrandBadge` (gradient icon medallion) on login, register, onboarding, splash, and order-success.
+  - Primary CTAs on login, register, change-password, onboarding, edit-profile, add-address, and order-success converted to `AppGradientButton`.
+  - Profile gains a gradient-tinted header card; Settings groups each preference section into its own card.
+  - Orders list rows show a coloured status pill (pending/processing/shipped/delivered); order-detail timeline marks completed steps green.
+  - Replaced the raw `600` breakpoint literal in login/register with `AppBreakpoints.mobile`. All `TestKeys`, responsive rules, and reduced-motion fallbacks preserved.
+
 - **"Bold & Vibrant" redesign — Phase 2 (purchase flow)** — Carried the new language into Product Detail, Cart, and Checkout.
   - Shared `RatingBadge` widget extracted from the catalog card and reused on the PDP; standalone review stars now use the amber `warning` token.
   - **Product Detail:** rounded gradient-tinted hero panel, bolder title/price, sticky bottom add-to-cart bar with a gradient CTA.
