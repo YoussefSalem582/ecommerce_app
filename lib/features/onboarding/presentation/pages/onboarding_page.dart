@@ -8,6 +8,8 @@ import 'package:shop_flow/core/di/injection.dart';
 import 'package:shop_flow/core/l10n/gen/app_localizations.dart';
 import 'package:shop_flow/core/router/app_routes.dart';
 import 'package:shop_flow/core/theme/theme_extensions.dart';
+import 'package:shop_flow/core/widgets/brand_badge.dart';
+import 'package:shop_flow/core/widgets/gradient_button.dart';
 
 /// First-run carousel introducing ShopFlow showcase features.
 class OnboardingPage extends StatefulWidget {
@@ -85,7 +87,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        Icon(slide.icon, size: 96, color: palette.primary),
+                        BrandBadge(icon: slide.icon, size: 116),
                         const SizedBox(height: 24),
                         Text(
                           slide.title,
@@ -128,7 +130,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
             const SizedBox(height: 24),
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-              child: FilledButton(
+              child: AppGradientButton(
+                label: _index < _slideCount - 1
+                    ? l10n.onboardingNext
+                    : l10n.onboardingGetStarted,
                 onPressed: () {
                   if (_index < _slideCount - 1) {
                     _controller.nextPage(
@@ -139,11 +144,6 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     unawaited(_finish());
                   }
                 },
-                child: Text(
-                  _index < _slideCount - 1
-                      ? l10n.onboardingNext
-                      : l10n.onboardingGetStarted,
-                ),
               ),
             ),
           ],

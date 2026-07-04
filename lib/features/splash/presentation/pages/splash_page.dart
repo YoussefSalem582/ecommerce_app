@@ -11,6 +11,7 @@ import 'package:shop_flow/core/di/injection.dart';
 import 'package:shop_flow/core/l10n/gen/app_localizations.dart';
 import 'package:shop_flow/core/router/app_routes.dart';
 import 'package:shop_flow/core/theme/theme_extensions.dart';
+import 'package:shop_flow/core/widgets/brand_badge.dart';
 import 'package:shop_flow/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:shop_flow/features/auth/presentation/bloc/auth_event.dart';
 import 'package:shop_flow/features/auth/presentation/bloc/auth_state.dart';
@@ -69,10 +70,9 @@ class _SplashPageState extends State<SplashPage> {
     final palette = context.appPalette;
     final disableAnimations = MediaQuery.of(context).disableAnimations;
 
-    final logo = Icon(
-      Icons.shopping_bag_rounded,
-      size: 72,
-      color: palette.primary,
+    const Widget logo = BrandBadge(
+      icon: Icons.shopping_bag_rounded,
+      size: 104,
     );
 
     final animatedLogo = disableAnimations || kIsWeb
