@@ -9,7 +9,9 @@ import 'package:shop_flow/core/constants/test_keys.dart';
 import 'package:shop_flow/core/l10n/gen/app_localizations.dart';
 import 'package:shop_flow/core/preferences/notification_prefs_cubit.dart';
 import 'package:shop_flow/core/router/app_routes.dart';
-import 'package:shop_flow/core/theme/theme_extensions.dart';
+import 'package:shop_flow/core/theme/app_spacing.dart';
+import 'package:shop_flow/core/widgets/brand_badge.dart';
+import 'package:shop_flow/core/widgets/gradient_button.dart';
 
 /// Post-checkout celebration route with optional Lottie asset.
 class OrderSuccessPage extends StatefulWidget {
@@ -54,15 +56,10 @@ class _OrderSuccessPageState extends State<OrderSuccessPage> {
   @override
   Widget build(BuildContext context) {
     final AppLocalizations l10n = AppLocalizations.of(context);
-    final palette = context.appPalette;
     final bool disableMotion =
         kIsWeb || MediaQuery.of(context).disableAnimations;
 
-    Widget mark = Icon(
-      Icons.check_circle_rounded,
-      size: 120,
-      color: palette.primary,
-    );
+    Widget mark = const BrandBadge(icon: Icons.check_rounded, size: 120);
     if (!disableMotion) {
       mark = mark
           .animate()
@@ -108,12 +105,12 @@ class _OrderSuccessPageState extends State<OrderSuccessPage> {
                 icon: const Icon(Icons.copy_rounded),
                 label: Text(l10n.copyOrderId),
               ),
-              const SizedBox(height: 24),
-              FilledButton(
+              const SizedBox(height: AppSpacing.xl),
+              AppGradientButton(
+                label: l10n.orderContinueShopping,
                 onPressed: () => context.go(AppRoutes.home),
-                child: Text(l10n.orderContinueShopping),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: AppSpacing.sm),
               TextButton(
                 onPressed: () => context.go(AppRoutes.orders),
                 child: Text(l10n.ordersTitle),

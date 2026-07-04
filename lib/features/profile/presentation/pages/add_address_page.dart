@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shop_flow/core/constants/test_keys.dart';
 import 'package:shop_flow/core/l10n/gen/app_localizations.dart';
+import 'package:shop_flow/core/theme/app_spacing.dart';
+import 'package:shop_flow/core/widgets/gradient_button.dart';
 import 'package:shop_flow/features/profile/domain/entities/saved_address_entity.dart';
 import 'package:shop_flow/features/profile/presentation/cubit/addresses_cubit.dart';
 
@@ -131,11 +133,11 @@ class _AddAddressPageState extends State<AddAddressPage> {
               onChanged: (bool value) => setState(() => _isDefault = value),
               title: Text(l10n.addressDefaultLabel),
             ),
-            const SizedBox(height: 24),
-            FilledButton(
+            const SizedBox(height: AppSpacing.xl),
+            AppGradientButton(
               key: TestKeys.saveAddressButton,
+              label: l10n.saveProfile,
               onPressed: () => _save(l10n),
-              child: Text(l10n.saveProfile),
             ),
           ],
         ),

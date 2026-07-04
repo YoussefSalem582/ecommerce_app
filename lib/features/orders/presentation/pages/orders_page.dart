@@ -5,6 +5,8 @@ import 'package:intl/intl.dart';
 import 'package:shop_flow/core/constants/test_keys.dart';
 import 'package:shop_flow/core/l10n/gen/app_localizations.dart';
 import 'package:shop_flow/core/router/app_routes.dart';
+import 'package:shop_flow/core/theme/app_radius.dart';
+import 'package:shop_flow/core/theme/app_spacing.dart';
 import 'package:shop_flow/core/theme/theme_extensions.dart';
 import 'package:shop_flow/core/utils/price_formatter.dart';
 import 'package:shop_flow/core/utils/app_breakpoints.dart';
@@ -88,16 +90,43 @@ class _OrdersPageState extends State<OrdersPage> {
                   return Card(
                     key: index == 0 ? TestKeys.firstOrderTile : null,
                     child: ListTile(
+                      leading: Container(
+                        height: 44,
+                        width: 44,
+                        decoration: BoxDecoration(
+                          color: palette.primary.withValues(alpha: 0.10),
+                          borderRadius: AppRadius.brMd,
+                        ),
+                        alignment: Alignment.center,
+                        child: Icon(
+                          Icons.receipt_long_rounded,
+                          color: palette.primary,
+                        ),
+                      ),
                       title: Text('${l10n.ordersOrderIdLabel}: ${o.id}'),
-                      subtitle: Text(
-                        '$dateStr · ${_statusLabel(l10n, o.status)}',
+                      subtitle: Padding(
+                        padding: const EdgeInsets.only(top: AppSpacing.xxs),
+                        child: Row(
+                          children: <Widget>[
+                            Expanded(
+                              child: Text(
+                                dateStr,
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
+                            ),
+                            _OrderStatusPill(status: o.status, l10n: l10n),
+                          ],
+                        ),
                       ),
                       trailing: Text(
                         PriceFormatter.formatUsd(context, o.total),
                         style: Theme.of(context)
                             .textTheme
                             .titleMedium
-                            ?.copyWith(color: palette.primary),
+                            ?.copyWith(
+                              color: palette.primary,
+                              fontWeight: FontWeight.w800,
+                            ),
                       ),
                       onTap: () => context.push(AppRoutes.order(o.id)),
                     ),
@@ -126,16 +155,47 @@ class _OrdersPageState extends State<OrdersPage> {
     );
   }
 
-  String _statusLabel(AppLocalizations l10n, OrderStatus status) {
-    switch (status) {
-      case OrderStatus.pending:
-        return l10n.orderStatusPending;
-      case OrderStatus.processing:
-        return l10n.orderStatusProcessing;
-      case OrderStatus.shipped:
-        return l10n.orderStatusShipped;
-      case OrderStatus.delivered:
-        return l10n.orderStatusDelivered;
-    }
+}
+
+/// Coloured pill conveying an order's fulfilment status.
+class _OrderStatusPill extends StatelessWidget {
+  const _OrderStatusPill({required this.status, required this.l10n});
+
+  final OrderStatus status;
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.appPalette;
+    final Color color = switch (status) {
+      OrderStatus.pending => palette.warning,
+      OrderStatus.processing => palette.primary,
+      OrderStatus.shipped => palette.secondary,
+      OrderStatus.delivered => palette.success,
+    };
+    final String label = switch (status) {
+      OrderStatus.pending => l10n.orderStatusPending,
+      OrderStatus.processing => l10n.orderStatusProcessing,
+      OrderStatus.shipped => l10n.orderStatusShipped,
+      OrderStatus.delivered => l10n.orderStatusDelivered,
+    };
+
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.xs,
+        vertical: 3,
+      ),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.14),
+        borderRadius: AppRadius.brPill,
+      ),
+      child: Text(
+        label,
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: color,
+              fontWeight: FontWeight.w700,
+            ),
+      ),
+    );
   }
 }

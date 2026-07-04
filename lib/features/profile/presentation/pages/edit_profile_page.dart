@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shop_flow/core/constants/test_keys.dart';
 import 'package:shop_flow/core/l10n/gen/app_localizations.dart';
+import 'package:shop_flow/core/theme/app_spacing.dart';
+import 'package:shop_flow/core/widgets/gradient_button.dart';
 import 'package:shop_flow/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:shop_flow/features/auth/presentation/bloc/auth_event.dart';
 import 'package:shop_flow/features/profile/presentation/bloc/edit_profile_bloc.dart';
@@ -174,11 +176,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     controller: _lastNameController,
                     decoration: InputDecoration(labelText: l10n.lastNameLabel),
                   ),
-                  const SizedBox(height: 24),
-                  FilledButton(
+                  const SizedBox(height: AppSpacing.xl),
+                  AppGradientButton(
                     key: TestKeys.saveProfileButton,
+                    label: l10n.saveProfile,
+                    loading: state is EditProfileLoading,
                     onPressed: state is EditProfileLoading ? null : _submit,
-                    child: Text(l10n.saveProfile),
                   ),
                 ],
               ),

@@ -202,9 +202,9 @@ class _Timeline extends StatelessWidget {
             Column(
               children: <Widget>[
                 Icon(
-                  done ? Icons.check_circle : Icons.radio_button_off,
+                  done ? Icons.check_circle_rounded : Icons.radio_button_off,
                   color: done
-                      ? palette.primary
+                      ? palette.success
                       : palette.onSurface.withValues(alpha: 0.35),
                   size: 28,
                 ),
@@ -213,7 +213,7 @@ class _Timeline extends StatelessWidget {
                     width: 2,
                     height: 28,
                     color: done
-                        ? palette.primary
+                        ? palette.success
                         : palette.onSurface.withValues(alpha: 0.2),
                   ),
               ],
