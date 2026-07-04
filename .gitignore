@@ -46,3 +46,6 @@ app.*.map.json
 
 # Local env overrides (secrets — never commit)
 .env
+
+# Golden test failure diffs (generated on mismatch)
+test/goldens/failures/
