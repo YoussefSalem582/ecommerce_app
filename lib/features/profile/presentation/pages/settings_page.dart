@@ -6,6 +6,7 @@ import 'package:shop_flow/core/config/app_config.dart';
 import 'package:shop_flow/core/constants/test_keys.dart';
 import 'package:shop_flow/core/di/injection.dart';
 import 'package:shop_flow/core/l10n/gen/app_localizations.dart';
+import 'package:shop_flow/core/theme/app_spacing.dart';
 import 'package:shop_flow/core/utils/app_breakpoints.dart';
 import 'package:shop_flow/core/l10n/language_cubit.dart';
 import 'package:shop_flow/core/preferences/app_currency.dart';
@@ -27,6 +28,17 @@ class SettingsPage extends StatelessWidget {
       appBar: AppBar(title: Text(l10n.settingsTitle)),
       body: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
+          Widget sectionCard(Widget child) => Padding(
+                padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                child: Card(
+                  clipBehavior: Clip.antiAlias,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: AppSpacing.xs),
+                    child: child,
+                  ),
+                ),
+              );
+
           final themeSection = Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
@@ -213,21 +225,19 @@ class SettingsPage extends StatelessWidget {
 
           if (constraints.maxWidth < AppBreakpoints.tablet) {
             return ListView(
+              padding: const EdgeInsets.all(AppSpacing.md),
               children: <Widget>[
-                themeSection,
-                const Divider(),
-                languageSection,
-                const Divider(),
-                currencySection,
-                const Divider(),
-                notificationsSection,
+                sectionCard(themeSection),
+                sectionCard(languageSection),
+                sectionCard(currencySection),
+                sectionCard(notificationsSection),
                 ...debugSection,
               ],
             );
           }
 
           return ListView(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(AppSpacing.md),
             children: <Widget>[
               Center(
                 child: ConstrainedBox(
@@ -235,16 +245,14 @@ class SettingsPage extends StatelessWidget {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Expanded(child: themeSection),
-                      const VerticalDivider(width: 32),
+                      Expanded(child: sectionCard(themeSection)),
+                      const SizedBox(width: AppSpacing.md),
                       Expanded(
                         child: Column(
                           children: <Widget>[
-                            languageSection,
-                            const Divider(),
-                            currencySection,
-                            const Divider(),
-                            notificationsSection,
+                            sectionCard(languageSection),
+                            sectionCard(currencySection),
+                            sectionCard(notificationsSection),
                           ],
                         ),
                       ),

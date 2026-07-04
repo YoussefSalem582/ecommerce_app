@@ -4,6 +4,9 @@ import 'package:go_router/go_router.dart';
 import 'package:shop_flow/core/constants/test_keys.dart';
 import 'package:shop_flow/core/l10n/gen/app_localizations.dart';
 import 'package:shop_flow/core/router/app_routes.dart';
+import 'package:shop_flow/core/theme/app_radius.dart';
+import 'package:shop_flow/core/theme/app_spacing.dart';
+import 'package:shop_flow/core/theme/theme_extensions.dart';
 import 'package:shop_flow/core/utils/app_breakpoints.dart';
 import 'package:shop_flow/core/widgets/app_error_view.dart';
 import 'package:shop_flow/core/widgets/app_loading_view.dart';
@@ -108,38 +111,56 @@ class _ProfilePageState extends State<ProfilePage> {
 
           return LayoutBuilder(
             builder: (BuildContext context, BoxConstraints constraints) {
+              final palette = context.appPalette;
               final content = ListView(
-                padding: const EdgeInsets.all(24),
+                padding: const EdgeInsets.all(AppSpacing.md),
                 children: <Widget>[
-                  Center(
-                    child: ProfileAvatarWidget(
-                      user: state.user,
-                      avatarPath: state.avatarPath,
-                      radius: 56,
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.md,
+                      vertical: AppSpacing.xl,
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                  Center(
-                    child: Text(
-                      _displayName(state),
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                  ),
-                  if (state.user.email != null && state.user.email!.isNotEmpty)
-                    Center(
-                      child: Text(
-                        state.user.email!,
-                        style: Theme.of(context).textTheme.bodyMedium,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: <Color>[
+                          palette.primary.withValues(alpha: 0.12),
+                          palette.secondary.withValues(alpha: 0.12),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
                       ),
+                      borderRadius: AppRadius.brXl,
                     ),
-                  const SizedBox(height: 8),
-                  Center(
-                    child: Text(
-                      l10n.welcomeUser(state.user.username),
-                      style: Theme.of(context).textTheme.labelMedium,
+                    child: Column(
+                      children: <Widget>[
+                        ProfileAvatarWidget(
+                          user: state.user,
+                          avatarPath: state.avatarPath,
+                          radius: 52,
+                        ),
+                        const SizedBox(height: AppSpacing.sm),
+                        Text(
+                          _displayName(state),
+                          style: Theme.of(context).textTheme.titleLarge,
+                          textAlign: TextAlign.center,
+                        ),
+                        if (state.user.email != null &&
+                            state.user.email!.isNotEmpty)
+                          Text(
+                            state.user.email!,
+                            style: Theme.of(context).textTheme.bodyMedium,
+                            textAlign: TextAlign.center,
+                          ),
+                        const SizedBox(height: AppSpacing.xxs),
+                        Text(
+                          l10n.welcomeUser(state.user.username),
+                          style: Theme.of(context).textTheme.labelMedium,
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: AppSpacing.xl),
                   FilledButton.tonalIcon(
                     onPressed: () => context.push(AppRoutes.wishlist),
                     icon: const Icon(Icons.favorite_outline_rounded),
