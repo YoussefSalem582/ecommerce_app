@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 
-import 'package:shop_flow/features/auth/domain/entities/user_entity.dart';
 
 /// Edit profile form events.
 sealed class EditProfileEvent extends Equatable {

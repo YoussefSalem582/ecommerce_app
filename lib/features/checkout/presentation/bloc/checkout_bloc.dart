@@ -10,7 +10,6 @@ import 'package:shop_flow/features/checkout/domain/checkout_payment_gateway.dart
 import 'package:shop_flow/features/checkout/presentation/bloc/checkout_event.dart';
 import 'package:shop_flow/features/checkout/presentation/bloc/checkout_state.dart';
 import 'package:shop_flow/features/orders/domain/entities/order_entity.dart';
-import 'package:shop_flow/features/orders/domain/entities/shipping_address_entity.dart';
 import 'package:shop_flow/features/orders/domain/usecases/create_order_entity_usecase.dart';
 import 'package:shop_flow/features/orders/domain/usecases/save_order_usecase.dart';
 import 'package:shop_flow/features/profile/domain/entities/saved_address_entity.dart';

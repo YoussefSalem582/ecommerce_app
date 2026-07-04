@@ -148,16 +148,14 @@ class _MobileShell extends StatelessWidget {
               index: i,
               semanticLabel: a11yLabels[i],
               icon:
-                  ResponsiveAppNav._destinations[i].icon ??
-                  const Icon(Icons.circle),
+                  ResponsiveAppNav._destinations[i].icon,
             ),
             selectedIcon: _NavTabIcon(
               index: i,
               semanticLabel: a11yLabels[i],
               icon:
                   ResponsiveAppNav._destinations[i].selectedIcon ??
-                  ResponsiveAppNav._destinations[i].icon ??
-                  const Icon(Icons.circle),
+                  ResponsiveAppNav._destinations[i].icon,
             ),
             label: labels[i],
           ),
@@ -199,16 +197,14 @@ class _TabletShell extends StatelessWidget {
                       index: i,
                       semanticLabel: a11yLabels[i],
                       icon:
-                          ResponsiveAppNav._destinations[i].icon ??
-                          const Icon(Icons.circle),
+                          ResponsiveAppNav._destinations[i].icon,
                     ),
                     selectedIcon: _NavTabIcon(
                       index: i,
                       semanticLabel: a11yLabels[i],
                       icon:
                           ResponsiveAppNav._destinations[i].selectedIcon ??
-                          ResponsiveAppNav._destinations[i].icon ??
-                          const Icon(Icons.circle),
+                          ResponsiveAppNav._destinations[i].icon,
                     ),
                     label: labels[i],
                   ),
@@ -267,16 +263,14 @@ class _DesktopShell extends StatelessWidget {
                     index: i,
                     semanticLabel: a11yLabels[i],
                     icon:
-                        ResponsiveAppNav._destinations[i].icon ??
-                        const Icon(Icons.circle),
+                        ResponsiveAppNav._destinations[i].icon,
                   ),
                   selectedIcon: _NavTabIcon(
                     index: i,
                     semanticLabel: a11yLabels[i],
                     icon:
                         ResponsiveAppNav._destinations[i].selectedIcon ??
-                        ResponsiveAppNav._destinations[i].icon ??
-                        const Icon(Icons.circle),
+                        ResponsiveAppNav._destinations[i].icon,
                   ),
                   label: Text(labels[i]),
                 );

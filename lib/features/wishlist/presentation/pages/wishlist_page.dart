@@ -8,7 +8,6 @@ import 'package:shop_flow/core/router/app_routes.dart';
 import 'package:shop_flow/core/theme/theme_extensions.dart';
 import 'package:shop_flow/core/widgets/app_empty_view.dart';
 import 'package:shop_flow/core/widgets/app_error_view.dart';
-import 'package:shop_flow/core/widgets/app_loading_view.dart';
 import 'package:shop_flow/core/widgets/continue_shopping_button.dart';
 import 'package:shop_flow/core/widgets/product_grid_shimmer.dart';
 import 'package:shop_flow/features/products/domain/entities/product_entity.dart';

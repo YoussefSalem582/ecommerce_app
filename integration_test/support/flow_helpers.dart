@@ -20,14 +20,31 @@ Future<void> pumpUntilFound(
   }
 }
 
+/// Pumps frames until any of [finders] matches or [maxSteps] is exhausted.
+Future<void> pumpUntilAnyFound(
+  WidgetTester tester,
+  List<Finder> finders, {
+  Duration step = const Duration(milliseconds: 100),
+  int maxSteps = 80,
+}) async {
+  for (var i = 0; i < maxSteps; i++) {
+    await tester.pump(step);
+    if (finders.any((Finder f) => f.evaluate().isNotEmpty)) {
+      return;
+    }
+  }
+}
+
 /// Launches [ShopFlowApp] and waits for splash routing to settle.
 Future<void> launchShopFlowApp(WidgetTester tester) async {
   await tester.pumpWidget(const ShopFlowApp());
-  await pumpUntilFound(
+  await pumpUntilAnyFound(
     tester,
-    find.byKey(TestKeys.loginSubmitButton)
-        .or(find.byKey(TestKeys.googleSignInButton))
-        .or(find.byKey(TestKeys.firstProductCard)),
+    <Finder>[
+      find.byKey(TestKeys.loginSubmitButton),
+      find.byKey(TestKeys.googleSignInButton),
+      find.byKey(TestKeys.firstProductCard),
+    ],
   );
 }
 
