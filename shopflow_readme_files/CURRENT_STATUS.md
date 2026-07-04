@@ -3,7 +3,7 @@
 **Version:** `1.0.0+1` (from `pubspec.yaml`)  
 **Last updated:** 2026-07-03
 
-> **UI:** "Bold & Vibrant" redesign **complete (Phases 1–3)** on `feat/bold-vibrant-redesign` — new violet→pink gradient brand, lime accent, Space Grotesk / Plus Jakarta type, chunky rounded components, gradient CTAs (`AppGradientButton`), sticky action bars, shared `RatingBadge` + `BrandBadge`, gradient profile/PDP headers, settings section cards, order status pills. Every screen now carries the new language. **Follow-ups:** regenerate goldens (`flutter test --update-goldens`); BLoC/repository unit-test pyramid still thin (deferred).
+> **UI:** "Bold & Vibrant" redesign **complete (Phases 1–3)** on `feat/bold-vibrant-redesign` — new violet→pink gradient brand, lime accent, Space Grotesk / Plus Jakarta type, chunky rounded components, gradient CTAs (`AppGradientButton`), sticky action bars, shared `RatingBadge` + `BrandBadge`, gradient profile/PDP headers, settings section cards, order status pills. Every screen now carries the new language. **Verified** with Flutter 3.44 / Dart 3.12: `flutter analyze` → 0 errors, 0 warnings; `flutter test` → 16/16 pass; golden snapshots regenerated. **Follow-ups:** BLoC/repository unit-test pyramid still thin (deferred); ~320 pre-existing info-level style lints across the wider codebase remain (out of scope for the redesign).
 
 ## Feature matrix
 
